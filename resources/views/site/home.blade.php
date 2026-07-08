@@ -24,24 +24,36 @@
         </p>
     </section>
 
+    {{-- Разделы — навигационные плитки (перейти в раздел), визуально
+         отличаются от карточек материалов: акцентная полоса слева и стрелка --}}
     <section style="margin-top: 36px;">
-        <h2 class="section-title">Разделы архива</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px;">
+        <div class="home-section-head">
+            <h2 class="section-title" style="margin: 0;">Разделы архива</h2>
+            <span class="home-section-hint">навигация по разделам проекта</span>
+        </div>
+        <div class="section-tiles">
             @foreach ($sections as $section)
-                <a class="page-card" href="{{ $section->url() }}">
-                    <h3>{{ $section->title }}</h3>
+                <a class="section-tile" href="{{ $section->url() }}">
+                    <span class="section-tile-head">
+                        <span class="section-tile-title">{{ $section->title }}</span>
+                        <span class="section-tile-arrow" aria-hidden="true">→</span>
+                    </span>
                     @if ($section->description)
-                        <p>{{ Str::limit($section->description, 110) }}</p>
+                        <span class="section-tile-desc">{{ Str::limit($section->description, 100) }}</span>
                     @endif
-                    <p class="meta" style="margin-top: 10px;">{{ trans_choice('{0} нет материалов|{1} :count материал|[2,4] :count материала|[5,*] :count материалов', $section->published_pages_count) }}</p>
+                    <span class="section-tile-count">{{ trans_choice('{0} нет материалов|{1} :count материал|[2,4] :count материала|[5,*] :count материалов', $section->published_pages_count) }}</span>
                 </a>
             @endforeach
         </div>
     </section>
 
+    {{-- Материалы — карточки контента (открыть страницу) с бейджем эпохи --}}
     @if ($latestPages->isNotEmpty())
-        <section style="margin-top: 40px;">
-            <h2 class="section-title">Последние материалы</h2>
+        <section style="margin-top: 44px;">
+            <div class="home-section-head">
+                <h2 class="section-title" style="margin: 0;">Последние материалы</h2>
+                <span class="home-section-hint">свежие опубликованные страницы</span>
+            </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px;">
                 @foreach ($latestPages as $page)
                     @include('site.partials.page-card', ['page' => $page])
