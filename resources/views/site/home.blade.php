@@ -14,7 +14,7 @@
 @section('content')
     <section class="xi-card home-hero" style="padding: 40px 34px;">
         <h1 class="page-title">Информационный ресурс X-Intellect</h1>
-        <p style="color: var(--xi-ink-soft); font-size: 17.5px; max-width: 720px;">
+        <p style="color: var(--xi-ink-soft); font-size: 16px; max-width: 720px;">
             Архив проекта <strong style="color: var(--xi-ink);">X-Интеллект</strong> (ранее — «Сфера Разума»),
             основанного в 2012 году Александром Георгиевичем Глазом. Материалы о сотрудничестве
             с представителями Внеземного Разума: исследования, статьи Посредников, обучающие
