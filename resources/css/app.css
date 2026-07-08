@@ -157,6 +157,9 @@ html { scroll-padding-top: 84px; }
 
 .site-search--mobile { display: none; }
 
+/* Подложка мобильного меню — на десктопе не нужна */
+.site-nav-backdrop { display: none; }
+
 /* Планшеты и смартфоны: прячем горизонтальное меню, показываем гамбургер;
    меню выезжает выпадающей панелью по клику */
 @media (max-width: 860px) {
@@ -169,6 +172,7 @@ html { scroll-padding-top: 84px; }
         top: 100%;
         left: 0;
         right: 0;
+        z-index: 10;
         flex-direction: column;
         gap: 2px;
         padding: 12px 16px 18px;
@@ -181,6 +185,19 @@ html { scroll-padding-top: 84px; }
 
     .site-search--mobile { display: flex; margin-top: 10px; }
     .site-search--mobile input { width: 100%; }
+
+    /* Полупрозрачная подложка под выпавшим меню: перехватывает клик
+       по свободному пространству и закрывает меню (лежит ниже панели) */
+    .site-nav-backdrop {
+        display: block;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 100vh;
+        z-index: 5;
+        background: rgba(5, 4, 12, 0.5);
+    }
 }
 
 /* --- Карточки и типографика --- */
@@ -192,6 +209,25 @@ html { scroll-padding-top: 84px; }
 }
 
 .xi-card + .xi-card { margin-top: 16px; }
+
+/* Hero главной: полупрозрачный энергетический фон под затемняющим
+   оверлеем — оверлей держит контраст, чтобы текст явно читался */
+.home-hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-color: var(--xi-accent-deep);
+}
+.home-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(150deg, rgba(11, 9, 24, 0.82) 0%, rgba(21, 18, 40, 0.72) 55%, rgba(28, 24, 54, 0.68) 100%),
+        url('/images/energy-background.webp') center / cover no-repeat;
+}
+.home-hero > * { position: relative; }
 
 .xi-prose { font-size: 16.5px; color: var(--xi-ink); overflow-wrap: break-word; }
 .xi-prose h2, .xi-prose h3 { color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
