@@ -29,7 +29,7 @@
                 @endforeach
             </div>
 
-            <div style="margin-top: 24px; max-width: 760px;">{{ $results->links() }}</div>
+            <div style="margin-top: 24px; max-width: 760px;">{{ $results->links('site.partials.pagination') }}</div>
         @endif
     @endif
 @endsection
