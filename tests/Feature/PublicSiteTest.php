@@ -346,6 +346,61 @@ class PublicSiteTest extends TestCase
             ->assertSee('localStorage', false);
     }
 
+    public function test_cookie_policy_page_is_accessible_directly(): void
+    {
+        $this->seedCore();
+
+        $this->get('/about/politika-cookies')
+            ->assertOk()
+            ->assertSee('Политика использования Cookies');
+    }
+
+    public function test_legal_pages_are_hidden_from_listings(): void
+    {
+        $this->seedCore();
+
+        $legal = ['politika-konfidencialnosti', 'politika-cookies'];
+
+        // «Последние материалы» на главной
+        $home = collect($this->get('/')->viewData('latestPages'))->pluck('slug');
+        foreach ($legal as $slug) {
+            $this->assertFalse($home->contains($slug), "Главная не должна содержать {$slug}");
+        }
+
+        // Список раздела «О проекте»
+        $section = collect($this->get('/about')->viewData('pages')->items())->pluck('slug');
+        foreach ($legal as $slug) {
+            $this->assertFalse($section->contains($slug), "Раздел не должен содержать {$slug}");
+        }
+
+        // Поиск
+        $results = $this->get('/search?'.http_build_query(['q' => 'политика']))->viewData('results');
+        $found = $results ? collect($results->items())->pluck('slug') : collect();
+        foreach ($legal as $slug) {
+            $this->assertFalse($found->contains($slug), "Поиск не должен возвращать {$slug}");
+        }
+    }
+
+    public function test_unlisted_page_hidden_from_listing_but_reachable(): void
+    {
+        $this->seedCore();
+
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'wiki')->first()->id,
+            'title' => 'Скрытая служебная страница',
+            'body' => '<p>Тело</p>',
+            'status' => 'published',
+            'is_listed' => false,
+        ]);
+
+        // Не в списке раздела
+        $slugs = collect($this->get('/wiki')->viewData('pages')->items())->pluck('slug');
+        $this->assertFalse($slugs->contains($page->slug));
+
+        // Но доступна по прямой ссылке
+        $this->get('/wiki/'.$page->slug)->assertOk()->assertSee('Скрытая служебная страница');
+    }
+
     public function test_og_image_defaults_to_logo_when_not_set(): void
     {
         $this->seedCore();

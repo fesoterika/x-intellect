@@ -17,7 +17,7 @@ class Page extends Model
 
     protected $fillable = [
         'section_id', 'title', 'slug', 'excerpt', 'body', 'body_rendered',
-        'page_type', 'status', 'source_type', 'source_url', 'seo',
+        'page_type', 'status', 'is_listed', 'source_type', 'source_url', 'seo',
         'position', 'published_at', 'archived_at',
     ];
 
@@ -25,6 +25,7 @@ class Page extends Model
     {
         return [
             'seo' => 'array',
+            'is_listed' => 'boolean',
             'published_at' => 'datetime',
             'archived_at' => 'date',
         ];
@@ -58,6 +59,12 @@ class Page extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', 'published');
+    }
+
+    /** Страницы, видимые в списках (разделы, последние материалы, поиск). */
+    public function scopeListed(Builder $query): Builder
+    {
+        return $query->where('is_listed', true);
     }
 
     public function isPublished(): bool

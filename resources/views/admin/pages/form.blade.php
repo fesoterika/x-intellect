@@ -74,6 +74,15 @@
                     <input type="url" name="source_url" value="{{ old('source_url', $page->source_url) }}" placeholder="https://web.archive.org/web/..." class="w-full rounded-md border-gray-300">
                 </div>
 
+                <label class="flex items-start gap-2 text-sm text-gray-700">
+                    <input type="hidden" name="is_listed" value="0">
+                    <input type="checkbox" name="is_listed" value="1" @checked(old('is_listed', $page->is_listed ?? true)) class="mt-0.5 rounded border-gray-300">
+                    <span>
+                        Показывать в списках
+                        <span class="block text-xs text-gray-400">Если снять — страница доступна только по прямой ссылке (напр. юридические страницы), не выводится в разделах, «Последних материалах» и поиске.</span>
+                    </span>
+                </label>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Анонс (excerpt)</label>
                     <textarea name="excerpt" rows="2" class="w-full rounded-md border-gray-300">{{ old('excerpt', $page->excerpt) }}</textarea>

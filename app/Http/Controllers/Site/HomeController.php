@@ -13,9 +13,10 @@ class HomeController extends Controller
         return view('site.home', [
             'sections' => Section::where('is_visible', true)
                 ->orderBy('position')
-                ->withCount(['pages as published_pages_count' => fn ($q) => $q->where('status', 'published')])
+                ->withCount(['pages as published_pages_count' => fn ($q) => $q->where('status', 'published')->where('is_listed', true)])
                 ->get(),
             'latestPages' => Page::published()
+                ->listed()
                 ->where('page_type', 'page')
                 ->with('section')
                 ->orderByDesc('published_at')
