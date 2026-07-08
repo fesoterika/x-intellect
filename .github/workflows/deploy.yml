@@ -1,0 +1,62 @@
+# Вариант Б плана (Этап 8): автодеплой на hosting.timeweb.ru.
+# Сейчас запускается только вручную (workflow_dispatch) — по совету плана
+# начинать с ручного деплоя (Вариант А). Когда обновления станут частыми:
+#   1) добавить секреты SSH_HOST, SSH_USERNAME, SSH_PRIVATE_KEY, DEPLOY_PATH;
+#   2) раскомментировать триггер push.
+name: Deploy to Timeweb
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Security audit
+        run: composer audit || true
+
+      - name: Build assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci && npm run build
+
+      - name: Upload via SSH (rsync)
+        uses: burnett01/rsync-deployments@7.1.0
+        with:
+          switches: -avz --delete
+            --exclude '.env'
+            --exclude 'storage/app'
+            --exclude 'storage/logs'
+            --exclude 'node_modules'
+            --exclude '.git'
+          path: ./
+          remote_path: ${{ secrets.DEPLOY_PATH }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Run artisan post-deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
