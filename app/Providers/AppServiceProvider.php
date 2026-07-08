@@ -23,10 +23,11 @@ class AppServiceProvider extends ServiceProvider
         // Отдельные права администратора (редиректы, меню, пользователи)
         Gate::define('admin', fn ($user) => $user->isAdmin());
 
-        // Навигация из таблицы menu_items — доступна во всех публичных шаблонах
+        // Навигация из таблицы menu_items — доступна во всех публичных шаблонах.
+        // Шапка — корневые пункты с детьми (выпадающие подменю), футер плоский.
         View::composer('site.*', function ($view) {
-            $view->with('headerMenu', MenuItem::location('header')->get())
-                ->with('footerMenu', MenuItem::location('footer')->get());
+            $view->with('headerMenu', MenuItem::location('header')->root()->with('children')->get())
+                ->with('footerMenu', MenuItem::location('footer')->root()->get());
         });
     }
 }

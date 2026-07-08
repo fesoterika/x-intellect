@@ -4,7 +4,7 @@
 
 @section('meta')
     <meta name="description" content="Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.">
-    <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/glossarij">
+    <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/glossary">
     {{-- FAQPage JSON-LD для глоссария (Этап 5 плана) --}}
     <script type="application/ld+json">{!! json_encode([
         '@context' => 'https://schema.org',

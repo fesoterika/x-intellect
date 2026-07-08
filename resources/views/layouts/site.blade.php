@@ -69,7 +69,26 @@
 
             <nav id="site-nav" class="site-nav" :class="{ 'is-open': menuOpen }" aria-label="Основная навигация">
                 @foreach ($headerMenu ?? [] as $item)
-                    <a href="{{ $item->url }}" @class(['active' => request()->is(ltrim($item->url, '/').'*') && $item->url !== '/'])>{{ $item->label }}</a>
+                    @if ($item->children->isNotEmpty())
+                        {{-- Пункт с подменю: на ПК раскрывается по наведению (CSS :hover),
+                             на смартфоне/планшете — по тапу на стрелку (Alpine) --}}
+                        <div class="nav-item" x-data="{ subOpen: false }" @click.outside="subOpen = false">
+                            <span class="nav-item-row">
+                                <a href="{{ $item->url }}" @class(['active' => request()->is(ltrim($item->url, '/').'*') && $item->url !== '/'])>{{ $item->label }}</a>
+                                <button type="button" class="nav-caret" @click.prevent="subOpen = !subOpen"
+                                        :aria-expanded="subOpen.toString()" aria-label="Подменю «{{ $item->label }}»">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                            </span>
+                            <div class="nav-submenu" :class="{ 'is-open': subOpen }">
+                                @foreach ($item->children as $child)
+                                    <a href="{{ $child->url }}" @class(['active' => request()->is(ltrim($child->url, '/').'*')])>{{ $child->label }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ $item->url }}" @class(['active' => request()->is(ltrim($item->url, '/').'*') && $item->url !== '/'])>{{ $item->label }}</a>
+                    @endif
                 @endforeach
 
                 <form class="site-search site-search--mobile" action="{{ route('search') }}" method="GET" role="search">

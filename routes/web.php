@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', Site\HomeController::class)->name('home');
 Route::get('/search', Site\SearchController::class)->name('search');
-Route::get('/glossarij', Site\GlossaryController::class)->name('glossary');
+Route::get('/glossary', Site\GlossaryController::class)->name('glossary');
 
 // Персональная страница автора/хранителя — фиксированный slug вне разделов
 Route::get('/fesoterika', [Site\PageController::class, 'fesoterika'])->name('fesoterika');
