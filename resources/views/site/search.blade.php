@@ -16,14 +16,20 @@
     </form>
 
     @if ($query !== '')
-        <h2 class="section-title">
-            {{ $results->isEmpty() ? 'Ничего не найдено' : 'Найдено: '.$results->count() }}
-        </h2>
+        @if (! $results)
+            <p style="color: var(--xi-ink-faint);">Введите не менее двух символов для поиска.</p>
+        @elseif ($results->total() === 0)
+            <h2 class="section-title">Ничего не найдено</h2>
+        @else
+            <h2 class="section-title">Найдено: {{ $results->total() }}</h2>
 
-        <div style="display: grid; gap: 12px; max-width: 760px;">
-            @foreach ($results as $page)
-                @include('site.partials.page-card', ['page' => $page])
-            @endforeach
-        </div>
+            <div style="display: grid; gap: 12px; max-width: 760px;">
+                @foreach ($results as $page)
+                    @include('site.partials.page-card', ['page' => $page])
+                @endforeach
+            </div>
+
+            <div style="margin-top: 24px; max-width: 760px;">{{ $results->links() }}</div>
+        @endif
     @endif
 @endsection
