@@ -70,7 +70,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Ссылка на архивный снапшот (source_url)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ссылка на архивную копию (source_url)</label>
                     <input type="url" name="source_url" value="{{ old('source_url', $page->source_url) }}" placeholder="https://web.archive.org/web/..." class="w-full rounded-md border-gray-300">
                 </div>
 

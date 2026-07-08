@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Скрываем элементы с x-cloak до инициализации Alpine (гамбургер, плеер) */
+[x-cloak] { display: none !important; }
+
+/* Отступ для якорей — чтобы sticky-шапка не перекрывала цель перехода */
+html { scroll-padding-top: 84px; }
+
 /* ============================================================
    Публичная часть X-Intellect — космическая тема на архивных
    мотивах (Этап 3 плана). Палитра выведена из логотипа заглушки
@@ -65,13 +71,14 @@
     flex: 1;
 }
 
-/* --- Шапка --- */
+/* --- Шапка (sticky — фиксируется сверху при прокрутке) --- */
 .site-header {
-    position: relative;
-    z-index: 2;
+    position: sticky;
+    top: 0;
+    z-index: 20;
     border-bottom: 1px solid var(--xi-line);
-    background: rgba(11, 9, 24, 0.85);
-    backdrop-filter: blur(8px);
+    background: rgba(11, 9, 24, 0.9);
+    backdrop-filter: blur(10px);
 }
 
 .site-header-inner {
@@ -92,12 +99,13 @@
     color: var(--xi-ink);
     font-weight: 700;
     letter-spacing: 0.02em;
+    margin-right: auto;
 }
 
 .site-logo svg { width: 38px; height: 38px; border-radius: 8px; }
 .site-logo .tagline { display: block; font-size: 11px; font-weight: 400; color: var(--xi-ink-faint); }
 
-.site-nav { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 4px; }
 
 .site-nav a {
     color: var(--xi-ink-soft);
@@ -110,17 +118,70 @@
 
 .site-nav a:hover, .site-nav a.active { color: var(--xi-ink); background: var(--xi-accent-soft); }
 
+/* Гамбургер — скрыт на десктопе, показывается на узких экранах */
+.site-burger {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--xi-line);
+    color: var(--xi-ink);
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    cursor: pointer;
+    place-items: center;
+}
+.site-burger svg { width: 22px; height: 22px; }
+.site-burger:hover { border-color: var(--xi-accent-deep); }
+
+/* Поиск с иконкой слева */
+.site-search { position: relative; display: flex; align-items: center; }
+.site-search-icon {
+    position: absolute;
+    left: 13px;
+    width: 16px;
+    height: 16px;
+    color: var(--xi-ink-faint);
+    pointer-events: none;
+}
 .site-search input {
     background: var(--xi-surface);
     border: 1px solid var(--xi-line);
     border-radius: 999px;
     color: var(--xi-ink);
     font-size: 13px;
-    padding: 7px 14px;
-    width: 160px;
+    padding: 8px 14px 8px 36px;
+    width: 180px;
 }
-
 .site-search input::placeholder { color: var(--xi-ink-faint); }
+.site-search input:focus { outline: none; border-color: var(--xi-accent-deep); }
+
+.site-search--mobile { display: none; }
+
+/* Планшеты и смартфоны: прячем горизонтальное меню, показываем гамбургер;
+   меню выезжает выпадающей панелью по клику */
+@media (max-width: 860px) {
+    .site-search--desktop { display: none; }
+    .site-burger { display: grid; }
+
+    .site-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 2px;
+        padding: 12px 16px 18px;
+        background: rgba(11, 9, 24, 0.98);
+        border-bottom: 1px solid var(--xi-line);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+    .site-nav.is-open { display: flex; }
+    .site-nav a { font-size: 16px; padding: 11px 14px; }
+
+    .site-search--mobile { display: flex; margin-top: 10px; }
+    .site-search--mobile input { width: 100%; }
+}
 
 /* --- Карточки и типографика --- */
 .xi-card {
@@ -139,8 +200,11 @@
 .xi-prose p { margin: 0 0 1em; }
 .xi-prose a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
 .xi-prose a:hover { border-bottom-color: var(--xi-accent); }
-.xi-prose ul, .xi-prose ol { padding-left: 1.4em; margin: 0 0 1em; }
+/* Tailwind preflight сбрасывает маркеры — возвращаем их для контента статей */
+.xi-prose ul { padding-left: 1.4em; margin: 0 0 1em; list-style: disc outside; }
+.xi-prose ol { padding-left: 1.4em; margin: 0 0 1em; list-style: decimal outside; }
 .xi-prose li { margin-bottom: 0.4em; }
+.xi-prose li::marker { color: var(--xi-accent); }
 .xi-prose blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 1.2em 0; padding: 0.3em 0 0.3em 1em; color: var(--xi-ink-soft); font-style: italic; }
 .xi-prose img { max-width: 100%; border-radius: 10px; }
 .xi-prose em { color: var(--xi-ink-soft); }
@@ -277,20 +341,102 @@
 .audio-player .ap-track.active { color: var(--xi-accent); font-weight: 600; }
 .audio-player .ap-track .dur { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--xi-ink-faint); }
 
-/* --- Таймлайн истории проекта --- */
-.timeline { position: relative; margin: 1.5em 0; padding-left: 26px; list-style: none; }
-.timeline::before { content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px; width: 2px; background: linear-gradient(var(--xi-accent-deep), var(--xi-accent)); border-radius: 2px; }
-.timeline li { position: relative; margin-bottom: 1.1em; }
-.timeline li::before {
+/* --- Глоссарий: поиск, алфавитный указатель, группы --- */
+.glossary-search { position: relative; display: flex; align-items: center; max-width: 460px; margin-bottom: 18px; }
+.glossary-search-icon {
+    position: absolute;
+    left: 16px;
+    width: 18px;
+    height: 18px;
+    color: var(--xi-ink-faint);
+    pointer-events: none;
+}
+.glossary-search input {
+    width: 100%;
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    border-radius: 999px;
+    color: var(--xi-ink);
+    font-size: 15px;
+    padding: 11px 44px 11px 44px;
+}
+.glossary-search input::placeholder { color: var(--xi-ink-faint); }
+.glossary-search input:focus { outline: none; border-color: var(--xi-accent-deep); }
+.glossary-search-clear {
+    position: absolute;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: var(--xi-ink-faint);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+.glossary-search-clear:hover { color: var(--xi-ink); }
+
+.glossary-alphabet {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--xi-line);
+}
+.glossary-alphabet a {
+    display: grid;
+    place-items: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    color: var(--xi-accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.glossary-alphabet a:hover { background: var(--xi-accent-soft); border-color: var(--xi-accent-deep); color: var(--xi-ink); }
+
+.glossary-groups { display: grid; gap: 22px; }
+.glossary-group { scroll-margin-top: 90px; }
+.glossary-letter {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--xi-accent-deep);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--xi-line);
+}
+.glossary-list { display: grid; gap: 12px; }
+.glossary-item { padding: 18px 22px; scroll-margin-top: 90px; }
+.glossary-term-title { margin: 0 0 8px; font-size: 18px; color: var(--xi-accent); }
+.glossary-def { margin: 0; color: var(--xi-ink-soft); }
+.glossary-more { display: inline-block; margin-top: 10px; font-size: 13.5px; color: var(--xi-accent); text-decoration: none; }
+.glossary-more:hover { text-decoration: underline; }
+.glossary-empty { color: var(--xi-ink-faint); margin-top: 20px; }
+
+/* --- Таймлайн истории проекта ---
+   Селекторы с `.xi-prose` — чтобы перебить общие `.xi-prose ul/li`
+   (иначе маркеры-точки съезжают влево от вертикальной шкалы). */
+.xi-prose ul.timeline,
+.timeline { position: relative; margin: 1.5em 0; padding-left: 30px; list-style: none; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--xi-accent-deep), var(--xi-accent)); border-radius: 2px; }
+.xi-prose ul.timeline > li,
+.timeline > li { position: relative; margin-bottom: 1.1em; list-style: none; padding-left: 0; }
+.timeline > li::marker { content: none; }
+.timeline > li::before {
     content: '';
     position: absolute;
-    left: -25px;
-    top: 7px;
+    left: -27px;              /* центр точки: 30 (padding) − 27 + 6 = 9px — совпадает с центром шкалы (8+1) */
+    top: 6px;
     width: 12px;
     height: 12px;
     border-radius: 50%;
     background: var(--xi-bg);
     border: 2.5px solid var(--xi-accent);
+    box-sizing: border-box;
 }
 .timeline strong:first-child { color: var(--xi-accent); }
 

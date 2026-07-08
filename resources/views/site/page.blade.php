@@ -21,7 +21,7 @@
             @endif
             @if ($page->source_url)
                 <a href="{{ $page->source_url }}" target="_blank" rel="noopener noreferrer"
-                   style="font-size: 12.5px; color: var(--xi-ink-soft);">архивный снапшот ↗</a>
+                   style="font-size: 12.5px; color: var(--xi-ink-soft);">архивная копия ↗</a>
             @endif
         </div>
 

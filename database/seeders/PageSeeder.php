@@ -197,8 +197,8 @@ HTML,
             'status' => 'draft',
             'source_type' => 'archive_xintellect',
             'source_url' => 'https://web.archive.org/web/20240712163937/http://www.x-intellect.org/rules/',
-            'excerpt' => 'Правила сайта X-INTELLECT — восстанавливаются из архивного снапшота /rules/.',
-            'body' => '<p>Текст правил восстанавливается из архивного снапшота раздела /rules/ (Этап 0–7 плана). Черновик будет заполнен командой import:archive.</p>',
+            'excerpt' => 'Правила сайта X-INTELLECT — восстанавливаются из архивной копии /rules/.',
+            'body' => '<p>Текст правил восстанавливается из архивной копии раздела /rules/ (Этап 0–7 плана). Черновик будет заполнен командой import:archive.</p>',
         ]);
 
         $this->page([
