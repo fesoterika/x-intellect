@@ -76,6 +76,10 @@
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Поиск по архиву…" aria-label="Поиск">
             </form>
         </div>
+
+        {{-- Подложка: клик по свободному пространству под меню закрывает его
+             (только на узких экранах; на десктопе скрыта через CSS) --}}
+        <div class="site-nav-backdrop" x-show="menuOpen" x-cloak @click="menuOpen = false" aria-hidden="true"></div>
     </header>
 
     <main class="site-wrap" style="padding-top: 36px; padding-bottom: 20px;">
