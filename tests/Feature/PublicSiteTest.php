@@ -92,17 +92,47 @@ class PublicSiteTest extends TestCase
     {
         $this->seedCore();
 
-        $this->get('/wiki/index.php')->assertStatus(301);
+        $this->get('/wiki/index.php')->assertStatus(301)->assertRedirect('/wiki');
+    }
+
+    public function test_old_mediawiki_glossary_url_redirects_to_glossary(): void
+    {
+        $this->seedCore();
+
+        // Архивный адрес MediaWiki с query-string (percent-encoded кириллица)
+        $this->get('/wiki/index.php?title=%D0%93%D0%BB%D0%BE%D1%81%D1%81%D0%B0%D1%80%D0%B8%D0%B9')
+            ->assertStatus(301)
+            ->assertRedirect('/glossary');
+
+        // Прежний slug нового сайта тоже ведёт на новый адрес
+        $this->get('/glossarij')->assertStatus(301)->assertRedirect('/glossary');
     }
 
     public function test_glossary_page_renders_faq_schema(): void
     {
         $this->seedCore();
 
-        $this->get('/glossarij')
+        $this->get('/glossary')
             ->assertOk()
             ->assertSee('Биоэкран')
             ->assertSee('FAQPage', false);
+    }
+
+    public function test_header_menu_contains_glossary_as_wiki_submenu(): void
+    {
+        $this->seedCore();
+
+        $wiki = \App\Models\MenuItem::where('location', 'header')->where('url', '/wiki')->first();
+        $glossary = \App\Models\MenuItem::where('location', 'header')->where('url', '/glossary')->first();
+
+        $this->assertNotNull($glossary);
+        $this->assertSame($wiki->id, $glossary->parent_id);
+
+        // На странице подменю рендерится внутри пункта «Вики»
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('nav-submenu', false)
+            ->assertSee('Глоссарий');
     }
 
     public function test_glossary_terms_are_linked_in_page_body(): void

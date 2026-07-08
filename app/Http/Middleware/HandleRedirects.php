@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
  *  1) 301 со старых архивных URL на новые SEO-slug — сохранение ссылочного веса;
  *  2) обёртки /go/*.html → 302 на внешний ресурс — механизм обхода adblock,
  *     который вырезает прямые ссылки (Дзен, донат и т.п.).
+ *
+ * Сопоставление идёт и по чистому пути, и по пути с query-string
+ * (rawurldecode) — так работают редиректы со старых MediaWiki-адресов
+ * вида /wiki/index.php?title=Глоссарий.
  */
 class HandleRedirects
 {
@@ -20,8 +24,15 @@ class HandleRedirects
         if ($request->isMethod('GET') || $request->isMethod('HEAD')) {
             $path = '/'.ltrim($request->path(), '/');
 
-            $redirect = Redirect::where('from_path', $path)
-                ->orWhere('from_path', rtrim($path, '/'))
+            $candidates = array_unique(array_filter([
+                rawurldecode($request->getRequestUri()), // путь + query, юникод
+                $path,
+                rtrim($path, '/'),
+            ]));
+
+            // Более специфичное правило (например, с query-string) приоритетнее
+            $redirect = Redirect::whereIn('from_path', $candidates)
+                ->orderByRaw('LENGTH(from_path) DESC')
                 ->first();
 
             if ($redirect) {

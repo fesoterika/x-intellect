@@ -9,10 +9,9 @@ class MenuSeeder extends Seeder
 {
     public function run(): void
     {
-        $items = [
-            // Шапка — контентные разделы
+        // Шапка — контентные разделы (корневые пункты)
+        $rootItems = [
             ['label' => 'Вики', 'url' => '/wiki', 'location' => 'header', 'position' => 1],
-            ['label' => 'Глоссарий', 'url' => '/glossarij', 'location' => 'header', 'position' => 2],
             ['label' => 'Библиотека', 'url' => '/library', 'location' => 'header', 'position' => 3],
             ['label' => 'Статьи', 'url' => '/mag', 'location' => 'header', 'position' => 4],
             ['label' => 'Курсы', 'url' => '/courses', 'location' => 'header', 'position' => 5],
@@ -29,11 +28,22 @@ class MenuSeeder extends Seeder
             ['label' => 'Группа ВКонтакте', 'url' => 'https://vk.com/xintellect', 'location' => 'footer', 'position' => 6],
         ];
 
-        foreach ($items as $item) {
+        foreach ($rootItems as $item) {
             MenuItem::updateOrCreate(
                 ['url' => $item['url'], 'location' => $item['location']],
-                $item,
+                $item + ['parent_id' => null],
             );
         }
+
+        // Подменю: Глоссарий — раздел вики, живёт в выпадающем меню «Вики»
+        $wiki = MenuItem::where('location', 'header')->where('url', '/wiki')->first();
+
+        MenuItem::updateOrCreate(
+            ['url' => '/glossary', 'location' => 'header'],
+            ['label' => 'Глоссарий', 'position' => 1, 'parent_id' => $wiki->id],
+        );
+
+        // Прежний плоский пункт глоссария (если остался от старого сидера)
+        MenuItem::where('location', 'header')->where('url', '/glossarij')->delete();
     }
 }
