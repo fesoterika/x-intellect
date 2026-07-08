@@ -22,7 +22,7 @@
 <body class="site-body">
     <div class="starfield" aria-hidden="true"></div>
 
-    <header class="site-header">
+    <header class="site-header" x-data="{ menuOpen: false }" @keydown.escape.window="menuOpen = false">
         <div class="site-header-inner">
             <a class="site-logo" href="{{ route('home') }}">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="X-Intellect">
@@ -45,13 +45,34 @@
                 </span>
             </a>
 
-            <nav class="site-nav" aria-label="Основная навигация">
+            {{-- Гамбургер: виден только на узких экранах (см. CSS .site-burger) --}}
+            <button type="button" class="site-burger" @click="menuOpen = !menuOpen"
+                    :aria-expanded="menuOpen.toString()" aria-controls="site-nav" aria-label="Меню">
+                <svg x-show="!menuOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+                <svg x-show="menuOpen" x-cloak viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+                </svg>
+            </button>
+
+            <nav id="site-nav" class="site-nav" :class="{ 'is-open': menuOpen }" aria-label="Основная навигация">
                 @foreach ($headerMenu ?? [] as $item)
                     <a href="{{ $item->url }}" @class(['active' => request()->is(ltrim($item->url, '/').'*') && $item->url !== '/'])>{{ $item->label }}</a>
                 @endforeach
+
+                <form class="site-search site-search--mobile" action="{{ route('search') }}" method="GET" role="search">
+                    <svg class="site-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Поиск по архиву…" aria-label="Поиск">
+                </form>
             </nav>
 
-            <form class="site-search" action="{{ route('search') }}" method="GET" role="search">
+            <form class="site-search site-search--desktop" action="{{ route('search') }}" method="GET" role="search">
+                <svg class="site-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
                 <input type="search" name="q" value="{{ request('q') }}" placeholder="Поиск по архиву…" aria-label="Поиск">
             </form>
         </div>
@@ -76,7 +97,7 @@
                 Все материалы представлены исключительно в ознакомительных и архивных целях.
             </p>
 
-            <p>© 2012–{{ date('Y') }} X-Intellect · Хранитель архива — <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
+            <p>© 2012–{{ date('Y') }} X-Intellect · Создатель нового сайта — <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
         </div>
     </footer>
 
