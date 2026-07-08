@@ -30,7 +30,7 @@ class PageController extends Controller
     public function create()
     {
         return view('admin.pages.form', [
-            'page' => new Page(['status' => 'draft', 'source_type' => 'new', 'page_type' => 'page']),
+            'page' => new Page(['status' => 'draft', 'source_type' => 'new', 'page_type' => 'page', 'is_listed' => true]),
             'sections' => Section::orderBy('position')->get(),
         ]);
     }

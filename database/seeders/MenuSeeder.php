@@ -25,7 +25,8 @@ class MenuSeeder extends Seeder
             ['label' => 'Правила', 'url' => '/rules', 'location' => 'footer', 'position' => 2],
             ['label' => 'Об авторе сайта', 'url' => '/fesoterika', 'location' => 'footer', 'position' => 3],
             ['label' => 'Политика конфиденциальности', 'url' => '/about/politika-konfidencialnosti', 'location' => 'footer', 'position' => 4],
-            ['label' => 'Группа ВКонтакте', 'url' => 'https://vk.com/xintellect', 'location' => 'footer', 'position' => 5],
+            ['label' => 'Политика Cookies', 'url' => '/about/politika-cookies', 'location' => 'footer', 'position' => 5],
+            ['label' => 'Группа ВКонтакте', 'url' => 'https://vk.com/xintellect', 'location' => 'footer', 'position' => 6],
         ];
 
         foreach ($items as $item) {

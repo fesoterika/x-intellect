@@ -12,7 +12,7 @@ class SectionController extends Controller
     {
         abort_unless($section->is_visible, 404);
 
-        $pages = $section->publishedPages()->with('media')->paginate(20);
+        $pages = $section->publishedPages()->where('is_listed', true)->with('media')->paginate(20);
 
         // Прогрессивное улучшение «Показать ещё»: JS дозапрашивает
         // следующую страницу с ?partial=1 и получает только список карточек

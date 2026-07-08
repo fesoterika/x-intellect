@@ -25,6 +25,7 @@ class PageRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'page_type' => ['required', Rule::in(['page', 'author'])],
             'status' => ['required', Rule::in(['draft', 'published'])],
+            'is_listed' => ['boolean'],
             'source_type' => ['required', Rule::in(['archive_sferarazuma', 'archive_xintellect', 'new'])],
             'source_url' => ['nullable', 'url', 'max:2048'],
             'position' => ['nullable', 'integer', 'min:0'],
@@ -43,6 +44,7 @@ class PageRequest extends FormRequest
         $data = $this->validated();
         $data['seo'] = array_filter($data['seo'] ?? []) ?: null;
         $data['position'] = $data['position'] ?? 0;
+        $data['is_listed'] = $this->boolean('is_listed');
 
         return $data;
     }

@@ -15,7 +15,7 @@ class SearchController extends Controller
         $results = null;
 
         if (mb_strlen($query) >= 2) {
-            $builder = Page::published()->with('section');
+            $builder = Page::published()->listed()->with('section');
 
             // MySQL FULLTEXT на проде, LIKE-фолбэк на локальном SQLite (Этап 1 плана)
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {
