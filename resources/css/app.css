@@ -642,6 +642,7 @@ html { scroll-padding-top: 84px; }
 }
 
 .author-links a:hover { transform: translateY(-1px); }
+.author-links a svg { width: 16px; height: 16px; flex: 0 0 auto; }
 .author-links .btn-solid { background: var(--xi-accent-deep); color: #fff; }
 .author-links .btn-solid:hover { background: var(--xi-accent); }
 .author-links .btn-outline { border: 1px solid var(--xi-line); color: var(--xi-ink-soft); }
