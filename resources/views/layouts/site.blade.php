@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Тема применяется до рендера, чтобы не было вспышки (FOUC). По умолчанию тёмная. --}}
+    {{-- Тема применяется до рендера, чтобы не было вспышки (FOUC). По умолчанию светлая. --}}
     <script>
         (function () {
             try {
-                document.documentElement.setAttribute('data-theme', localStorage.getItem('xi-theme') || 'dark');
+                document.documentElement.setAttribute('data-theme', localStorage.getItem('xi-theme') || 'light');
             } catch (e) {
-                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.setAttribute('data-theme', 'light');
             }
         })();
     </script>
@@ -109,7 +109,7 @@
                 {{-- Переключатель темы: значение хранится в localStorage
                      (не cookie), тема применяется мгновенно к <html> --}}
                 <button type="button" class="theme-toggle"
-                        x-data="{ theme: document.documentElement.getAttribute('data-theme') || 'dark' }"
+                        x-data="{ theme: document.documentElement.getAttribute('data-theme') || 'light' }"
                         @click="theme = (theme === 'dark' ? 'light' : 'dark');
                                 document.documentElement.setAttribute('data-theme', theme);
                                 try { localStorage.setItem('xi-theme', theme); } catch (e) {}"
