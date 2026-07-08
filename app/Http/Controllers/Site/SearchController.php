@@ -12,7 +12,7 @@ class SearchController extends Controller
     public function __invoke(Request $request)
     {
         $query = trim((string) $request->query('q', ''));
-        $results = collect();
+        $results = null;
 
         if (mb_strlen($query) >= 2) {
             $builder = Page::published()->with('section');
@@ -27,7 +27,9 @@ class SearchController extends Controller
                 });
             }
 
-            $results = $builder->limit(50)->get();
+            // Номерная пагинация: результатов может быть много, а строку
+            // поиска сохраняем в ссылках через withQueryString()
+            $results = $builder->paginate(20)->withQueryString();
         }
 
         return view('site.search', [

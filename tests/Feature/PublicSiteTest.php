@@ -123,6 +123,86 @@ class PublicSiteTest extends TestCase
             ->assertSee('Найдено');
     }
 
+    public function test_search_results_are_paginated(): void
+    {
+        $this->seedCore();
+
+        $section = Section::where('slug', 'wiki')->first();
+        for ($i = 1; $i <= 25; $i++) {
+            Page::create([
+                'section_id' => $section->id,
+                'title' => "Хроносфера запись {$i}",
+                'body' => '<p>Материал о хроносфере №'.$i.'</p>',
+                'status' => 'published',
+            ]);
+        }
+
+        // Первая страница: не более 20 результатов + ссылка на 2-ю
+        $first = $this->get('/search?'.http_build_query(['q' => 'Хроносфера запись']));
+        $first->assertOk()
+            ->assertSee('Найдено: 25')
+            ->assertSee('page=2', false);
+
+        $this->assertLessThanOrEqual(20, substr_count($first->getContent(), 'page-card'));
+
+        // Вторая страница отдаёт остаток и сохраняет строку поиска
+        $this->get('/search?'.http_build_query(['q' => 'Хроносфера запись', 'page' => 2]))
+            ->assertOk()
+            ->assertSee('Хроносфера запись');
+    }
+
+    public function test_short_query_shows_hint(): void
+    {
+        $this->seedCore();
+
+        $this->get('/search?'.http_build_query(['q' => 'а']))
+            ->assertOk()
+            ->assertSee('не менее двух символов');
+    }
+
+    public function test_section_shows_load_more_when_more_pages(): void
+    {
+        $this->seedCore();
+
+        $section = Section::where('slug', 'mag')->first();
+        for ($i = 1; $i <= 25; $i++) {
+            Page::create([
+                'section_id' => $section->id,
+                'title' => "Статья номер {$i}",
+                'body' => '<p>Тело статьи '.$i.'</p>',
+                'status' => 'published',
+            ]);
+        }
+
+        $this->get('/mag')
+            ->assertOk()
+            ->assertSee('Показать ещё')
+            ->assertSee('class="load-more"', false)
+            ->assertSee('page=2', false);
+    }
+
+    public function test_section_partial_returns_only_cards_without_layout(): void
+    {
+        $this->seedCore();
+
+        $section = Section::where('slug', 'mag')->first();
+        for ($i = 1; $i <= 25; $i++) {
+            Page::create([
+                'section_id' => $section->id,
+                'title' => "Статья номер {$i}",
+                'body' => '<p>Тело статьи '.$i.'</p>',
+                'status' => 'published',
+            ]);
+        }
+
+        $partial = $this->get('/mag?'.http_build_query(['page' => 2, 'partial' => 1]));
+
+        $partial->assertOk()
+            ->assertSee('section-items', false)   // фрагмент со списком карточек
+            ->assertDontSee('site-header', false) // но без общего layout
+            ->assertDontSee('Владелец этого сайта не является автором'); // без футера
+    }
+
     public function test_admin_area_requires_authentication(): void
     {
         $this->seedCore();
