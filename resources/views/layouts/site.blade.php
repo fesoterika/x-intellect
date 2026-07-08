@@ -51,8 +51,8 @@
                     <circle fill="#5f4c79" cx="50" cy="13.1" r="8.4"/>
                 </svg>
                 <span>
-                    X-Intellect
-                    <span class="tagline">архив проекта · с 2012 года</span>
+                    X-Intellect.org
+                    <span class="tagline">новый сайт · архив проекта</span>
                 </span>
             </a>
 
@@ -136,7 +136,7 @@
                 Все материалы представлены исключительно в ознакомительных и архивных целях.
             </p>
 
-            <p>© 2012–{{ date('Y') }} X-Intellect · Создатель нового сайта — <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
+            <p>© 2012–{{ date('Y') }} X-Intellect.org · Создатель нового сайта — <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
         </div>
     </footer>
 
