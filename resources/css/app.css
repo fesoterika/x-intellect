@@ -14,25 +14,10 @@ html { scroll-padding-top: 84px; }
    (#6667ab, #40334f, #5f4c79) и акцента #7b5cff.
    ============================================================ */
 
-:root {
-    --xi-bg: #0b0918;
-    --xi-surface: #151228;
-    --xi-surface-2: #1c1836;
-    --xi-line: #2c2650;
-    --xi-ink: #e9e6f7;
-    --xi-ink-soft: #a9a3c9;
-    --xi-ink-faint: #6f6a92;
-    --xi-accent: #9b86ec;
-    --xi-accent-deep: #6667ab;
-    --xi-accent-soft: rgba(123, 92, 255, 0.14);
-    --xi-radius: 16px;
-
-    --xi-header-bg: rgba(11, 9, 24, 0.9);
-    --xi-panel-bg: rgba(11, 9, 24, 0.98);
-}
-
-/* Светлая тема — та же фиолетово-космическая палитра, но на светлом фоне.
-   Переключается через data-theme на <html> (localStorage, см. layout). */
+/* Тема по умолчанию — СВЕТЛАЯ (та же фиолетово-космическая палитра
+   на светлом фоне). Тёмная включается через data-theme="dark" на <html>
+   (localStorage, см. layout). Без JS/атрибута страница остаётся светлой. */
+:root,
 :root[data-theme="light"] {
     --xi-bg: #f4f2fb;
     --xi-surface: #ffffff;
@@ -44,17 +29,32 @@ html { scroll-padding-top: 84px; }
     --xi-accent: #6a4cd6;
     --xi-accent-deep: #5a3fd6;
     --xi-accent-soft: rgba(106, 76, 214, 0.12);
+    --xi-radius: 16px;
 
     --xi-header-bg: rgba(255, 255, 255, 0.9);
     --xi-panel-bg: rgba(255, 255, 255, 0.98);
 }
 
-/* Звёздное поле убираем на светлой теме — светлые точки на светлом фоне не нужны */
-:root[data-theme="light"] .starfield { display: none; }
+/* Тёмная тема */
+:root[data-theme="dark"] {
+    --xi-bg: #0b0918;
+    --xi-surface: #151228;
+    --xi-surface-2: #1c1836;
+    --xi-line: #2c2650;
+    --xi-ink: #e9e6f7;
+    --xi-ink-soft: #a9a3c9;
+    --xi-ink-faint: #6f6a92;
+    --xi-accent: #9b86ec;
+    --xi-accent-deep: #6667ab;
+    --xi-accent-soft: rgba(123, 92, 255, 0.14);
 
-/* Бейджи эпох: на светлом фоне усиливаем контраст текста */
-:root[data-theme="light"] .badge-sfera { color: #8a5a00; background: rgba(214, 158, 46, 0.16); border-color: rgba(214, 158, 46, 0.45); }
-:root[data-theme="light"] .badge-new { color: #1f7a48; background: rgba(46, 160, 90, 0.14); border-color: rgba(46, 160, 90, 0.45); }
+    --xi-header-bg: rgba(11, 9, 24, 0.9);
+    --xi-panel-bg: rgba(11, 9, 24, 0.98);
+}
+
+/* Звёздное поле — только на тёмной теме (на светлом фоне не нужно) */
+.starfield { display: none; }
+:root[data-theme="dark"] .starfield { display: block; }
 
 .site-body {
     margin: 0;
@@ -296,9 +296,14 @@ html { scroll-padding-top: 84px; }
     white-space: nowrap;
 }
 
-.badge-sfera { background: rgba(214, 158, 46, 0.15); color: #e2b45c; border: 1px solid rgba(214, 158, 46, 0.35); }
-.badge-xintellect { background: rgba(123, 92, 255, 0.15); color: var(--xi-accent); border: 1px solid rgba(123, 92, 255, 0.4); }
-.badge-new { background: rgba(72, 187, 120, 0.13); color: #6fce96; border: 1px solid rgba(72, 187, 120, 0.35); }
+/* Базовые цвета бейджей — для светлой темы (тёмный текст для контраста) */
+.badge-sfera { background: rgba(214, 158, 46, 0.16); color: #8a5a00; border: 1px solid rgba(214, 158, 46, 0.45); }
+.badge-xintellect { background: rgba(106, 76, 214, 0.14); color: var(--xi-accent); border: 1px solid rgba(106, 76, 214, 0.4); }
+.badge-new { background: rgba(46, 160, 90, 0.14); color: #1f7a48; border: 1px solid rgba(46, 160, 90, 0.45); }
+
+/* Тёмная тема — исходные светлые цвета текста на тёмном фоне */
+:root[data-theme="dark"] .badge-sfera { background: rgba(214, 158, 46, 0.15); color: #e2b45c; border-color: rgba(214, 158, 46, 0.35); }
+:root[data-theme="dark"] .badge-new { background: rgba(72, 187, 120, 0.13); color: #6fce96; border-color: rgba(72, 187, 120, 0.35); }
 
 /* --- Хлебные крошки --- */
 .breadcrumbs { font-size: 13px; color: var(--xi-ink-faint); margin-bottom: 18px; }
