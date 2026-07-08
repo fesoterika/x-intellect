@@ -345,4 +345,33 @@ class PublicSiteTest extends TestCase
             ->assertSee('Политика конфиденциальности')
             ->assertSee('localStorage', false);
     }
+
+    public function test_og_image_defaults_to_logo_when_not_set(): void
+    {
+        $this->seedCore();
+
+        // На странице без своего og_image подставляется логотип
+        $this->get('/about/o-sajte-x-intellect')
+            ->assertOk()
+            ->assertSee('images/x-intellect_logo.webp', false);
+
+        // На главной — тоже
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('property="og:image"', false)
+            ->assertSee('images/x-intellect_logo.webp', false);
+    }
+
+    public function test_og_image_uses_custom_value_when_set(): void
+    {
+        $this->seedCore();
+
+        $page = Page::where('slug', 'o-sajte-x-intellect')->first();
+        $page->update(['seo' => array_merge($page->seo ?? [], ['og_image' => 'https://example.com/custom.jpg'])]);
+
+        $this->get('/about/o-sajte-x-intellect')
+            ->assertOk()
+            ->assertSee('https://example.com/custom.jpg', false)
+            ->assertDontSee('images/x-intellect_logo.webp', false);
+    }
 }
