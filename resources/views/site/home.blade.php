@@ -8,6 +8,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="X-Intellect — архив проекта">
     <meta property="og:description" content="Вики, библиотека, записи курсов и история проекта «Сфера Разума» / X-Интеллект.">
+    <meta property="og:image" content="{{ asset('images/x-intellect_logo.webp') }}">
 @endsection
 
 @section('content')

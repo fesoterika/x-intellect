@@ -6,8 +6,7 @@
 <meta property="og:title" content="{{ $page->seoValue('meta_title', $page->title) }}">
 <meta property="og:description" content="{{ $page->seoValue('meta_description') }}">
 <meta property="og:url" content="{{ $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()) }}">
-@if ($page->seoValue('og_image'))
-    <meta property="og:image" content="{{ $page->seoValue('og_image') }}">
-@endif
+{{-- OG-картинка: значение поля, иначе — логотип сайта по умолчанию --}}
+<meta property="og:image" content="{{ $page->seoValue('og_image') ?: asset('images/x-intellect_logo.webp') }}">
 
 @include('site.partials.json-ld', ['page' => $page])

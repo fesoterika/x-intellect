@@ -1,0 +1,61 @@
+/* Читаемость контента внутри Trix-редактора админки.
+   Tailwind preflight убирает отступы абзацев и маркеры списков —
+   возвращаем их только внутри редактора (класс .trix-content на
+   самом <trix-editor>). Импортируется в admin.js ПОСЛЕ trix.css. */
+
+trix-editor.trix-content {
+    line-height: 1.65;
+    padding: 14px 16px;
+}
+
+/* Отступы между блоками (абзацы, списки, заголовки, цитаты) */
+trix-editor.trix-content > * + * {
+    margin-top: 0.85em;
+}
+
+trix-editor.trix-content h1 {
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+/* Маркеры списков */
+trix-editor.trix-content ul {
+    list-style: disc outside;
+    padding-left: 1.6em;
+}
+trix-editor.trix-content ol {
+    list-style: decimal outside;
+    padding-left: 1.6em;
+}
+trix-editor.trix-content li {
+    margin-bottom: 0.3em;
+}
+trix-editor.trix-content li::marker {
+    color: #6a4cd6;
+}
+
+trix-editor.trix-content blockquote {
+    border-left: 3px solid #cfc7ef;
+    padding-left: 1em;
+    color: #555;
+    font-style: italic;
+}
+
+trix-editor.trix-content a {
+    color: #5a3fd6;
+    text-decoration: underline;
+}
+
+trix-editor.trix-content pre {
+    background: #f3f0fb;
+    padding: 0.7em 0.9em;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+trix-editor.trix-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
