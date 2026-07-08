@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Jobs\RegenerateSitemap;
 use App\Models\Page;
 use App\Services\GlossaryLinker;
+use App\Services\ImageSeo;
 use App\Services\SeoService;
 
 class PageObserver
@@ -12,10 +13,14 @@ class PageObserver
     public function __construct(
         protected SeoService $seo,
         protected GlossaryLinker $glossary,
+        protected ImageSeo $imageSeo,
     ) {}
 
     public function saving(Page $page): void
     {
+        // Проставляем alt изображениям до генерации slug/описания и рендера
+        $page->body = $this->imageSeo->process($page->body, $page->title);
+
         $this->seo->ensureSlug($page);
         $this->seo->fillDefaults($page);
 

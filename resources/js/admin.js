@@ -30,3 +30,51 @@ document.addEventListener('trix-initialize', (event) => {
 
     group.appendChild(button);
 });
+
+// Загрузка вставленных/перетащенных картинок в хранилище: вместо base64
+// в тело подставляется ссылка на файл. Alt проставляется на сервере при
+// сохранении страницы (App\Services\ImageSeo).
+document.addEventListener('trix-attachment-add', (event) => {
+    const attachment = event.attachment;
+
+    // Только вложения с файлом (вставка/drag-n-drop картинки)
+    if (!attachment.file) {
+        return;
+    }
+
+    const form = new FormData();
+    form.append('file', attachment.file);
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/admin/editor/image', true);
+    xhr.setRequestHeader('X-CSRF-TOKEN', csrf || '');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    // Прогресс загрузки — Trix показывает индикатор на вложении
+    xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+            attachment.setUploadProgress((e.loaded / e.total) * 100);
+        }
+    });
+
+    xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+                const data = JSON.parse(xhr.responseText);
+                attachment.setAttributes({ url: data.url, href: data.url });
+                return;
+            } catch (e) { /* провал парсинга — обработаем ниже */ }
+        }
+        attachment.remove(); // не оставляем base64 при ошибке
+        alert('Не удалось загрузить изображение. Проверьте формат и размер (до 8 МБ).');
+    });
+
+    xhr.addEventListener('error', () => {
+        attachment.remove();
+        alert('Ошибка сети при загрузке изображения.');
+    });
+
+    xhr.send(form);
+});

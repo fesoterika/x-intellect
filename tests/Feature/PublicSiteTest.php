@@ -283,4 +283,66 @@ class PublicSiteTest extends TestCase
         $this->assertStringContainsString('Disallow: /admin', file_get_contents(public_path('robots.txt')));
         $this->assertStringContainsString('/fesoterika', file_get_contents(public_path('llms.txt')));
     }
+
+    public function test_image_alt_is_filled_from_title_on_save(): void
+    {
+        $this->seedCore();
+
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'wiki')->first()->id,
+            'title' => 'Энергетический двойник',
+            'body' => '<p>До картинки</p><img src="/a.jpg"><p>между</p><img src="/b.jpg" alt="">',
+            'status' => 'draft',
+        ]);
+
+        // Оба изображения получают описательный alt с названием и номером
+        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» №1"', $page->body);
+        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» №2"', $page->body);
+    }
+
+    public function test_image_alt_set_by_editor_is_preserved(): void
+    {
+        $this->seedCore();
+
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'wiki')->first()->id,
+            'title' => 'Тест',
+            'body' => '<img src="/x.jpg" alt="Схема оболочечного двойника">',
+            'status' => 'draft',
+        ]);
+
+        $this->assertStringContainsString('alt="Схема оболочечного двойника"', $page->body);
+        $this->assertStringNotContainsString('Изображение к материалу', $page->body);
+    }
+
+    public function test_editor_image_upload_stores_file_and_returns_url(): void
+    {
+        $this->seedCore();
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $admin = User::where('email', 'admin@x-intellect.org')->first();
+        $file = \Illuminate\Http\Testing\File::image('photo.jpg', 400, 300);
+
+        $response = $this->actingAs($admin)->post('/admin/editor/image', ['file' => $file]);
+
+        $response->assertOk()->assertJsonStructure(['url']);
+
+        $stored = \Illuminate\Support\Facades\Storage::disk('public')->allFiles('media/inline');
+        $this->assertCount(1, $stored);
+    }
+
+    public function test_editor_image_upload_requires_auth(): void
+    {
+        $this->post('/admin/editor/image', [])->assertRedirect('/login');
+    }
+
+    public function test_privacy_policy_page_is_published(): void
+    {
+        $this->seedCore();
+
+        $this->get('/about/politika-konfidencialnosti')
+            ->assertOk()
+            ->assertSee('Политика конфиденциальности')
+            ->assertSee('localStorage', false);
+    }
 }

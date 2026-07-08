@@ -26,7 +26,35 @@ html { scroll-padding-top: 84px; }
     --xi-accent-deep: #6667ab;
     --xi-accent-soft: rgba(123, 92, 255, 0.14);
     --xi-radius: 16px;
+
+    --xi-header-bg: rgba(11, 9, 24, 0.9);
+    --xi-panel-bg: rgba(11, 9, 24, 0.98);
 }
+
+/* Светлая тема — та же фиолетово-космическая палитра, но на светлом фоне.
+   Переключается через data-theme на <html> (localStorage, см. layout). */
+:root[data-theme="light"] {
+    --xi-bg: #f4f2fb;
+    --xi-surface: #ffffff;
+    --xi-surface-2: #f1edfa;
+    --xi-line: #ded8ef;
+    --xi-ink: #1c1830;
+    --xi-ink-soft: #4b4570;
+    --xi-ink-faint: #8983a8;
+    --xi-accent: #6a4cd6;
+    --xi-accent-deep: #5a3fd6;
+    --xi-accent-soft: rgba(106, 76, 214, 0.12);
+
+    --xi-header-bg: rgba(255, 255, 255, 0.9);
+    --xi-panel-bg: rgba(255, 255, 255, 0.98);
+}
+
+/* Звёздное поле убираем на светлой теме — светлые точки на светлом фоне не нужны */
+:root[data-theme="light"] .starfield { display: none; }
+
+/* Бейджи эпох: на светлом фоне усиливаем контраст текста */
+:root[data-theme="light"] .badge-sfera { color: #8a5a00; background: rgba(214, 158, 46, 0.16); border-color: rgba(214, 158, 46, 0.45); }
+:root[data-theme="light"] .badge-new { color: #1f7a48; background: rgba(46, 160, 90, 0.14); border-color: rgba(46, 160, 90, 0.45); }
 
 .site-body {
     margin: 0;
@@ -77,7 +105,7 @@ html { scroll-padding-top: 84px; }
     top: 0;
     z-index: 20;
     border-bottom: 1px solid var(--xi-line);
-    background: rgba(11, 9, 24, 0.9);
+    background: var(--xi-header-bg);
     backdrop-filter: blur(10px);
 }
 
@@ -176,7 +204,7 @@ html { scroll-padding-top: 84px; }
         flex-direction: column;
         gap: 2px;
         padding: 12px 16px 18px;
-        background: rgba(11, 9, 24, 0.98);
+        background: var(--xi-panel-bg);
         border-bottom: 1px solid var(--xi-line);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
@@ -217,7 +245,14 @@ html { scroll-padding-top: 84px; }
     overflow: hidden;
     isolation: isolate;
     border-color: var(--xi-accent-deep);
+    /* Фон hero тёмный в любой теме (энергетическое изображение + оверлей),
+       поэтому текст внутри держим светлым — независимо от светлой/тёмной темы */
+    --xi-ink: #ece9fb;
+    --xi-ink-soft: #cbc6e8;
+    --xi-ink-faint: #a9a3c9;
+    color: var(--xi-ink);
 }
+.home-hero .page-title { color: var(--xi-ink); }
 .home-hero::before {
     content: '';
     position: absolute;
@@ -623,6 +658,24 @@ html { scroll-padding-top: 84px; }
 .site-footer a { color: var(--xi-ink-soft); text-decoration: none; }
 .site-footer a:hover { color: var(--xi-accent); }
 .site-footer .legal { max-width: 720px; line-height: 1.6; }
+
+/* Переключатель темы (футер) */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    color: var(--xi-ink-soft);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+}
+.theme-toggle:hover { border-color: var(--xi-accent-deep); color: var(--xi-ink); }
+.theme-toggle svg { width: 16px; height: 16px; }
 
 /* --- Предупреждение (курсы) --- */
 .warning-block {
