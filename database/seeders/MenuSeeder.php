@@ -14,7 +14,7 @@ class MenuSeeder extends Seeder
             ['label' => 'Вики', 'url' => '/wiki', 'location' => 'header', 'position' => 1],
             ['label' => 'Глоссарий', 'url' => '/glossarij', 'location' => 'header', 'position' => 2],
             ['label' => 'Библиотека', 'url' => '/library', 'location' => 'header', 'position' => 3],
-            ['label' => 'Журнал', 'url' => '/mag', 'location' => 'header', 'position' => 4],
+            ['label' => 'Статьи', 'url' => '/mag', 'location' => 'header', 'position' => 4],
             ['label' => 'Курсы', 'url' => '/courses', 'location' => 'header', 'position' => 5],
             ['label' => 'История', 'url' => '/history', 'location' => 'header', 'position' => 6],
             ['label' => 'О проекте', 'url' => '/about', 'location' => 'header', 'position' => 7],
