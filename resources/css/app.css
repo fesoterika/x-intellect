@@ -1,0 +1,372 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Публичная часть X-Intellect — космическая тема на архивных
+   мотивах (Этап 3 плана). Палитра выведена из логотипа заглушки
+   (#6667ab, #40334f, #5f4c79) и акцента #7b5cff.
+   ============================================================ */
+
+:root {
+    --xi-bg: #0b0918;
+    --xi-surface: #151228;
+    --xi-surface-2: #1c1836;
+    --xi-line: #2c2650;
+    --xi-ink: #e9e6f7;
+    --xi-ink-soft: #a9a3c9;
+    --xi-ink-faint: #6f6a92;
+    --xi-accent: #9b86ec;
+    --xi-accent-deep: #6667ab;
+    --xi-accent-soft: rgba(123, 92, 255, 0.14);
+    --xi-radius: 16px;
+}
+
+.site-body {
+    margin: 0;
+    background:
+        radial-gradient(1000px 500px at 80% -10%, rgba(102, 103, 171, 0.22) 0%, transparent 60%),
+        radial-gradient(800px 400px at 10% 110%, rgba(95, 76, 121, 0.18) 0%, transparent 55%),
+        var(--xi-bg);
+    color: var(--xi-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Звёздное поле — лёгкий слой без изображений */
+.starfield {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(1px 1px at 12% 22%, rgba(233, 230, 247, 0.7) 50%, transparent 50%),
+        radial-gradient(1px 1px at 34% 68%, rgba(233, 230, 247, 0.5) 50%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 56% 12%, rgba(155, 134, 236, 0.8) 50%, transparent 50%),
+        radial-gradient(1px 1px at 72% 44%, rgba(233, 230, 247, 0.6) 50%, transparent 50%),
+        radial-gradient(1px 1px at 88% 78%, rgba(233, 230, 247, 0.45) 50%, transparent 50%),
+        radial-gradient(1.5px 1.5px at 22% 88%, rgba(155, 134, 236, 0.6) 50%, transparent 50%),
+        radial-gradient(1px 1px at 44% 36%, rgba(233, 230, 247, 0.35) 50%, transparent 50%),
+        radial-gradient(1px 1px at 64% 92%, rgba(233, 230, 247, 0.5) 50%, transparent 50%),
+        radial-gradient(1px 1px at 94% 8%, rgba(233, 230, 247, 0.65) 50%, transparent 50%);
+}
+
+.site-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex: 1;
+}
+
+/* --- Шапка --- */
+.site-header {
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid var(--xi-line);
+    background: rgba(11, 9, 24, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.site-header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.site-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--xi-ink);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.site-logo svg { width: 38px; height: 38px; border-radius: 8px; }
+.site-logo .tagline { display: block; font-size: 11px; font-weight: 400; color: var(--xi-ink-faint); }
+
+.site-nav { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+
+.site-nav a {
+    color: var(--xi-ink-soft);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    transition: color .15s, background .15s;
+}
+
+.site-nav a:hover, .site-nav a.active { color: var(--xi-ink); background: var(--xi-accent-soft); }
+
+.site-search input {
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    border-radius: 999px;
+    color: var(--xi-ink);
+    font-size: 13px;
+    padding: 7px 14px;
+    width: 160px;
+}
+
+.site-search input::placeholder { color: var(--xi-ink-faint); }
+
+/* --- Карточки и типографика --- */
+.xi-card {
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    border-radius: var(--xi-radius);
+    padding: 26px 28px;
+}
+
+.xi-card + .xi-card { margin-top: 16px; }
+
+.xi-prose { font-size: 16.5px; color: var(--xi-ink); overflow-wrap: break-word; }
+.xi-prose h2, .xi-prose h3 { color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
+.xi-prose h2 { font-size: 1.45em; }
+.xi-prose h3 { font-size: 1.2em; }
+.xi-prose p { margin: 0 0 1em; }
+.xi-prose a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
+.xi-prose a:hover { border-bottom-color: var(--xi-accent); }
+.xi-prose ul, .xi-prose ol { padding-left: 1.4em; margin: 0 0 1em; }
+.xi-prose li { margin-bottom: 0.4em; }
+.xi-prose blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 1.2em 0; padding: 0.3em 0 0.3em 1em; color: var(--xi-ink-soft); font-style: italic; }
+.xi-prose img { max-width: 100%; border-radius: 10px; }
+.xi-prose em { color: var(--xi-ink-soft); }
+
+.page-title { font-size: clamp(26px, 4vw, 36px); line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01em; }
+.section-title { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--xi-ink-faint); font-weight: 600; margin: 0 0 16px; }
+
+/* --- Бейджи эпох контента --- */
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-radius: 999px;
+    padding: 4px 11px;
+    white-space: nowrap;
+}
+
+.badge-sfera { background: rgba(214, 158, 46, 0.15); color: #e2b45c; border: 1px solid rgba(214, 158, 46, 0.35); }
+.badge-xintellect { background: rgba(123, 92, 255, 0.15); color: var(--xi-accent); border: 1px solid rgba(123, 92, 255, 0.4); }
+.badge-new { background: rgba(72, 187, 120, 0.13); color: #6fce96; border: 1px solid rgba(72, 187, 120, 0.35); }
+
+/* --- Хлебные крошки --- */
+.breadcrumbs { font-size: 13px; color: var(--xi-ink-faint); margin-bottom: 18px; }
+.breadcrumbs a { color: var(--xi-ink-soft); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--xi-accent); }
+.breadcrumbs .sep { margin: 0 7px; opacity: 0.5; }
+
+/* --- Глоссарий: термины и тултипы --- */
+.glossary-term {
+    border-bottom: 1px dotted var(--xi-accent);
+    cursor: help;
+    color: inherit;
+}
+
+.glossary-tooltip {
+    position: absolute;
+    z-index: 50;
+    max-width: 320px;
+    background: var(--xi-surface-2);
+    border: 1px solid var(--xi-accent-deep);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--xi-ink);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.glossary-tooltip strong { color: var(--xi-accent); }
+
+/* --- Аудиоплеер --- */
+.audio-player {
+    background: var(--xi-surface-2);
+    border: 1px solid var(--xi-line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 1.2em 0;
+}
+
+.audio-player .ap-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.audio-player .ap-btn {
+    background: var(--xi-accent-deep);
+    border: none;
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background .15s;
+    flex: 0 0 auto;
+}
+
+.audio-player .ap-btn:hover { background: var(--xi-accent); }
+.audio-player .ap-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.audio-player .ap-skip {
+    background: transparent;
+    border: 1px solid var(--xi-line);
+    color: var(--xi-ink-soft);
+    border-radius: 999px;
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.audio-player .ap-skip:hover { color: var(--xi-ink); border-color: var(--xi-accent-deep); }
+
+.audio-player .ap-bar {
+    flex: 1 1 160px;
+    height: 8px;
+    background: var(--xi-line);
+    border-radius: 999px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.audio-player .ap-bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--xi-accent); border-radius: 999px; }
+.audio-player .ap-time { font-size: 12.5px; color: var(--xi-ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.audio-player select.ap-rate {
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    color: var(--xi-ink-soft);
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.audio-player .ap-playlist { margin-top: 12px; border-top: 1px solid var(--xi-line); padding-top: 10px; }
+
+.audio-player .ap-track {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--xi-ink-soft);
+    font-size: 14px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.audio-player .ap-track:hover { background: var(--xi-accent-soft); color: var(--xi-ink); }
+.audio-player .ap-track.active { color: var(--xi-accent); font-weight: 600; }
+.audio-player .ap-track .dur { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--xi-ink-faint); }
+
+/* --- Таймлайн истории проекта --- */
+.timeline { position: relative; margin: 1.5em 0; padding-left: 26px; list-style: none; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px; width: 2px; background: linear-gradient(var(--xi-accent-deep), var(--xi-accent)); border-radius: 2px; }
+.timeline li { position: relative; margin-bottom: 1.1em; }
+.timeline li::before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 7px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--xi-bg);
+    border: 2.5px solid var(--xi-accent);
+}
+.timeline strong:first-child { color: var(--xi-accent); }
+
+/* --- Список страниц раздела --- */
+.page-card {
+    display: block;
+    text-decoration: none;
+    color: var(--xi-ink);
+    background: var(--xi-surface);
+    border: 1px solid var(--xi-line);
+    border-radius: var(--xi-radius);
+    padding: 20px 22px;
+    transition: border-color .15s, transform .12s;
+}
+
+.page-card:hover { border-color: var(--xi-accent-deep); transform: translateY(-2px); }
+.page-card h3 { margin: 0 0 6px; font-size: 17px; }
+.page-card p { margin: 8px 0 0; font-size: 14px; color: var(--xi-ink-soft); }
+.page-card .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--xi-ink-faint); flex-wrap: wrap; }
+
+/* --- Кнопки-ссылки страницы автора --- */
+.author-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+
+.author-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 11px 20px;
+    border-radius: 999px;
+    transition: transform .12s, background .15s, border-color .15s;
+}
+
+.author-links a:hover { transform: translateY(-1px); }
+.author-links .btn-solid { background: var(--xi-accent-deep); color: #fff; }
+.author-links .btn-solid:hover { background: var(--xi-accent); }
+.author-links .btn-outline { border: 1px solid var(--xi-line); color: var(--xi-ink-soft); }
+.author-links .btn-outline:hover { border-color: var(--xi-accent); color: var(--xi-ink); }
+
+/* --- Футер --- */
+.site-footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--xi-line);
+    margin-top: 60px;
+    padding: 30px 20px 40px;
+    font-size: 13px;
+    color: var(--xi-ink-faint);
+}
+
+.site-footer-inner { max-width: 1080px; margin: 0 auto; display: grid; gap: 18px; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.site-footer a { color: var(--xi-ink-soft); text-decoration: none; }
+.site-footer a:hover { color: var(--xi-accent); }
+.site-footer .legal { max-width: 720px; line-height: 1.6; }
+
+/* --- Предупреждение (курсы) --- */
+.warning-block {
+    border: 1px solid rgba(214, 158, 46, 0.4);
+    background: rgba(214, 158, 46, 0.08);
+    color: #e2c185;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 1.2em 0;
+}
+
+/* --- Пагинация Laravel на тёмном фоне --- */
+.site-body nav[role="navigation"] { color: var(--xi-ink-soft); }
+
+@media (max-width: 640px) {
+    .site-header-inner { gap: 10px; }
+    .site-search { width: 100%; }
+    .site-search input { width: 100%; }
+    .xi-card { padding: 20px 18px; }
+}

@@ -1,0 +1,146 @@
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+/**
+ * Аудиоплеер для вики-страниц (Этап 4 плана): Alpine.js-компонент без
+ * React/Vue-рантайма. Play/pause, перемотка, скорость воспроизведения,
+ * плейлист (записи курса подряд), сохранение позиции в localStorage —
+ * важно для многочасовых записей курсов А. Глаза.
+ */
+Alpine.data('audioPlayer', (tracks) => ({
+    tracks,
+    current: 0,
+    playing: false,
+    progress: 0,
+    currentTime: 0,
+    duration: 0,
+    rate: 1,
+    rates: [0.75, 1, 1.25, 1.5, 2],
+
+    init() {
+        const audio = this.$refs.audio;
+
+        audio.addEventListener('timeupdate', () => {
+            this.currentTime = audio.currentTime;
+            this.progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+
+            // Позиция прослушивания сохраняется раз в ~5 секунд
+            if (Math.floor(audio.currentTime) % 5 === 0 && audio.currentTime > 0) {
+                localStorage.setItem(this.posKey(), String(Math.floor(audio.currentTime)));
+            }
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            this.duration = audio.duration;
+
+            const saved = parseInt(localStorage.getItem(this.posKey()) || '0', 10);
+            if (saved > 5 && saved < audio.duration - 10) {
+                audio.currentTime = saved;
+            }
+        });
+
+        audio.addEventListener('ended', () => {
+            localStorage.removeItem(this.posKey());
+            if (this.current < this.tracks.length - 1) {
+                this.select(this.current + 1, true);
+            } else {
+                this.playing = false;
+            }
+        });
+
+        if (this.tracks.length) {
+            audio.src = this.tracks[0].url;
+        }
+    },
+
+    posKey() {
+        return `xi-audio-pos-${this.tracks[this.current]?.id}`;
+    },
+
+    toggle() {
+        const audio = this.$refs.audio;
+        this.playing ? audio.pause() : audio.play();
+        this.playing = !this.playing;
+    },
+
+    select(index, autoplay = false) {
+        const audio = this.$refs.audio;
+        this.current = index;
+        audio.src = this.tracks[index].url;
+        audio.playbackRate = this.rate;
+
+        if (autoplay || this.playing) {
+            audio.play();
+            this.playing = true;
+        }
+    },
+
+    seek(event) {
+        const audio = this.$refs.audio;
+        const rect = event.currentTarget.getBoundingClientRect();
+        const ratio = (event.clientX - rect.left) / rect.width;
+
+        if (audio.duration) {
+            audio.currentTime = ratio * audio.duration;
+        }
+    },
+
+    skip(seconds) {
+        const audio = this.$refs.audio;
+        audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds));
+    },
+
+    setRate(rate) {
+        this.rate = rate;
+        this.$refs.audio.playbackRate = rate;
+    },
+
+    format(seconds) {
+        if (!isFinite(seconds)) return '0:00';
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${s}` : `${m}:${s}`;
+    },
+}));
+
+Alpine.start();
+
+/**
+ * Тултипы глоссария (Этап 3 плана): термины размечаются при сохранении
+ * страницы (span.glossary-term с data-атрибутами), подсказка показывается
+ * при наведении/фокусе без тяжёлого фреймворка.
+ */
+const tooltip = document.createElement('div');
+tooltip.className = 'glossary-tooltip';
+tooltip.setAttribute('role', 'tooltip');
+tooltip.hidden = true;
+document.body.appendChild(tooltip);
+
+function showTooltip(target) {
+    tooltip.innerHTML = `<strong>${target.dataset.glossaryTerm}</strong><br>${target.dataset.glossaryDefinition}`;
+    tooltip.hidden = false;
+
+    const rect = target.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 8;
+    let left = rect.left + window.scrollX;
+
+    left = Math.min(left, window.scrollX + document.documentElement.clientWidth - tooltip.offsetWidth - 12);
+
+    tooltip.style.top = `${top}px`;
+    tooltip.style.left = `${Math.max(12, left)}px`;
+}
+
+['mouseover', 'focusin'].forEach((type) => {
+    document.addEventListener(type, (event) => {
+        const term = event.target.closest?.('.glossary-term');
+        if (term) showTooltip(term);
+    });
+});
+
+['mouseout', 'focusout'].forEach((type) => {
+    document.addEventListener(type, (event) => {
+        if (event.target.closest?.('.glossary-term')) tooltip.hidden = true;
+    });
+});

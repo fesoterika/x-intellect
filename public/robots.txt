@@ -1,0 +1,11 @@
+# X-Intellect — архив проекта «Сфера Разума» / X-Интеллект
+# Контентные разделы открыты для индексации, служебные — закрыты
+
+User-agent: *
+Disallow: /admin
+Disallow: /login
+Disallow: /profile
+Disallow: /search
+Allow: /
+
+Sitemap: https://x-intellect.org/sitemap.xml
