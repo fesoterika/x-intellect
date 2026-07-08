@@ -37,6 +37,9 @@ Route::prefix('admin')
         Route::resource('media', Admin\MediaController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('glossary', Admin\GlossaryTermController::class)->only(['index', 'store', 'update', 'destroy']);
 
+        // Загрузка изображений из Trix-редактора
+        Route::post('editor/image', [Admin\EditorImageController::class, 'store'])->name('editor.image');
+
         // Редиректы и меню — только администратор
         Route::middleware('can:admin')->group(function () {
             Route::resource('redirects', Admin\RedirectController::class)->only(['index', 'store', 'update', 'destroy']);
