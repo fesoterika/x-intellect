@@ -717,14 +717,23 @@ html { scroll-padding-top: 84px; }
 
 /* --- Предупреждение (курсы) --- */
 .warning-block {
-    border: 1px solid rgba(214, 158, 46, 0.4);
-    background: rgba(214, 158, 46, 0.08);
-    color: #e2c185;
+    /* Светлая тема (по умолчанию): тёмно-янтарный текст для контраста */
+    border: 1px solid rgba(180, 120, 20, 0.45);
+    background: rgba(214, 158, 46, 0.14);
+    color: #7a4e05;
     border-radius: 12px;
     padding: 16px 20px;
     font-size: 14.5px;
     line-height: 1.6;
     margin: 1.2em 0;
+}
+.warning-block strong { color: inherit; }
+
+/* Тёмная тема: светло-золотой текст на приглушённом фоне */
+:root[data-theme="dark"] .warning-block {
+    border-color: rgba(214, 158, 46, 0.4);
+    background: rgba(214, 158, 46, 0.08);
+    color: #e2c185;
 }
 
 /* --- Пагинация Laravel на тёмном фоне --- */
