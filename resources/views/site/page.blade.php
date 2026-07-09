@@ -43,6 +43,12 @@
             {!! $body !!}
         </div>
 
+        {{-- Приватный блок «Поделиться» — после тела материала --}}
+        @include('site.partials.share', [
+            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
+            'title' => $page->title,
+        ])
+
         @php
             $shortcodeUsed = str_contains((string) $page->body, '[[audio:');
             $playlist = $page->audio;
