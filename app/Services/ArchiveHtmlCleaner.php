@@ -52,6 +52,26 @@ class ArchiveHtmlCleaner
             $n->parentNode?->removeChild($n);
         }
 
+        // Удаляем блоки «Поделиться»/соцсети/похожие записи целиком (не разворачивая),
+        // чтобы их подписи не протекли в контент
+        $bad = ['buttons_share', 'share', 'social', 'pluso', 'sharedaddy', 'addthis',
+            'uptolike', 'yashare', 'ya-share', 'jp-relatedposts', 'sd-block', 'sd-content',
+            'relatedposts', 'related-posts', 'robokassa', 'commentlist', 'respond'];
+        $cond = implode(' or ', array_map(
+            fn ($c) => "contains(concat(' ', normalize-space(@class), ' '), ' {$c} ') or contains(@class, '{$c}')",
+            $bad
+        ));
+        foreach (iterator_to_array($xp->query("//*[{$cond}]")) as $n) {
+            $n->parentNode?->removeChild($n);
+        }
+        // Абзацы, состоящие только из «Опубликовать в …/Поделиться»
+        foreach (iterator_to_array($xp->query('//p|//div')) as $n) {
+            $txt = trim(preg_replace('/\s+/u', ' ', $n->textContent));
+            if (preg_match('/^(Опубликовать в|Поделиться|Share this|Нравится:?)/u', $txt) && mb_strlen($txt) < 120) {
+                $n->parentNode?->removeChild($n);
+            }
+        }
+
         $root = $doc->getElementById('__root');
         if (! $root) {
             return trim(strip_tags($html));
