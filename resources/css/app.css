@@ -208,16 +208,32 @@ html { scroll-padding-top: 84px; }
 
 /* --- Вложенное меню --- */
 .nav-item { position: relative; }
-.nav-item-row { display: inline-flex; align-items: center; }
+
+/* У пункта с подменю подсветку несёт вся строка (текст + стрелка),
+   поэтому фон переносится на .nav-item-row, а не на отдельную ссылку */
+.nav-item-row {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding-right: 6px;
+    transition: background .15s;
+}
+.nav-item-row a:hover,
+.nav-item-row a.active { background: transparent; }
+.nav-item:hover > .nav-item-row,
+.nav-item-row:has(a.active) { background: var(--xi-accent-soft); }
+.nav-item:hover > .nav-item-row a,
+.nav-item-row:has(a.active) a,
+.nav-item:hover > .nav-item-row .nav-caret { color: var(--xi-ink); }
 
 .nav-caret {
     background: transparent;
     border: none;
     color: var(--xi-ink-faint);
-    width: 22px;
+    width: 20px;
     height: 22px;
     padding: 0;
-    margin-left: -6px;
+    margin-left: -4px;
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -420,18 +436,6 @@ html { scroll-padding-top: 84px; }
     border-radius: 2px;
 }
 
-/* Буквица первого абзаца статьи — книжно-архивный приём.
-   Trix сохраняет абзацы как <div>, ручной HTML — как <p>: кроем оба случая */
-.xi-prose--article > p:first-of-type:first-child::first-letter,
-.xi-prose--article > blockquote + p::first-letter,
-.xi-prose--article > div:first-child::first-letter {
-    font-family: var(--xi-font-serif);
-    float: left;
-    font-size: 3.2em;
-    line-height: 0.85;
-    padding: 5px 10px 0 0;
-    color: var(--xi-accent);
-}
 .section-title { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--xi-ink-faint); font-weight: 600; margin: 0 0 16px; }
 
 /* --- Бейджи эпох контента --- */
