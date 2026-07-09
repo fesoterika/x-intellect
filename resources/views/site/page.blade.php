@@ -26,6 +26,7 @@
         </div>
 
         <h1 class="page-title">{{ $page->title }}</h1>
+        <hr class="title-rule" aria-hidden="true">
 
         @if ($section->slug === 'courses')
             {{-- Предупреждение об ответственном использовании техник —
@@ -38,7 +39,7 @@
             </div>
         @endif
 
-        <div class="xi-card xi-prose" style="margin-top: 18px;">
+        <div class="xi-card xi-prose xi-prose--article" style="margin-top: 18px;">
             {!! $body !!}
         </div>
 

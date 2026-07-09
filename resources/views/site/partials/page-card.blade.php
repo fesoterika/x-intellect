@@ -1,4 +1,4 @@
-<a class="page-card" href="{{ url($page->url()) }}">
+<a class="page-card epoch-{{ $page->source_type }}" href="{{ url($page->url()) }}">
     <div class="meta">
         <x-source-badge :page="$page" />
         @if ($page->archived_at)
@@ -15,4 +15,5 @@
     @if ($page->excerpt)
         <p>{{ Str::limit($page->excerpt, 140) }}</p>
     @endif
+    <span class="page-card-more">Читать <span class="arr" aria-hidden="true">→</span></span>
 </a>
