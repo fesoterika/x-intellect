@@ -133,54 +133,47 @@ html { scroll-padding-top: 84px; }
     flex-direction: column;
 }
 
-/* Звёздное поле — лёгкий слой без изображений */
-/* Звёздное небо: мягкие светящиеся точки с плавным ореолом (не резкие
-   1px-«пиксели»), разных размеров + деликатное мерцание двух слоёв.
-   Базовый слой всегда виден, ::before/::after подмигивают со сдвигом. */
+/* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
+   читались как звёзды, а не дефекты экрана) + два замощённых слоя мягких
+   звёзд (SVG-тайл) с деликатным мерцанием и лёгким параллаксом. */
 .starfield {
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background-image:
-        radial-gradient(2.5px 2.5px at 56% 13%, rgba(196, 182, 255, 0.95), transparent 68%),
-        radial-gradient(2px 2px at 12% 22%, rgba(233, 230, 247, 0.85), transparent 70%),
-        radial-gradient(2px 2px at 88% 78%, rgba(233, 230, 247, 0.7), transparent 72%),
-        radial-gradient(1.6px 1.6px at 34% 66%, rgba(233, 230, 247, 0.6), transparent 74%),
-        radial-gradient(1.6px 1.6px at 72% 44%, rgba(205, 192, 255, 0.7), transparent 74%),
-        radial-gradient(1.6px 1.6px at 22% 88%, rgba(233, 230, 247, 0.55), transparent 76%),
-        radial-gradient(1.6px 1.6px at 94% 9%, rgba(233, 230, 247, 0.75), transparent 76%);
-    background-repeat: no-repeat;
+    background:
+        radial-gradient(1100px 620px at 80% 8%, rgba(120, 95, 220, 0.20), transparent 62%),
+        radial-gradient(900px 700px at 12% 88%, rgba(70, 62, 150, 0.18), transparent 60%),
+        radial-gradient(760px 520px at 46% 44%, rgba(150, 120, 235, 0.10), transparent 66%);
 }
 .starfield::before,
 .starfield::after {
     content: '';
     position: absolute;
-    inset: 0;
-    background-repeat: no-repeat;
+    inset: -10%;
+    background-image: url('/images/stars.svg');
+    background-repeat: repeat;
+    will-change: opacity, transform;
 }
+/* Дальний слой — мельче (плотнее), медленное мерцание */
 .starfield::before {
-    background-image:
-        radial-gradient(1.6px 1.6px at 8% 58%, rgba(233, 230, 247, 0.7), transparent 76%),
-        radial-gradient(1.6px 1.6px at 40% 8%, rgba(205, 192, 255, 0.75), transparent 76%),
-        radial-gradient(1.6px 1.6px at 66% 92%, rgba(233, 230, 247, 0.6), transparent 78%),
-        radial-gradient(1.4px 1.4px at 80% 30%, rgba(233, 230, 247, 0.55), transparent 80%);
-    animation: xi-twinkle 5.5s ease-in-out infinite alternate;
+    background-size: 260px 260px;
+    opacity: 0.7;
+    animation: xi-twinkle 6s ease-in-out infinite alternate;
 }
+/* Ближний слой — крупнее и ярче, смещён, другой ритм (ощущение глубины) */
 .starfield::after {
-    background-image:
-        radial-gradient(1.6px 1.6px at 28% 46%, rgba(233, 230, 247, 0.6), transparent 78%),
-        radial-gradient(1.6px 1.6px at 52% 74%, rgba(205, 192, 255, 0.6), transparent 78%),
-        radial-gradient(1.4px 1.4px at 16% 36%, rgba(233, 230, 247, 0.5), transparent 80%),
-        radial-gradient(1.4px 1.4px at 90% 56%, rgba(233, 230, 247, 0.55), transparent 80%);
-    animation: xi-twinkle 7.5s ease-in-out infinite alternate-reverse;
+    background-size: 400px 400px;
+    background-position: 130px 70px;
+    opacity: 0.9;
+    animation: xi-twinkle 9s ease-in-out infinite alternate-reverse;
 }
 @keyframes xi-twinkle {
-    from { opacity: 0.35; }
+    from { opacity: 0.5; }
     to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .starfield::before, .starfield::after { animation: none; opacity: 0.8; }
+    .starfield::before, .starfield::after { animation: none; }
 }
 
 .site-wrap {
