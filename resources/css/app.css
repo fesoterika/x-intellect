@@ -927,6 +927,9 @@ html { scroll-padding-top: 84px; }
     position: relative;
     z-index: 1;
     border-top: 1px solid var(--xi-line);
+    /* Явная заливка — футер читается отдельной полосой и перекрывает
+       звёздный фон (в тёмной теме) */
+    background: var(--xi-surface);
     margin-top: 60px;
     padding: 30px 20px 40px;
     font-size: 13px;
