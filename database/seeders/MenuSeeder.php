@@ -15,7 +15,6 @@ class MenuSeeder extends Seeder
             ['label' => 'Библиотека', 'url' => '/library', 'location' => 'header', 'position' => 3],
             ['label' => 'Статьи', 'url' => '/mag', 'location' => 'header', 'position' => 4],
             ['label' => 'Курсы', 'url' => '/courses', 'location' => 'header', 'position' => 5],
-            ['label' => 'История', 'url' => '/history', 'location' => 'header', 'position' => 6],
             ['label' => 'О проекте', 'url' => '/about', 'location' => 'header', 'position' => 7],
 
             // Футер - служебные ссылки; /fesoterika в футере, не в основном
@@ -24,8 +23,7 @@ class MenuSeeder extends Seeder
             ['label' => 'Правила', 'url' => '/rules', 'location' => 'footer', 'position' => 2],
             ['label' => 'Об авторе сайта', 'url' => '/fesoterika', 'location' => 'footer', 'position' => 3],
             ['label' => 'Политика конфиденциальности', 'url' => '/about/politika-konfidencialnosti', 'location' => 'footer', 'position' => 4],
-            ['label' => 'Политика Cookies', 'url' => '/about/politika-cookies', 'location' => 'footer', 'position' => 5],
-            ['label' => 'Группа ВКонтакте', 'url' => 'https://vk.com/xintellect', 'location' => 'footer', 'position' => 6],
+            ['label' => 'Группа ВК', 'url' => 'https://vk.com/xintellect', 'location' => 'footer', 'position' => 6],
         ];
 
         foreach ($rootItems as $item) {
