@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Services\GlossaryLinker;
 use App\Services\ImageSeo;
 use App\Services\SeoService;
+use App\Services\TimelineTagger;
 
 class PageObserver
 {
@@ -14,12 +15,15 @@ class PageObserver
         protected SeoService $seo,
         protected GlossaryLinker $glossary,
         protected ImageSeo $imageSeo,
+        protected TimelineTagger $timeline,
     ) {}
 
     public function saving(Page $page): void
     {
         // Проставляем alt изображениям до генерации slug/описания и рендера
         $page->body = $this->imageSeo->process($page->body, $page->title);
+        // Восстанавливаем класс таймлайна (Trix его вырезает)
+        $page->body = $this->timeline->process($page->body);
 
         $this->seo->ensureSlug($page);
         $this->seo->fillDefaults($page);

@@ -17,7 +17,13 @@ class PageSeeder extends Seeder
 {
     public function run(): void
     {
-        $sections = Section::pluck('id', 'slug');
+        // Раздел может быть переименован/удалён редактором в админке —
+        // отдаём id по slug, а на отсутствующий ключ возвращаем null,
+        // чтобы сид не падал (страница создастся без раздела)
+        $sections = Section::pluck('id', 'slug')
+            ->union(['history' => null, 'wiki' => null, 'library' => null,
+                     'mag' => null, 'courses' => null, 'hello' => null,
+                     'rules' => null, 'about' => null]);
 
         $this->page([
             'section_id' => $sections['about'],

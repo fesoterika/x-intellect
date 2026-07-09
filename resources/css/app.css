@@ -9,12 +9,46 @@
 html { scroll-padding-top: 84px; }
 
 /* ============================================================
-   Типографика (аудит по design-taste-frontend): у архивного
-   editorial-сайта заголовки набираются антиквой — книжный характер
-   вместо безликого системного гротеска. Без внешних шрифтов:
-   Georgia есть на всех платформах.
+   Типографика (аудит по design-taste-frontend).
+   Пара: заголовки — Lora (гуманистическая антиква с полной кириллицей,
+   лицензия OFL, самостоятельно размещена в проекте, без внешних CDN),
+   текст — системный гротеск. Serif-заголовок + sans-текст: классическая
+   читаемая пара с книжно-архивным характером. Georgia — резервный шрифт
+   на время загрузки/если Lora недоступна.
    ============================================================ */
-:root { --xi-font-serif: Georgia, 'Times New Roman', 'Noto Serif', serif; }
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url('../fonts/lora-cyrillic-500.woff2') format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url('../fonts/lora-latin-500.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2074, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 600 700;
+    font-display: swap;
+    src: url('../fonts/lora-cyrillic-700.woff2') format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+    font-family: 'Lora';
+    font-style: normal;
+    font-weight: 600 700;
+    font-display: swap;
+    src: url('../fonts/lora-latin-700.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2074, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+:root { --xi-font-serif: 'Lora', Georgia, 'Times New Roman', serif; }
 
 /* Доступность: видимый фокус для клавиатурной навигации */
 :where(a, button, input, select, summary, [tabindex]):focus-visible {
@@ -411,6 +445,9 @@ html { scroll-padding-top: 84px; }
 .xi-prose h4 { font-size: 1.08em; }
 .xi-prose h5 { font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--xi-ink-soft); }
 .xi-prose p { margin: 0 0 1em; }
+/* Trix оборачивает абзацы в <div> без класса — даём им те же отступы,
+   чтобы контент после правок в редакторе не слипался */
+.xi-prose > div:not([class]) { margin: 0 0 1em; }
 .xi-prose a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
 .xi-prose a:hover { border-bottom-color: var(--xi-accent); }
 /* Tailwind preflight сбрасывает маркеры — возвращаем их для контента статей */

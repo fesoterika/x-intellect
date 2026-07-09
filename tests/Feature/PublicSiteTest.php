@@ -459,4 +459,34 @@ class PublicSiteTest extends TestCase
             ->assertSee('https://example.com/custom.jpg', false)
             ->assertDontSee('images/x-intellect_logo.webp', false);
     }
+
+    public function test_year_list_is_tagged_as_timeline_on_save(): void
+    {
+        $this->seedCore();
+
+        // Редактор Trix вырезает класс — он восстанавливается при сохранении,
+        // если первый пункт начинается с <strong>ГОД
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'about')->first()->id,
+            'title' => 'Хронология',
+            'body' => '<ul><li><strong>1982</strong> - начало</li><li><strong>1990</strong> - далее</li></ul>',
+            'status' => 'published',
+        ]);
+
+        $this->assertStringContainsString('<ul class="timeline"', $page->body);
+    }
+
+    public function test_ordinary_list_is_not_tagged_as_timeline(): void
+    {
+        $this->seedCore();
+
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'about')->first()->id,
+            'title' => 'Обычный список',
+            'body' => '<ul><li>первый пункт</li><li>второй</li></ul>',
+            'status' => 'published',
+        ]);
+
+        $this->assertStringNotContainsString('timeline', $page->body);
+    }
 }
