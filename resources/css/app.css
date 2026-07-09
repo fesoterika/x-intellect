@@ -361,9 +361,11 @@ html { scroll-padding-top: 84px; }
 .home-hero > * { position: relative; }
 
 .xi-prose { font-size: 16.5px; color: var(--xi-ink); overflow-wrap: break-word; }
-.xi-prose h2, .xi-prose h3 { color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
+.xi-prose h2, .xi-prose h3, .xi-prose h4, .xi-prose h5 { color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
 .xi-prose h2 { font-size: 1.45em; }
 .xi-prose h3 { font-size: 1.2em; }
+.xi-prose h4 { font-size: 1.08em; }
+.xi-prose h5 { font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--xi-ink-soft); }
 .xi-prose p { margin: 0 0 1em; }
 .xi-prose a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
 .xi-prose a:hover { border-bottom-color: var(--xi-accent); }
