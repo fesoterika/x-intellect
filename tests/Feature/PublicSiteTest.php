@@ -173,7 +173,7 @@ class PublicSiteTest extends TestCase
             ->assertSee('Найдено: 25')
             ->assertSee('page=2', false);
 
-        $this->assertLessThanOrEqual(20, substr_count($first->getContent(), 'page-card'));
+        $this->assertLessThanOrEqual(20, substr_count($first->getContent(), '<a class="page-card'));
 
         // Вторая страница отдаёт остаток и сохраняет строку поиска
         $this->get('/search?'.http_build_query(['q' => 'Хроносфера запись', 'page' => 2]))
