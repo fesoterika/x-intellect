@@ -9,6 +9,34 @@
 html { scroll-padding-top: 84px; }
 
 /* ============================================================
+   Типографика (аудит по design-taste-frontend): у архивного
+   editorial-сайта заголовки набираются антиквой — книжный характер
+   вместо безликого системного гротеска. Без внешних шрифтов:
+   Georgia есть на всех платформах.
+   ============================================================ */
+:root { --xi-font-serif: Georgia, 'Times New Roman', 'Noto Serif', serif; }
+
+/* Доступность: видимый фокус для клавиатурной навигации */
+:where(a, button, input, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--xi-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Выделение текста в фирменном цвете */
+::selection { background: rgba(106, 76, 214, 0.25); }
+
+/* Тактильный отклик: лёгкое «нажатие» на активных элементах */
+:where(.load-more, .author-links a, .theme-toggle, .glossary-alphabet a,
+       .xi-page, .ap-btn, .ap-skip, .site-burger, .nav-caret):active {
+    transform: translateY(1px) scale(0.99);
+}
+
+/* Иконка аудио в мета-строке карточек */
+.meta-audio { display: inline-flex; align-items: center; gap: 4px; }
+.meta-audio svg { width: 12px; height: 12px; }
+
+/* ============================================================
    Публичная часть X-Intellect — космическая тема на архивных
    мотивах (Этап 3 плана). Палитра выведена из логотипа заглушки
    (#6667ab, #40334f, #5f4c79) и акцента #7b5cff.
@@ -361,7 +389,7 @@ html { scroll-padding-top: 84px; }
 .home-hero > * { position: relative; }
 
 .xi-prose { font-size: 16.5px; color: var(--xi-ink); overflow-wrap: break-word; }
-.xi-prose h2, .xi-prose h3, .xi-prose h4, .xi-prose h5 { color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
+.xi-prose h2, .xi-prose h3, .xi-prose h4, .xi-prose h5 { font-family: var(--xi-font-serif); color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
 .xi-prose h2 { font-size: 1.45em; }
 .xi-prose h3 { font-size: 1.2em; }
 .xi-prose h4 { font-size: 1.08em; }
@@ -378,7 +406,7 @@ html { scroll-padding-top: 84px; }
 .xi-prose img { max-width: 100%; border-radius: 10px; }
 .xi-prose em { color: var(--xi-ink-soft); }
 
-.page-title { font-size: clamp(26px, 4vw, 36px); line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01em; }
+.page-title { font-family: var(--xi-font-serif); font-size: clamp(26px, 4vw, 36px); line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.005em; font-weight: 700; }
 .section-title { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--xi-ink-faint); font-weight: 600; margin: 0 0 16px; }
 
 /* --- Бейджи эпох контента --- */
@@ -551,7 +579,7 @@ html { scroll-padding-top: 84px; }
     transform: translateY(-2px);
 }
 .section-tile-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.section-tile-title { font-size: 16px; font-weight: 600; }
+.section-tile-title { font-family: var(--xi-font-serif); font-size: 16.5px; font-weight: 700; }
 .section-tile-arrow { color: var(--xi-accent); font-size: 17px; transition: transform .15s; }
 .section-tile:hover .section-tile-arrow { transform: translateX(4px); }
 .section-tile-desc { font-size: 13px; color: var(--xi-ink-soft); line-height: 1.5; }
@@ -618,6 +646,7 @@ html { scroll-padding-top: 84px; }
 .glossary-groups { display: grid; gap: 22px; }
 .glossary-group { scroll-margin-top: 90px; }
 .glossary-letter {
+    font-family: var(--xi-font-serif);
     font-size: 22px;
     font-weight: 700;
     color: var(--xi-accent-deep);
@@ -627,7 +656,7 @@ html { scroll-padding-top: 84px; }
 }
 .glossary-list { display: grid; gap: 12px; }
 .glossary-item { padding: 18px 22px; scroll-margin-top: 90px; }
-.glossary-term-title { margin: 0 0 8px; font-size: 18px; color: var(--xi-accent); }
+.glossary-term-title { font-family: var(--xi-font-serif); margin: 0 0 8px; font-size: 18px; color: var(--xi-accent); }
 .glossary-def { margin: 0; color: var(--xi-ink-soft); }
 .glossary-more { display: inline-block; margin-top: 10px; font-size: 13.5px; color: var(--xi-accent); text-decoration: none; }
 .glossary-more:hover { text-decoration: underline; }
@@ -668,8 +697,8 @@ html { scroll-padding-top: 84px; }
     transition: border-color .15s, transform .12s;
 }
 
-.page-card:hover { border-color: var(--xi-accent-deep); transform: translateY(-2px); }
-.page-card h3 { margin: 0 0 6px; font-size: 17px; }
+.page-card:hover { border-color: var(--xi-accent-deep); background: var(--xi-surface-2); transform: translateY(-2px); }
+.page-card h3 { font-family: var(--xi-font-serif); margin: 0 0 6px; font-size: 17.5px; }
 .page-card p { margin: 8px 0 0; font-size: 14px; color: var(--xi-ink-soft); }
 .page-card .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--xi-ink-faint); flex-wrap: wrap; }
 
