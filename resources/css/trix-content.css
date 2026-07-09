@@ -13,6 +13,16 @@ trix-editor.trix-content > * + * {
     margin-top: 0.85em;
 }
 
+/* Заголовки в редакторе — той же антиквой (Lora), что и на публичной
+   части: WYSIWYG-соответствие. Шрифт подключён в app.css (@font-face),
+   который админка тоже грузит. */
+trix-editor.trix-content h1,
+trix-editor.trix-content h2,
+trix-editor.trix-content h3,
+trix-editor.trix-content h4,
+trix-editor.trix-content h5 {
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+}
 trix-editor.trix-content h1,
 trix-editor.trix-content h2 {
     font-size: 1.5em;
