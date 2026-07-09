@@ -5,6 +5,19 @@ import 'trix/dist/trix.css';
 // Стили контента редактора — ПОСЛЕ trix.css, чтобы перебить их и preflight
 import '../css/trix-content.css';
 
+// Уровни заголовков h2–h5 для контента материалов. H1 в тексте не нужен —
+// это заголовок самой страницы; штатная кнопка Heading (h1) скрывается CSS.
+document.addEventListener('trix-before-initialize', () => {
+    [2, 3, 4, 5].forEach((level) => {
+        window.Trix.config.blockAttributes[`heading${level}`] = {
+            tagName: `h${level}`,
+            terminal: true,
+            breakOnReturn: true,
+            group: false,
+        };
+    });
+});
+
 // Загрузка файла-картинки в хранилище (общая для drag-n-drop и кнопки).
 // Возвращает промис с URL загруженного файла.
 function uploadImage(file) {
@@ -43,6 +56,20 @@ document.addEventListener('trix-initialize', (event) => {
     if (!group || group.querySelector('[data-x-audio]')) {
         return;
     }
+
+    // Кнопки уровней заголовков H2–H5 — на место штатной кнопки Heading (h1).
+    // Клики обрабатывает сам Trix по data-trix-attribute.
+    const heading1 = group.querySelector('[data-trix-attribute="heading1"]');
+    [2, 3, 4, 5].forEach((level) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'trix-button';
+        btn.dataset.trixAttribute = `heading${level}`;
+        btn.textContent = `H${level}`;
+        btn.title = `Заголовок H${level}`;
+        group.insertBefore(btn, heading1 || group.firstChild);
+    });
+    heading1?.remove();
 
     // Кнопка вставки аудиоплеера через short-код [[audio:ID]]
     const audioBtn = document.createElement('button');
