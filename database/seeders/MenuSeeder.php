@@ -9,7 +9,7 @@ class MenuSeeder extends Seeder
 {
     public function run(): void
     {
-        // Шапка — контентные разделы (корневые пункты)
+        // Шапка - контентные разделы (корневые пункты)
         $rootItems = [
             ['label' => 'Вики', 'url' => '/wiki', 'location' => 'header', 'position' => 1],
             ['label' => 'Библиотека', 'url' => '/library', 'location' => 'header', 'position' => 3],
@@ -18,7 +18,7 @@ class MenuSeeder extends Seeder
             ['label' => 'История', 'url' => '/history', 'location' => 'header', 'position' => 6],
             ['label' => 'О проекте', 'url' => '/about', 'location' => 'header', 'position' => 7],
 
-            // Футер — служебные ссылки; /fesoterika в футере, не в основном
+            // Футер - служебные ссылки; /fesoterika в футере, не в основном
             // меню (стандартное место для «об авторе/разработчике», Этап 1 плана)
             ['label' => 'Приветствие', 'url' => '/hello', 'location' => 'footer', 'position' => 1],
             ['label' => 'Правила', 'url' => '/rules', 'location' => 'footer', 'position' => 2],
@@ -35,7 +35,7 @@ class MenuSeeder extends Seeder
             );
         }
 
-        // Подменю: Глоссарий — раздел вики, живёт в выпадающем меню «Вики»
+        // Подменю: Глоссарий - раздел вики, живёт в выпадающем меню «Вики»
         $wiki = MenuItem::where('location', 'header')->where('url', '/wiki')->first();
 
         MenuItem::updateOrCreate(

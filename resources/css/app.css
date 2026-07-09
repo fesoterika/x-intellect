@@ -598,13 +598,13 @@ html { scroll-padding-top: 84px; }
     padding: 18px 20px 16px;
     transition: border-color .2s, transform .15s, box-shadow .2s;
 }
-.section-tile::before {
-    content: '';
+/* Акцентная черта — под заголовком, плавно растёт при наведении */
+.section-tile-rule {
     width: 28px;
     height: 2px;
     border-radius: 2px;
     background: linear-gradient(90deg, var(--xi-accent), var(--xi-accent-deep));
-    margin-bottom: 3px;
+    margin: 1px 0 2px;
     transition: width .25s ease;
 }
 .section-tile:hover {
@@ -612,7 +612,7 @@ html { scroll-padding-top: 84px; }
     transform: translateY(-2px);
     box-shadow: 0 12px 28px -14px rgba(90, 63, 214, 0.35);
 }
-.section-tile:hover::before { width: 52px; }
+.section-tile:hover .section-tile-rule { width: 52px; }
 
 .section-tile-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .section-tile-title { font-family: var(--xi-font-serif); font-size: 17px; font-weight: 700; }

@@ -18,7 +18,7 @@
     </select>
 
     <select name="parent_id" class="rounded-md border-gray-300 text-sm" @disabled($item->children->isNotEmpty())>
-        <option value="">— корневой —</option>
+        <option value="">- корневой -</option>
         @foreach ($parents as $parent)
             @continue($parent->id === $item->id)
             <option value="{{ $parent->id }}" @selected($item->parent_id === $parent->id)>{{ $parent->label }}</option>

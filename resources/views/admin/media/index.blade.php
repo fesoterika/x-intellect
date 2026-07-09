@@ -23,7 +23,7 @@
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Страница</label>
                 <select name="page_id" class="w-full rounded-md border-gray-300">
-                    <option value="">— не привязан —</option>
+                    <option value="">- не привязан -</option>
                     @foreach ($pages as $p)
                         <option value="{{ $p->id }}">{{ $p->title }}</option>
                     @endforeach
@@ -64,7 +64,7 @@
                                 @if ($item->durationLabel())<span class="text-xs text-gray-400">({{ $item->durationLabel() }})</span>@endif
                             </td>
                             <td class="px-5 py-3 text-gray-500">{{ $item->type }}</td>
-                            <td class="px-5 py-3 text-gray-500">{{ $item->page?->title ?? '—' }}</td>
+                            <td class="px-5 py-3 text-gray-500">{{ $item->page?->title ?? '-' }}</td>
                             <td class="px-5 py-3"><a class="text-indigo-600 hover:underline text-xs" href="{{ $item->url() }}" target="_blank">открыть ↗</a></td>
                             <td class="px-5 py-3 text-right">
                                 <form method="POST" action="{{ route('admin.media.destroy', $item) }}" onsubmit="return confirm('Удалить файл «{{ $item->title }}»?')">

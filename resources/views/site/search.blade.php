@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', ($query ? 'Поиск: '.$query : 'Поиск').' — X-Intellect')
+@section('title', ($query ? 'Поиск: '.$query : 'Поиск').' - X-Intellect')
 
 @section('meta')
     <meta name="robots" content="noindex, follow">

@@ -52,7 +52,7 @@
                                 <a class="text-indigo-700 hover:underline font-medium" href="{{ route('admin.pages.edit', $page) }}">{{ $page->title }}</a>
                                 <div class="text-xs text-gray-400">/{{ $page->section?->slug }}/{{ $page->slug }}</div>
                             </td>
-                            <td class="px-5 py-3 text-gray-500">{{ $page->section?->title ?? '—' }}</td>
+                            <td class="px-5 py-3 text-gray-500">{{ $page->section?->title ?? '-' }}</td>
                             <td class="px-5 py-3"><x-source-badge :page="$page" /></td>
                             <td class="px-5 py-3">
                                 <span class="px-2 py-0.5 rounded text-xs {{ $page->isPublished() ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">

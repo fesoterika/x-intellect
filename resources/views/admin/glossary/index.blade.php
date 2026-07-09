@@ -22,7 +22,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Статья</label>
                 <select name="page_id" class="w-full rounded-md border-gray-300">
-                    <option value="">—</option>
+                    <option value="">-</option>
                     @foreach ($pages as $p)
                         <option value="{{ $p->id }}">{{ $p->title }}</option>
                     @endforeach
@@ -38,7 +38,7 @@
                     <input type="text" name="term" value="{{ $term->term }}" class="md:col-span-2 rounded-md border-gray-300 text-sm">
                     <textarea name="definition" rows="2" class="md:col-span-2 rounded-md border-gray-300 text-sm">{{ $term->definition }}</textarea>
                     <select name="page_id" class="rounded-md border-gray-300 text-sm">
-                        <option value="">—</option>
+                        <option value="">-</option>
                         @foreach ($pages as $p)
                             <option value="{{ $p->id }}" @selected($term->page_id == $p->id)>{{ $p->title }}</option>
                         @endforeach
