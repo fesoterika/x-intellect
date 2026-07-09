@@ -4,14 +4,13 @@
     // стороне не собираются, переход к сети происходит только по клику.
     $u = rawurlencode($url);
     $t = rawurlencode($title);
+    // MAX и Bastyon исключены: у них нет простого web-share URL (MAX — только
+    // Bot API, у Bastyon web-share не документирован), рабочего решения нет.
     $links = [
-        // сеть => [ссылка шаринга, SVG-иконка]
         'ВКонтакте'    => "https://vk.com/share.php?url={$u}&title={$t}",
         'Одноклассники'=> "https://connect.ok.ru/offer?url={$u}&title={$t}",
         'Телеграм'     => "https://t.me/share/url?url={$u}&text={$t}",
-        'MAX'          => "https://max.ru/share?url={$u}&text={$t}",
         'LiveJournal'  => "https://www.livejournal.com/update.bml?subject={$t}&event={$u}",
-        'Bastyon'      => "https://bastyon.com/index?share={$u}&text={$t}",
     ];
 @endphp
 
@@ -49,14 +48,10 @@
         <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Телеграм"><title>Телеграм</title><path d="M21.94 4.3 18.7 19.6c-.24 1.08-.88 1.34-1.78.83l-4.92-3.63-2.37 2.28c-.26.26-.48.48-.99.48l.35-5 9.1-8.22c.4-.35-.09-.55-.62-.2L4.21 13.1l-4.85-1.52c-1.05-.33-1.07-1.05.22-1.56L20.6 2.78c.88-.32 1.64.2 1.34 1.52z" transform="translate(1 0)"/></svg>
     </a>
 
-    <a class="share-btn share-btn--text" href="{{ $links['MAX'] }}" target="_blank" rel="noopener noreferrer nofollow"
-       title="MAX" aria-label="Поделиться в MAX"><span aria-hidden="true">M</span></a>
-
-    <a class="share-btn share-btn--text" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
-       title="LiveJournal" aria-label="Поделиться в LiveJournal"><span aria-hidden="true">LJ</span></a>
-
-    <a class="share-btn share-btn--text" href="{{ $links['Bastyon'] }}" target="_blank" rel="noopener noreferrer nofollow"
-       title="Bastyon" aria-label="Поделиться в Bastyon"><span aria-hidden="true">B</span></a>
+    <a class="share-btn share-btn--logo" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
+       title="LiveJournal" aria-label="Поделиться в LiveJournal">
+        <svg viewBox="0 0 32 32" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path d="M11.123 3.27L7.813 0A15.025 15.025 0 0 0 0 7.763l3.316 3.272c-.804 1.82-1.28 3.8-1.28 5.91 0 8.23 6.747 14.9 15.07 14.9 8.32 0 14.894-6.36 14.894-14.9S25.427 2.047 17.106 2.047c-2.125 0-4.148.437-5.983 1.223z" fill="#00A3D9"/><path d="M15.57 23.134a15.035 15.035 0 0 1 7.807-7.762L11.126 3.275h-.006a15.037 15.037 0 0 0-7.81 7.763l12.26 12.096z" fill="#00303F"/><path d="M24.256 19.503a8.733 8.733 0 0 0-4.535 4.508l5.722 1.172-1.186-5.68z" fill="#00303F"/><path d="M24.254 19.503c-.458-2.168-.876-4.13-.876-4.13h-.002a15.043 15.043 0 0 0-7.807 7.76l4.15.876a8.786 8.786 0 0 1 4.534-4.507" fill="#FFF"/></svg>
+    </a>
 
     <button type="button" class="share-btn share-copy"
             title="Скопировать ссылку" aria-label="Скопировать ссылку"
