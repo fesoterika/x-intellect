@@ -1,13 +1,13 @@
 @extends('layouts.site')
 
-@section('title', $page->seoValue('meta_title', 'Ф. (@fesoterika) — хранитель архива и разработчик сайта X-Intellect'))
+@section('title', $page->seoValue('meta_title', 'Ф. (@fesoterika) - хранитель архива и разработчик сайта X-Intellect'))
 
 @section('meta')
     @include('site.partials.seo', ['page' => $page])
 @endsection
 
 @section('content')
-    {{-- Персональная страница автора/хранителя проекта — отдельный шаблон
+    {{-- Персональная страница автора/хранителя проекта - отдельный шаблон
          вне общей иерархии разделов (Этап 1 плана) --}}
     <article style="max-width: 760px; margin: 0 auto;">
         @include('site.partials.breadcrumbs', ['crumbs' => [
@@ -17,7 +17,7 @@
 
         <div class="xi-card" style="padding: 36px 34px;">
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
-                <img src="/images/f_color.webp" alt="Портрет автора — Ф. (@fesoterika)" width="76" height="76"
+                <img src="/images/f_color.webp" alt="Портрет автора - Ф. (@fesoterika)" width="76" height="76"
                      style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 1px solid var(--xi-accent-deep); background: var(--xi-accent-soft);">
                 <div>
                     <h1 class="page-title" style="margin: 0;">{{ $page->title }}</h1>
@@ -30,7 +30,7 @@
             </div>
 
             {{-- Блок ссылок с заглушки: внешние ресурсы идут через внутренние
-                 обёртки /go/*.html — механизм обхода adblock (таблица redirects) --}}
+                 обёртки /go/*.html - механизм обхода adblock (таблица redirects) --}}
             <div class="author-links">
                 <a class="btn-solid" href="/go/dzen.html" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 169 169" fill="currentColor" aria-hidden="true"><path d="M148.369 82.7304C148.369 82.0906 147.849 81.5608 147.209 81.5308C124.246 80.661 110.271 77.732 100.494 67.955C90.6967 58.1581 87.7776 44.1724 86.9079 21.1596C86.8879 20.5198 86.358 20 85.7082 20H83.0291C82.3893 20 81.8594 20.5198 81.8295 21.1596C80.9597 44.1624 78.0406 58.1581 68.2437 67.955C58.4568 77.742 44.4911 80.661 21.5283 81.5308C20.8885 81.5508 20.3687 82.0806 20.3687 82.7304V85.4096C20.3687 86.0494 20.8885 86.5792 21.5283 86.6092C44.4911 87.4789 58.4667 90.408 68.2437 100.185C78.0206 109.962 80.9397 123.908 81.8195 146.83C81.8394 147.47 82.3693 147.99 83.0191 147.99H85.7082C86.348 147.99 86.8779 147.47 86.9079 146.83C87.7876 123.908 90.7067 109.962 100.484 100.185C110.271 90.398 124.236 87.4789 147.199 86.6092C147.839 86.5892 148.359 86.0594 148.359 85.4096V82.7304H148.369Z"/></svg>

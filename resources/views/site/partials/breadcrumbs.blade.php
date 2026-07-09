@@ -1,5 +1,5 @@
 @php
-    // $crumbs — массив [label => url|null]; последний элемент — текущая страница
+    // $crumbs - массив [label => url|null]; последний элемент - текущая страница
     $base = rtrim(config('app.url'), '/');
     $items = collect($crumbs);
 @endphp

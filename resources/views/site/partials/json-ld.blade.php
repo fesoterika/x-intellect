@@ -11,7 +11,7 @@
             'alternateName' => 'Fesoterika',
             'description' => $page->seoValue('meta_description'),
             'url' => $base.$page->url(),
-            // Внешние профили — помогают поисковикам и LLM-краулерам
+            // Внешние профили - помогают поисковикам и LLM-краулерам
             // связывать страницу с личностью автора
             'sameAs' => [
                 'https://dzen.ru/fesoterika',

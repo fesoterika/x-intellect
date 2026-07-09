@@ -15,11 +15,11 @@
         })();
     </script>
 
-    <title>@yield('title', 'X-Intellect — архив проекта «Сфера Разума» / X-Интеллект')</title>
+    <title>@yield('title', 'X-Intellect - архив проекта «Сфера Разума» / X-Интеллект')</title>
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta name="description" content="Архив проекта X-Intellect (ранее — «Сфера Разума»): вики, библиотека, записи курсов А. Глаза, материалы о контактах с Внеземным Разумом.">
+        <meta name="description" content="Архив проекта X-Intellect (ранее - «Сфера Разума»): вики, библиотека, записи курсов А. Глаза, материалы о контактах с Внеземным Разумом.">
     @endif
 
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -71,7 +71,7 @@
                 @foreach ($headerMenu ?? [] as $item)
                     @if ($item->children->isNotEmpty())
                         {{-- Пункт с подменю: на ПК раскрывается по наведению (CSS :hover),
-                             на смартфоне/планшете — по тапу на стрелку (Alpine) --}}
+                             на смартфоне/планшете - по тапу на стрелку (Alpine) --}}
                         <div class="nav-item" x-data="{ subOpen: false }" @click.outside="subOpen = false">
                             <span class="nav-item-row">
                                 <a href="{{ $item->url }}" @class(['active' => request()->is(ltrim($item->url, '/').'*') && $item->url !== '/'])>{{ $item->label }}</a>
@@ -148,14 +148,14 @@
                 </button>
             </div>
 
-            {{-- Юридический дисклеймер с заглушки — обязателен на всех страницах --}}
+            {{-- Юридический дисклеймер с заглушки - обязателен на всех страницах --}}
             <p class="legal">
                 Владелец этого сайта не является автором проекта X-Intellect («Икс-Интеллект»)
                 и не несёт ответственности за содержание размещённых материалов.
                 Все материалы представлены исключительно в ознакомительных и архивных целях.
             </p>
 
-            <p>© 2012–{{ date('Y') }} X-Intellect.org · Создатель нового сайта — <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
+            <p>© 2012-{{ date('Y') }} X-Intellect.org · Создатель нового сайта - <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
         </div>
     </footer>
 

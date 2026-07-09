@@ -23,7 +23,7 @@
                             <td class="px-5 py-3">
                                 <a class="text-indigo-700 hover:underline" href="{{ route('admin.pages.edit', $page) }}">{{ $page->title }}</a>
                             </td>
-                            <td class="px-5 py-3 text-gray-500">{{ $page->section?->title ?? '—' }}</td>
+                            <td class="px-5 py-3 text-gray-500">{{ $page->section?->title ?? '-' }}</td>
                             <td class="px-5 py-3">
                                 <span class="px-2 py-0.5 rounded text-xs {{ $page->isPublished() ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                     {{ $page->isPublished() ? 'опубликовано' : 'черновик' }}
@@ -32,7 +32,7 @@
                             <td class="px-5 py-3 text-gray-400">{{ $page->updated_at->format('d.m.Y H:i') }}</td>
                         </tr>
                     @empty
-                        <tr><td class="px-5 py-4 text-gray-400">Страниц пока нет — начните с «Страницы → Создать» или импортируйте архив: <code>php artisan import:archive</code></td></tr>
+                        <tr><td class="px-5 py-4 text-gray-400">Страниц пока нет - начните с «Страницы → Создать» или импортируйте архив: <code>php artisan import:archive</code></td></tr>
                     @endforelse
                 </tbody>
             </table>

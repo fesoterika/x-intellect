@@ -7,7 +7,7 @@
         {{-- Админка закрыта от индексации --}}
         <meta name="robots" content="noindex, nofollow">
 
-        <title>{{ $title ?? 'Админка' }} — X-Intellect</title>
+        <title>{{ $title ?? 'Админка' }} - X-Intellect</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin.js'])
     </head>

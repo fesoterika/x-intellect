@@ -9,7 +9,7 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Пароль задаётся через .env (SEED_ADMIN_PASSWORD) — сменить сразу
+        // Пароль задаётся через .env (SEED_ADMIN_PASSWORD) - сменить сразу
         // после первого входа; при отсутствии переменной используется
         // временный пароль для локальной разработки
         User::updateOrCreate(

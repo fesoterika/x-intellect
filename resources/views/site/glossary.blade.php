@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', 'Глоссарий — толкователь терминов проекта X-Intellect')
+@section('title', 'Глоссарий - толкователь терминов проекта X-Intellect')
 
 @section('meta')
     <meta name="description" content="Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.">

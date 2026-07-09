@@ -7,7 +7,7 @@
     <div class="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <p class="text-sm text-gray-500">
             Один уровень вложенности: пункт с родителем показывается в выпадающем подменю
-            (на ПК — по наведению, на смартфоне — по тапу на стрелку). Родителем может быть
+            (на ПК - по наведению, на смартфоне - по тапу на стрелку). Родителем может быть
             только корневой пункт шапки.
         </p>
 
@@ -31,7 +31,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Родитель</label>
                 <select name="parent_id" class="w-full rounded-md border-gray-300">
-                    <option value="">— корневой —</option>
+                    <option value="">- корневой -</option>
                     @foreach ($parents as $parent)
                         <option value="{{ $parent->id }}">{{ $parent->label }} ({{ $parent->location === 'header' ? 'шапка' : 'футер' }})</option>
                     @endforeach

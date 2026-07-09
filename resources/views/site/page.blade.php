@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', $page->seoValue('meta_title', $page->title.' — X-Intellect'))
+@section('title', $page->seoValue('meta_title', $page->title.' - X-Intellect'))
 
 @section('meta')
     @include('site.partials.seo', ['page' => $page])
@@ -29,12 +29,12 @@
         <hr class="title-rule" aria-hidden="true">
 
         @if ($section->slug === 'courses')
-            {{-- Предупреждение об ответственном использовании техник —
+            {{-- Предупреждение об ответственном использовании техник -
                  обязательно на страницах раздела курсов (см. план) --}}
             <div class="warning-block">
                 <strong>Важно!</strong> Использование методик А. Глаза и его единомышленников
                 во вред другим или не по назначению влечёт за собой ответственность.
-                Материалы публикуются в архивных целях — применяйте знания осознанно
+                Материалы публикуются в архивных целях - применяйте знания осознанно
                 и только с созидательными намерениями.
             </div>
         @endif

@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', $section->title.' — X-Intellect')
+@section('title', $section->title.' - X-Intellect')
 
 @section('meta')
     <meta name="description" content="{{ Str::limit($section->description ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158) }}">

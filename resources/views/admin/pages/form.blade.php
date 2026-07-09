@@ -32,7 +32,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Раздел</label>
                         <select name="section_id" class="w-full rounded-md border-gray-300">
-                            <option value="">— без раздела —</option>
+                            <option value="">- без раздела -</option>
                             @foreach ($sections as $section)
                                 <option value="{{ $section->id }}" @selected(old('section_id', $page->section_id) == $section->id)>{{ $section->title }}</option>
                             @endforeach
@@ -79,7 +79,7 @@
                     <input type="checkbox" name="is_listed" value="1" @checked(old('is_listed', $page->is_listed ?? true)) class="mt-0.5 rounded border-gray-300">
                     <span>
                         Показывать в списках
-                        <span class="block text-xs text-gray-400">Если снять — страница доступна только по прямой ссылке (напр. юридические страницы), не выводится в разделах, «Последних материалах» и поиске.</span>
+                        <span class="block text-xs text-gray-400">Если снять - страница доступна только по прямой ссылке (напр. юридические страницы), не выводится в разделах, «Последних материалах» и поиске.</span>
                     </span>
                 </label>
 
@@ -96,7 +96,7 @@
                     <trix-editor input="body" class="trix-content bg-white border border-gray-300 rounded-md min-h-64"></trix-editor>
                     <p class="text-xs text-gray-400 mt-1">
                         Short-код <code>[[audio:ID]]</code> разворачивается в аудиоплеер на публичной странице.
-                        ID — из раздела «Медиа»@if($page->exists && $page->media->isNotEmpty()): прикреплённые файлы перечислены ниже@endif.
+                        ID - из раздела «Медиа»@if($page->exists && $page->media->isNotEmpty()): прикреплённые файлы перечислены ниже@endif.
                     </p>
                 </div>
             </div>
@@ -169,7 +169,7 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-sm text-gray-400">Ревизий пока нет — они создаются автоматически при правке заголовка или текста.</p>
+                        <p class="text-sm text-gray-400">Ревизий пока нет - они создаются автоматически при правке заголовка или текста.</p>
                     @endforelse
                 </div>
             </div>
