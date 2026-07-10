@@ -12,6 +12,7 @@
         'Телеграм'     => "https://t.me/share/url?url={$u}&text={$t}",
         'MAX'          => "https://max.ru/:share?text={$t}%20{$u}",
         'LiveJournal'  => "https://www.livejournal.com/update.bml?subject={$t}&event={$u}",
+        'Мой Мир'      => "https://connect.mail.ru/share?url={$u}&title={$t}",
     ];
 @endphp
 
@@ -57,6 +58,11 @@
     <a class="share-btn" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
        title="LiveJournal" aria-label="Поделиться в LiveJournal">
         <svg viewBox="67 67 321 321" fill="currentColor" fill-rule="evenodd" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path d="M268.769,306.818l50.575,10.875l-10.874-50.586l-10.602-44.864c0.043-0.022-0.011-0.086-0.011-0.086L178.027,102.34c-33.126,14.218-59.977,40.248-75.28,72.787l121.135,121.132L268.769,306.818z M292.327,229.465l7.897,34.674c-14.714,7.363-27.06,19.708-34.421,34.432l-34.674-7.896C243.601,263.488,265.14,241.95,292.327,229.465z M236.071,385c-81.348,0-147.288-65.94-147.288-147.277c0-22.392,5.027-43.594,13.965-62.596l-31.096-31.088C90.255,113.949,115.601,88.604,145.69,70l32.337,32.34c17.818-7.646,37.431-11.895,58.043-11.895c81.337,0,147.277,65.94,147.277,147.277S317.408,385,236.071,385z"/></svg>
+    </a>
+
+    <a class="share-btn" href="{{ $links['Мой Мир'] }}" target="_blank" rel="noopener noreferrer nofollow"
+       title="Мой Мир" aria-label="Поделиться в Моём Мире (Mail.ru)">
+        <svg viewBox="-8 -8 238.1 167" fill="currentColor" role="img" aria-label="Мой Мир"><title>Мой Мир</title><ellipse cx="67.9" cy="21.3" rx="21.3" ry="21.3"/><ellipse cx="154.4" cy="21.3" rx="21.3" ry="21.3"/><path d="M220.6 125.2L194.8 81c-3.2-5.4-10.1-7.3-15.6-4.1-5.4 3.2-7.3 10.1-4.1 15.5l3.8 6.4c-18.9 17.2-43 26.6-68.9 26.6-25.1 0-48.7-9-67.4-25.3l4.5-7.8c3.2-5.4 1.3-12.4-4.1-15.5-5.4-3.2-12.4-1.3-15.6 4.1L1.6 125.1c-3.2 5.4-1.3 12.4 4.1 15.5 1.8 1 3.8 1.5 5.7 1.5 3.9 0 7.7-2 9.8-5.6l8.2-14C52.2 141 80.3 151 110 151c30 0 59.1-10.7 82-29.7l9 15.3c2.1 3.6 5.9 5.6 9.8 5.6 1.9 0 3.9-.5 5.7-1.5 5.4-3.2 7.2-10.1 4.1-15.5z"/></svg>
     </a>
 
     <button type="button" class="share-btn share-copy"
