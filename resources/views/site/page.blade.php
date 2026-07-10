@@ -43,12 +43,6 @@
             {!! $body !!}
         </div>
 
-        {{-- Приватный блок «Поделиться» — после тела материала --}}
-        @include('site.partials.share', [
-            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
-            'title' => $page->title,
-        ])
-
         @php
             $shortcodeUsed = str_contains((string) $page->body, '[[audio:');
             $playlist = $page->audio;
@@ -60,6 +54,12 @@
                 @include('site.partials.audio-player', ['tracks' => $playlist, 'playerId' => 'page-playlist'])
             </section>
         @endif
+
+        {{-- Приватный блок «Поделиться» — под материалом и аудиоплеером --}}
+        @include('site.partials.share', [
+            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
+            'title' => $page->title,
+        ])
 
         @if ($page->revisions->isNotEmpty())
             <details class="xi-card" style="margin-top: 22px;">
