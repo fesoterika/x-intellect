@@ -56,7 +56,10 @@ class ArchiveHtmlCleaner
         // чтобы их подписи не протекли в контент
         $bad = ['buttons_share', 'share', 'social', 'pluso', 'sharedaddy', 'addthis',
             'uptolike', 'yashare', 'ya-share', 'jp-relatedposts', 'sd-block', 'sd-content',
-            'relatedposts', 'related-posts', 'robokassa', 'commentlist', 'respond'];
+            'relatedposts', 'related-posts', 'robokassa', 'commentlist', 'respond',
+            // MediaWiki-служебное (импорт вики)
+            'mw-editsection', 'toc', 'printfooter', 'catlinks', 'navbox', 'noprint',
+            'mw-jump-link', 'mw-redirectedfrom', 'magnify', 'mw-empty-elt'];
         $cond = implode(' or ', array_map(
             fn ($c) => "contains(concat(' ', normalize-space(@class), ' '), ' {$c} ') or contains(@class, '{$c}')",
             $bad
