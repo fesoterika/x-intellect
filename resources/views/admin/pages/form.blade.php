@@ -93,6 +93,23 @@
                     {{-- Trix-редактор: клиентский JS-виджет без React/Vue-рантайма.
                          Кнопка «♪ Аудио» вставляет short-код [[audio:ID]] --}}
                     <input id="body" type="hidden" name="body" value="{{ old('body', $page->body) }}">
+                    @php
+                        // Карта выравнивания картинок для JS: Trix при разборе стирает
+                        // класс xi-float-* у <img>, поэтому отдаём соответствие src→выравнивание
+                        // с сервера (здесь класс ещё цел), чтобы восстановить его как атрибут Trix.
+                        $xiAlignMap = [];
+                        if (preg_match_all('/<img\b[^>]*>/i', (string) old('body', $page->body), $xiTags)) {
+                            foreach ($xiTags[0] as $xiTag) {
+                                if (! preg_match('/src="([^"]+)"/', $xiTag, $xiSrc) || ! preg_match('/class="([^"]*)"/', $xiTag, $xiCls)) {
+                                    continue;
+                                }
+                                foreach (['xi-float-left' => 'left', 'xi-float-right' => 'right', 'xi-align-center' => 'center', 'xi-align-wide' => 'wide'] as $xiC => $xiA) {
+                                    if (str_contains($xiCls[1], $xiC)) { $xiAlignMap[$xiSrc[1]] = $xiA; break; }
+                                }
+                            }
+                        }
+                    @endphp
+                    <script type="application/json" id="xi-align-map">{!! json_encode($xiAlignMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
                     <trix-editor input="body" class="trix-content bg-white border border-gray-300 rounded-md min-h-64"></trix-editor>
                     <p class="text-xs text-gray-400 mt-1">
                         Short-код <code>[[audio:ID]]</code> разворачивается в аудиоплеер на публичной странице.

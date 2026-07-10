@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Jobs\RegenerateSitemap;
 use App\Models\Page;
 use App\Services\GlossaryLinker;
+use App\Services\ImageAligner;
 use App\Services\ImageSeo;
 use App\Services\SeoService;
 use App\Services\TimelineTagger;
@@ -16,6 +17,7 @@ class PageObserver
         protected GlossaryLinker $glossary,
         protected ImageSeo $imageSeo,
         protected TimelineTagger $timeline,
+        protected ImageAligner $imageAligner,
     ) {}
 
     public function saving(Page $page): void
@@ -29,7 +31,8 @@ class PageObserver
         $this->seo->fillDefaults($page);
 
         if ($page->isDirty('body') || $page->body_rendered === null) {
-            $page->body_rendered = $this->glossary->process($page->body);
+            // выравнивание картинок (класс на фигуру по alignment из Trix) → тултипы глоссария
+            $page->body_rendered = $this->glossary->process($this->imageAligner->process($page->body));
         }
 
         if ($page->isPublished() && $page->published_at === null) {

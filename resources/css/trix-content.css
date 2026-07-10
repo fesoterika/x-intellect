@@ -73,3 +73,60 @@ trix-editor.trix-content img {
     height: auto;
     border-radius: 8px;
 }
+
+/* --- Картинки-вложения (Trix attachment) в редакторе --- */
+/* По умолчанию фигура — блок по центру, размер по картинке (а не растянутая
+   на всю строку с «уехавшей» подписью и метаданными) */
+trix-editor.trix-content .attachment--preview {
+    display: block;
+    max-width: 340px;
+    margin: 1em auto;
+    text-align: center;
+}
+trix-editor.trix-content .attachment--preview img {
+    display: block;
+    width: 100%;
+}
+/* Подпись — мелкая, серая; служебные имя/размер файла не показываем */
+trix-editor.trix-content .attachment__caption {
+    font-size: 12.5px;
+    color: #8a8698;
+    margin-top: 4px;
+}
+trix-editor.trix-content .attachment__caption .attachment__name,
+trix-editor.trix-content .attachment__caption .attachment__size { display: none; }
+/* Метаданные (тёмная плашка размера при выделении) прячем — не нужны */
+trix-editor.trix-content .attachment__metadata-container,
+trix-editor.trix-content .attachment__metadata { display: none !important; }
+
+/* Живой предпросмотр выравнивания — класс на фигуре проставляет admin.js */
+trix-editor.trix-content figure.xi-float-left {
+    float: left; max-width: min(45%, 260px); margin: 4px 18px 10px 0; text-align: left;
+}
+trix-editor.trix-content figure.xi-float-right {
+    float: right; max-width: min(45%, 260px); margin: 4px 0 10px 18px; text-align: right;
+}
+trix-editor.trix-content figure.xi-align-center { max-width: min(80%, 420px); margin: 1em auto; }
+trix-editor.trix-content figure.xi-align-wide { max-width: 100%; margin: 1em 0; }
+/* Контейнер чистит флоты, чтобы текст корректно обтекал */
+trix-editor.trix-content::after { content: ''; display: block; clear: both; }
+
+/* --- Кастомные кнопки-иконки на панели (медиа + выравнивание) --- */
+.xi-media-group, .xi-align-group { margin-left: 8px; }
+/* Иконочная кнопка: одинаковый размер, иконка по центру, разделители внутри группы */
+.trix-button.xi-icon-btn {
+    width: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-position: center; /* перебиваем фоновую иконку Trix, у нас свой SVG */
+}
+.trix-button.xi-icon-btn::before { content: none; } /* у Trix иконка через ::before-фон — убираем */
+.trix-button.xi-icon-btn svg { width: 18px; height: 18px; display: block; }
+/* Рамки-разделители между кнопками внутри группы */
+.xi-media-group .trix-button + .trix-button,
+.xi-align-group .trix-button + .trix-button { border-left: 1px solid rgba(0,0,0,0.12); }
+/* Активное выравнивание — подсветка */
+.xi-align-btn.trix-active { background: #6a4cd6; color: #fff; }
+.xi-align-btn:disabled { opacity: 0.35; cursor: default; }
