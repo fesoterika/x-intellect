@@ -22,7 +22,7 @@
         </button>
 
         <button type="button" class="ap-skip" @click="skip(-15)" aria-label="Назад 15 секунд">−15с</button>
-        <button type="button" class="ap-skip" @click="skip(30)" aria-label="Вперёд 30 секунд">+30с</button>
+        <button type="button" class="ap-skip" @click="skip(15)" aria-label="Вперёд 15 секунд">+15с</button>
 
         <div class="ap-bar" @click="seek($event)" role="slider" aria-label="Позиция воспроизведения"
              :aria-valuenow="Math.round(progress)" aria-valuemin="0" aria-valuemax="100">

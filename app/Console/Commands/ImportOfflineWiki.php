@@ -32,7 +32,7 @@ use Illuminate\Support\Str;
  */
 class ImportOfflineWiki extends Command
 {
-    protected $signature = 'import:offline-wiki {archive} {--limit=0} {--dry}';
+    protected $signature = 'import:offline-wiki {archive} {--limit=0} {--dry} {--refresh}';
 
     protected $description = 'Импорт вики из офлайн-слепка: страницы Вики + термины в Глоссарий (черновики)';
 
@@ -181,8 +181,15 @@ class ImportOfflineWiki extends Command
 
     private function createWikiPage(string $title, string $body, int $wikiSectionId): void
     {
-        // идемпотентность: не плодить дубли при повторном запуске
-        if (Page::where('source_type', 'archive_wiki')->where('title', $title)->exists()) {
+        // идемпотентность: не плодить дубли при повторном запуске.
+        // --refresh — обновить тело существующего черновика (перечистка из исходника).
+        $existing = Page::where('source_type', 'archive_wiki')->where('title', $title)->first();
+        if ($existing) {
+            if ($this->option('refresh')) {
+                $existing->body = $body;
+                $existing->save();
+            }
+
             return;
         }
 

@@ -460,6 +460,14 @@ html { scroll-padding-top: 84px; }
 .xi-prose li::marker { color: var(--xi-accent); }
 .xi-prose blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 1.2em 0; padding: 0.3em 0 0.3em 1em; color: var(--xi-ink-soft); font-style: italic; }
 .xi-prose img { max-width: 100%; border-radius: 10px; }
+/* Обтекание картинок из исходников архива (WordPress alignleft / MediaWiki tleft) */
+.xi-prose img.xi-float-left { float: left; margin: 4px 20px 10px 0; max-width: min(45%, 320px); height: auto; }
+.xi-prose img.xi-float-right { float: right; margin: 4px 0 10px 20px; max-width: min(45%, 320px); height: auto; }
+.xi-prose::after { content: ''; display: block; clear: both; }
+@media (max-width: 560px) {
+    /* на узких экранах обтекание мешает чтению — картинка в свой ряд */
+    .xi-prose img.xi-float-left, .xi-prose img.xi-float-right { float: none; display: block; margin: 0 0 1em; max-width: 100%; }
+}
 .xi-prose em { color: var(--xi-ink-soft); }
 
 /* Крупные заголовки — антиква обычного начертания: в большом кегле
