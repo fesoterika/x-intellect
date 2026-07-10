@@ -10,7 +10,9 @@
     <article>
         @include('site.partials.breadcrumbs', ['crumbs' => [
             'Главная' => '/',
-            $section->title => $section->url(),
+            // скрытый раздел (is_visible=false) не имеет доступной страницы-листинга —
+            // крошка остаётся текстом, без ссылки на 404
+            $section->title => $section->is_visible ? $section->url() : null,
             $page->title => null,
         ]])
 
