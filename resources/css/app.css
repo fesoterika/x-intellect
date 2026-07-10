@@ -726,7 +726,9 @@ html { scroll-padding-top: 84px; }
 .glossary-search input[type="search"]::-ms-clear { display: none; width: 0; height: 0; }
 .glossary-search-clear {
     position: absolute;
+    top: 50%;
     right: 14px;
+    transform: translateY(-50%);
     background: transparent;
     border: none;
     color: var(--xi-ink-faint);
