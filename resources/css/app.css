@@ -719,6 +719,11 @@ html { scroll-padding-top: 84px; }
 }
 .glossary-search input::placeholder { color: var(--xi-ink-faint); }
 .glossary-search input:focus { outline: none; border-color: var(--xi-accent-deep); }
+/* Скрыть нативный крестик очистки type="search" — оставляем только свой,
+   цветной .glossary-search-clear (иначе в Chrome/Safari видно два крестика) */
+.glossary-search input[type="search"]::-webkit-search-cancel-button,
+.glossary-search input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+.glossary-search input[type="search"]::-ms-clear { display: none; width: 0; height: 0; }
 .glossary-search-clear {
     position: absolute;
     right: 14px;
