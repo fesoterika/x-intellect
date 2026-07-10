@@ -727,15 +727,20 @@ html { scroll-padding-top: 84px; }
 .glossary-search-clear {
     position: absolute;
     top: 50%;
-    right: 14px;
+    right: 16px;
     transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
     background: transparent;
     border: none;
+    padding: 0;
     color: var(--xi-ink-faint);
-    font-size: 22px;
-    line-height: 1;
     cursor: pointer;
 }
+.glossary-search-clear svg { width: 18px; height: 18px; }
 .glossary-search-clear:hover { color: var(--xi-ink); }
 
 .glossary-alphabet {

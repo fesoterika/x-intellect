@@ -47,7 +47,11 @@
                     <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="search" x-model="q" placeholder="Поиск по глоссарию…" aria-label="Поиск по глоссарию">
-                <button type="button" class="glossary-search-clear" x-show="q !== ''" x-cloak @click="q = ''" aria-label="Очистить">×</button>
+                <button type="button" class="glossary-search-clear" x-show="q !== ''" x-cloak @click="q = ''" aria-label="Очистить">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>
+                    </svg>
+                </button>
             </div>
 
             {{-- Алфавитный указатель --}}
