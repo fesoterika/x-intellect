@@ -37,7 +37,13 @@
             <label class="flex items-center gap-2 text-sm text-gray-700">
                 <input type="hidden" name="is_visible" value="0">
                 <input type="checkbox" name="is_visible" value="1" @checked(old('is_visible', $section->is_visible)) class="rounded border-gray-300">
-                Показывать на сайте
+                Показывать на сайте (иначе раздел и его страницы недоступны — 404)
+            </label>
+
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="hidden" name="show_on_home" value="0">
+                <input type="checkbox" name="show_on_home" value="1" @checked(old('show_on_home', $section->show_on_home ?? true)) class="rounded border-gray-300">
+                Показывать плитку на главной
             </label>
 
             <div class="flex items-center gap-3 pt-2">
