@@ -75,6 +75,15 @@ class ArchiveHtmlCleaner
             }
         }
 
+        // Пред-проход: помечаем картинки с обтеканием (float) из исходника —
+        // WordPress alignleft/alignright, MediaWiki thumb tleft/tright, floatleft
+        // и инлайновый float. Метку кладём на сам <img> ДО разворачивания обёрток.
+        foreach (iterator_to_array($xp->query('//img')) as $img) {
+            if ($float = $this->detectFloat($img)) {
+                $img->setAttribute('data-xi-float', $float);
+            }
+        }
+
         $root = $doc->getElementById('__root');
         if (! $root) {
             return trim(strip_tags($html));
@@ -188,10 +197,40 @@ class ArchiveHtmlCleaner
         }
     }
 
+    /**
+     * Определяет обтекание картинки по исходной разметке: класс/стиль самой
+     * картинки или её обёрток (WordPress alignleft/right, MediaWiki thumb
+     * tleft/tright, floatleft/right, инлайновый float). Возвращает 'left'/'right'/''.
+     */
+    private function detectFloat(DOMElement $img): string
+    {
+        $node = $img;
+        for ($depth = 0; $node instanceof DOMElement && $depth < 4; $depth++) {
+            $class = mb_strtolower($node->getAttribute('class'));
+            $style = mb_strtolower($node->getAttribute('style'));
+            $align = mb_strtolower($node->getAttribute('align'));
+
+            if (str_contains($class, 'alignleft') || str_contains($class, 'floatleft')
+                || str_contains($class, 'tleft') || $align === 'left'
+                || preg_match('/float\s*:\s*left/', $style)) {
+                return 'left';
+            }
+            if (str_contains($class, 'alignright') || str_contains($class, 'floatright')
+                || str_contains($class, 'tright') || $align === 'right'
+                || preg_match('/float\s*:\s*right/', $style)) {
+                return 'right';
+            }
+            $node = $node->parentNode;
+        }
+
+        return '';
+    }
+
     private function handleImage(DOMElement $img, string $baseDir): void
     {
         $src = $img->getAttribute('src');
         $alt = $img->getAttribute('alt');
+        $float = $img->getAttribute('data-xi-float');
         $parent = $img->parentNode;
 
         // внешние картинки (радикал и т.п.) не тянем — убираем
@@ -219,16 +258,23 @@ class ArchiveHtmlCleaner
             return;
         }
 
-        $dest = 'media/archive/'.Str::random(24).'.'.$ext;
-        Storage::disk('public')->put($dest, File::get($path));
+        // Имя по хэшу исходного пути — детерминированно: повторный прогон
+        // (--refresh) не плодит дубли в storage и не меняет src в теле.
+        $dest = 'media/archive/'.substr(sha1($path), 0, 24).'.'.$ext;
+        if (! Storage::disk('public')->exists($dest)) {
+            Storage::disk('public')->put($dest, File::get($path));
+        }
         $this->imagesCopied++;
 
-        // сбросить все атрибуты, оставить src+alt. Путь корне-относительный
-        // (/storage/…) — портабелен между хостами/портами, не зависит от APP_URL
+        // сбросить все атрибуты, оставить src+alt (+класс обтекания, если был).
+        // Путь корне-относительный (/storage/…) — портабелен между хостами/портами
         foreach (iterator_to_array($img->attributes) as $a) {
             $img->removeAttribute($a->name);
         }
         $img->setAttribute('src', '/storage/'.$dest);
         $img->setAttribute('alt', $alt !== '' ? $alt : 'Иллюстрация из архива');
+        if ($float === 'left' || $float === 'right') {
+            $img->setAttribute('class', 'xi-float-'.$float);
+        }
     }
 }

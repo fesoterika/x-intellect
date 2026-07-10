@@ -24,7 +24,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ImportOfflineExplorer extends Command
 {
-    protected $signature = 'import:offline-explorer {archive} {--limit=0} {--dry}';
+    protected $signature = 'import:offline-explorer {archive} {--limit=0} {--dry} {--refresh}';
 
     protected $description = 'Импорт основного сайта из офлайн-слепка (черновики)';
 
@@ -84,7 +84,8 @@ class ImportOfflineExplorer extends Command
             }
 
             $oldUrl = '/'.$slug;
-            if (Page::where('source_url', 'like', '%'.$oldUrl.'%')->exists()) {
+            $existing = Page::where('source_url', 'like', '%/'.$slug.'/')->first();
+            if ($existing && ! $this->option('refresh')) {
                 $skipped++;
 
                 continue; // уже импортировано
@@ -103,6 +104,16 @@ class ImportOfflineExplorer extends Command
                 $skipped++;
 
                 continue; // пусто/заглушка
+            }
+
+            // --refresh: обновляем тело существующего черновика (перечистка из
+            // исходника: обтекание картинок и пр.), остальное не трогаем
+            if ($existing) {
+                $existing->body = $body;
+                $existing->save();
+                $created++;
+
+                continue;
             }
 
             $newSlug = $this->uniqueSlug($slug, $title);
