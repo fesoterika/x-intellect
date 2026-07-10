@@ -35,12 +35,12 @@
 
     <a class="share-btn" href="{{ $links['ВКонтакте'] }}" target="_blank" rel="noopener noreferrer nofollow"
        title="ВКонтакте" aria-label="Поделиться во ВКонтакте">
-        <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="ВКонтакте"><title>ВКонтакте</title><path d="M12.8 16.9c-5.5 0-8.96-3.9-9.1-10.3h2.78c.1 4.74 2.26 6.76 3.9 7.18V6.6h2.66v3.96c1.6-.18 3.28-2.05 3.84-3.96h2.6c-.43 2.34-2.24 4.2-3.52 4.97 1.28.62 3.34 2.25 4.13 5.33h-2.86c-.62-1.96-2.16-3.48-4.2-3.69v3.69z"/></svg>
+        <svg viewBox="2.7 5.6 18.39 12.3" fill="currentColor" role="img" aria-label="ВКонтакте"><title>ВКонтакте</title><path d="M12.8 16.9c-5.5 0-8.96-3.9-9.1-10.3h2.78c.1 4.74 2.26 6.76 3.9 7.18V6.6h2.66v3.96c1.6-.18 3.28-2.05 3.84-3.96h2.6c-.43 2.34-2.24 4.2-3.52 4.97 1.28.62 3.34 2.25 4.13 5.33h-2.86c-.62-1.96-2.16-3.48-4.2-3.69v3.69z"/></svg>
     </a>
 
     <a class="share-btn" href="{{ $links['Одноклассники'] }}" target="_blank" rel="noopener noreferrer nofollow"
        title="Одноклассники" aria-label="Поделиться в Одноклассниках">
-        <svg viewBox="0 0 24 24" role="img" aria-label="Одноклассники"><title>Одноклассники</title><path fill="currentColor" d="M12 6.4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4M12 4a4.1 4.1 0 1 1 0 8.2A4.1 4.1 0 0 1 12 4M8.6 13.1a1.2 1.2 0 0 1 1.6-.4c1.1.7 2.5.7 3.6 0a1.2 1.2 0 0 1 1.3 2c-.7.5-1.5.8-2.3.9l2 2a1.2 1.2 0 1 1-1.7 1.7L12 17.4l-2.1 2a1.2 1.2 0 1 1-1.7-1.7l2-2c-.8-.2-1.6-.5-2.3-1a1.2 1.2 0 0 1-.4-1.6z"/></svg>
+        <svg viewBox="6.35 3 10.75 17.75" role="img" aria-label="Одноклассники"><title>Одноклассники</title><path fill="currentColor" d="M12 6.4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4M12 4a4.1 4.1 0 1 1 0 8.2A4.1 4.1 0 0 1 12 4M8.6 13.1a1.2 1.2 0 0 1 1.6-.4c1.1.7 2.5.7 3.6 0a1.2 1.2 0 0 1 1.3 2c-.7.5-1.5.8-2.3.9l2 2a1.2 1.2 0 1 1-1.7 1.7L12 17.4l-2.1 2a1.2 1.2 0 1 1-1.7-1.7l2-2c-.8-.2-1.6-.5-2.3-1a1.2 1.2 0 0 1-.4-1.6z"/></svg>
     </a>
 
     <a class="share-btn" href="{{ $links['Телеграм'] }}" target="_blank" rel="noopener noreferrer nofollow"
@@ -50,7 +50,7 @@
 
     <a class="share-btn" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
        title="LiveJournal" aria-label="Поделиться в LiveJournal">
-        <svg viewBox="0 0 32 32" fill="currentColor" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path fill-rule="evenodd" d="M11.123 3.27L7.813 0A15.025 15.025 0 0 0 0 7.763l3.316 3.272c-.804 1.82-1.28 3.8-1.28 5.91 0 8.23 6.747 14.9 15.07 14.9 8.32 0 14.894-6.36 14.894-14.9S25.427 2.047 17.106 2.047c-2.125 0-4.148.437-5.983 1.223zM15.57 23.134a15.035 15.035 0 0 1 7.807-7.762L11.126 3.275h-.006a15.037 15.037 0 0 0-7.81 7.763l12.26 12.096z"/></svg>
+        <svg viewBox="0 0 32 32" fill="currentColor" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path d="M11.123 3.27L7.813 0A15.025 15.025 0 0 0 0 7.763l3.316 3.272c-.804 1.82-1.28 3.8-1.28 5.91 0 8.23 6.747 14.9 15.07 14.9 8.32 0 14.894-6.36 14.894-14.9S25.427 2.047 17.106 2.047c-2.125 0-4.148.437-5.983 1.223zM15.57 23.134a15.035 15.035 0 0 1 7.807-7.762L11.126 3.275h-.006a15.037 15.037 0 0 0-7.81 7.763l12.26 12.096zM24.256 19.503a8.733 8.733 0 0 0-4.535 4.508l5.722 1.172-1.186-5.68z"/><path class="share-lj-notch" d="M24.254 19.503c-.458-2.168-.876-4.13-.876-4.13h-.002a15.043 15.043 0 0 0-7.807 7.76l4.15.876a8.786 8.786 0 0 1 4.534-4.507"/></svg>
     </a>
 
     <button type="button" class="share-btn share-copy"
