@@ -117,6 +117,11 @@ class ImportOfflineAudio extends Command
             }
         }
 
+        // Приветственные аудио → страница «Приветствие» (раздел hello).
+        // На старом сайте они играли во flash-плеере (без прямых mp3-ссылок в HTML),
+        // поэтому берём их из папки files/audio/privetstvie напрямую.
+        $tracks += $this->attachGreetings($base, $dry);
+
         $this->newLine();
         $this->info("Готово. Страниц с аудио: {$attached}, дорожек: {$tracks}.");
         if ($noPage || $missingFile) {
@@ -124,6 +129,56 @@ class ImportOfflineAudio extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /** Привязывает files/audio/privetstvie/*.mp3 к странице «Приветствие». */
+    private function attachGreetings(string $wikiDir, bool $dry): int
+    {
+        $dir = dirname($wikiDir).'/files/audio/privetstvie';
+        if (! is_dir($dir)) {
+            return 0;
+        }
+        $hello = Page::whereHas('section', fn ($q) => $q->where('slug', 'hello'))
+            ->where('title', 'like', '%риветствие%')->first();
+        if (! $hello) {
+            return 0;
+        }
+
+        $files = glob($dir.'/*.mp3');
+        sort($files);
+        $n = 0;
+        $pos = 0;
+        foreach ($files as $f) {
+            $name = basename($f);
+            if ($dry) {
+                $this->line(sprintf('[Приветствие] ← %s', $name));
+                $n++;
+                $pos++;
+
+                continue;
+            }
+            $dest = 'media/audio/archive/'.$name;
+            if (! Storage::disk('public')->exists($dest)) {
+                $stream = @fopen($f, 'rb');
+                if ($stream === false) {
+                    continue;
+                }
+                Storage::disk('public')->writeStream($dest, $stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            }
+            $m = Media::firstOrCreate(
+                ['page_id' => $hello->id, 'file_path' => $dest],
+                ['type' => 'audio', 'title' => 'Приветствие — '.pathinfo($name, PATHINFO_FILENAME), 'disk' => 'public', 'position' => $pos],
+            );
+            if ($m->wasRecentlyCreated) {
+                $n++;
+            }
+            $pos++;
+        }
+
+        return $n;
     }
 
     private function titleOf(string $html): ?string
