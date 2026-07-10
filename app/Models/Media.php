@@ -31,6 +31,12 @@ class Media extends Model
             return $this->file_path;
         }
 
+        // Локальный public-диск отдаём корне-относительно (/storage/…): портабельно
+        // между хостами/портами, не зависит от APP_URL (как и картинки архива).
+        if ($this->disk === 'public') {
+            return '/storage/'.ltrim($this->file_path, '/');
+        }
+
         return Storage::disk($this->disk)->url($this->file_path);
     }
 

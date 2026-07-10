@@ -12,6 +12,7 @@ class Page extends Model
     public const SOURCE_TYPES = [
         'archive_sferarazuma' => 'Сфера Разума (до 2012)',
         'archive_xintellect'  => 'Архив X-Intellect',
+        'archive_wiki'        => 'Архив вики',
         'new'                 => 'Новый материал',
     ];
 
