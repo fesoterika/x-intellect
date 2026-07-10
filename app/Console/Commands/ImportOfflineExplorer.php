@@ -113,7 +113,8 @@ class ImportOfflineExplorer extends Command
                 'body' => $body,
                 'status' => 'draft',
                 'source_type' => 'archive_xintellect',
-                'source_url' => 'http://www.x-intellect.org'.$oldUrl.'/',
+                // «Архивная копия» ведёт на снимок в Wayback Machine (не на мёртвый оригинал)
+                'source_url' => 'https://web.archive.org/web/2015/http://www.x-intellect.org'.$oldUrl.'/',
             ]);
 
             // 301 со старого плоского адреса на новый
