@@ -24,6 +24,7 @@ class SectionRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'position' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['boolean'],
+            'show_on_home' => ['boolean'],
         ];
     }
 
@@ -33,6 +34,7 @@ class SectionRequest extends FormRequest
         $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
         $data['position'] = $data['position'] ?? 0;
         $data['is_visible'] = $this->boolean('is_visible');
+        $data['show_on_home'] = $this->boolean('show_on_home');
 
         return $data;
     }
