@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Section extends Model
 {
-    protected $fillable = ['title', 'slug', 'description', 'position', 'is_visible'];
+    protected $fillable = ['title', 'slug', 'description', 'position', 'is_visible', 'show_on_home'];
 
     protected function casts(): array
     {
-        return ['is_visible' => 'boolean'];
+        return ['is_visible' => 'boolean', 'show_on_home' => 'boolean'];
     }
 
     public function getRouteKeyName(): string

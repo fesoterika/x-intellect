@@ -17,7 +17,7 @@ class SectionController extends Controller
 
     public function create()
     {
-        return view('admin.sections.form', ['section' => new Section(['is_visible' => true])]);
+        return view('admin.sections.form', ['section' => new Section(['is_visible' => true, 'show_on_home' => true])]);
     }
 
     public function store(SectionRequest $request)
