@@ -463,10 +463,26 @@ html { scroll-padding-top: 84px; }
 /* Обтекание картинок из исходников архива (WordPress alignleft / MediaWiki tleft) */
 .xi-prose img.xi-float-left { float: left; margin: 4px 20px 10px 0; max-width: min(45%, 320px); height: auto; }
 .xi-prose img.xi-float-right { float: right; margin: 4px 0 10px 20px; max-width: min(45%, 320px); height: auto; }
+
+/* Картинки, вставленные редактором (Trix attachment): фигура + выравнивание
+   классом (проставляет ImageAligner по выбору пользователя). По умолчанию —
+   блок по центру; пустую подпись не показываем. */
+.xi-prose figure.attachment { margin: 1.2em auto; text-align: center; max-width: 100%; }
+.xi-prose figure.attachment img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.xi-prose figure.attachment figcaption { font-size: 13.5px; color: var(--xi-ink-faint); margin-top: 6px; }
+.xi-prose figure.attachment figcaption:empty { display: none; }
+.xi-prose figure.xi-float-left { float: left; max-width: min(45%, 320px); margin: 4px 22px 10px 0; text-align: left; }
+.xi-prose figure.xi-float-right { float: right; max-width: min(45%, 320px); margin: 4px 0 10px 22px; text-align: right; }
+.xi-prose figure.xi-align-center { max-width: min(80%, 520px); margin: 1.2em auto; }
+.xi-prose figure.xi-align-wide { max-width: 100%; }
+
 .xi-prose::after { content: ''; display: block; clear: both; }
 @media (max-width: 560px) {
     /* на узких экранах обтекание мешает чтению — картинка в свой ряд */
-    .xi-prose img.xi-float-left, .xi-prose img.xi-float-right { float: none; display: block; margin: 0 0 1em; max-width: 100%; }
+    .xi-prose img.xi-float-left, .xi-prose img.xi-float-right,
+    .xi-prose figure.xi-float-left, .xi-prose figure.xi-float-right {
+        float: none; display: block; margin: 0 auto 1em; max-width: 100%;
+    }
 }
 .xi-prose em { color: var(--xi-ink-soft); }
 
