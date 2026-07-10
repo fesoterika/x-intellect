@@ -48,16 +48,16 @@
         <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Телеграм"><title>Телеграм</title><path d="M21.94 4.3 18.7 19.6c-.24 1.08-.88 1.34-1.78.83l-4.92-3.63-2.37 2.28c-.26.26-.48.48-.99.48l.35-5 9.1-8.22c.4-.35-.09-.55-.62-.2L4.21 13.1l-4.85-1.52c-1.05-.33-1.07-1.05.22-1.56L20.6 2.78c.88-.32 1.64.2 1.34 1.52z" transform="translate(1 0)"/></svg>
     </a>
 
-    <a class="share-btn share-btn--logo" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
+    <a class="share-btn" href="{{ $links['LiveJournal'] }}" target="_blank" rel="noopener noreferrer nofollow"
        title="LiveJournal" aria-label="Поделиться в LiveJournal">
-        <svg viewBox="0 0 32 32" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path d="M11.123 3.27L7.813 0A15.025 15.025 0 0 0 0 7.763l3.316 3.272c-.804 1.82-1.28 3.8-1.28 5.91 0 8.23 6.747 14.9 15.07 14.9 8.32 0 14.894-6.36 14.894-14.9S25.427 2.047 17.106 2.047c-2.125 0-4.148.437-5.983 1.223z" fill="#00A3D9"/><path d="M15.57 23.134a15.035 15.035 0 0 1 7.807-7.762L11.126 3.275h-.006a15.037 15.037 0 0 0-7.81 7.763l12.26 12.096z" fill="#00303F"/><path d="M24.256 19.503a8.733 8.733 0 0 0-4.535 4.508l5.722 1.172-1.186-5.68z" fill="#00303F"/><path d="M24.254 19.503c-.458-2.168-.876-4.13-.876-4.13h-.002a15.043 15.043 0 0 0-7.807 7.76l4.15.876a8.786 8.786 0 0 1 4.534-4.507" fill="#FFF"/></svg>
+        <svg viewBox="0 0 32 32" fill="currentColor" role="img" aria-label="LiveJournal"><title>LiveJournal</title><path fill-rule="evenodd" d="M11.123 3.27L7.813 0A15.025 15.025 0 0 0 0 7.763l3.316 3.272c-.804 1.82-1.28 3.8-1.28 5.91 0 8.23 6.747 14.9 15.07 14.9 8.32 0 14.894-6.36 14.894-14.9S25.427 2.047 17.106 2.047c-2.125 0-4.148.437-5.983 1.223zM15.57 23.134a15.035 15.035 0 0 1 7.807-7.762L11.126 3.275h-.006a15.037 15.037 0 0 0-7.81 7.763l12.26 12.096z"/></svg>
     </a>
 
     <button type="button" class="share-btn share-copy"
             title="Скопировать ссылку" aria-label="Скопировать ссылку"
             @click="copy(@js($url))">
-        <svg x-show="!copied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Скопировать ссылку"><title>Скопировать ссылку</title><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <svg x-show="copied" x-cloak viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg x-show="!copied" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="Скопировать ссылку"><title>Скопировать ссылку</title><path d="M15 1H5a2 2 0 0 0-2 2v13h2V3h10V1z"/><path d="M19 5H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H9V7h10v14z"/></svg>
+        <svg x-show="copied" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
     </button>
 
     <span class="share-copied" x-show="copied" x-cloak aria-live="polite">Ссылка скопирована</span>
