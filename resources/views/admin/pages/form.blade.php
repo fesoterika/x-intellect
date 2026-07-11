@@ -12,6 +12,16 @@
     </x-slot>
 
     <div class="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if ($errors->any())
+            <div class="mb-4 rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+                <strong>Страница не сохранена - исправьте ошибки:</strong>
+                <ul class="list-disc list-inside mt-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <form method="POST"
               action="{{ $page->exists ? route('admin.pages.update', $page) : route('admin.pages.store') }}"
               class="space-y-6">
@@ -91,8 +101,11 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст страницы</label>
                     {{-- Trix-редактор: клиентский JS-виджет без React/Vue-рантайма.
-                         Кнопка «♪ Аудио» вставляет short-код [[audio:ID]] --}}
-                    <input id="body" type="hidden" name="body" value="{{ old('body', $page->body) }}">
+                         Кнопка «♪ Аудио» вставляет short-код [[audio:ID]].
+                         Таблицы тела оборачиваются в content-вложения Trix
+                         (TrixTables::embed), иначе Trix их вырезает; при
+                         сохранении PageObserver разворачивает обратно --}}
+                    <input id="body" type="hidden" name="body" value="{{ old('body', app(\App\Services\TrixTables::class)->embed($page->body)) }}">
                     @php
                         // Карта выравнивания картинок для JS: Trix при разборе стирает
                         // класс xi-float-* у <img>, поэтому отдаём соответствие src→выравнивание
@@ -110,10 +123,12 @@
                         }
                     @endphp
                     <script type="application/json" id="xi-align-map">{!! json_encode($xiAlignMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
-                    <trix-editor input="body" class="trix-content bg-white border border-gray-300 rounded-md min-h-64"></trix-editor>
+                    <trix-editor input="body" @if($page->exists) data-page-id="{{ $page->id }}" @endif class="trix-content bg-white border border-gray-300 rounded-md min-h-64"></trix-editor>
                     <p class="text-xs text-gray-400 mt-1">
                         Short-код <code>[[audio:ID]]</code> разворачивается в аудиоплеер на публичной странице.
                         ID - из раздела «Медиа»@if($page->exists && $page->media->isNotEmpty()): прикреплённые файлы перечислены ниже@endif.
+                        Картинки, аудио и PDF (до 170 МБ) можно загружать прямо в редактор - кнопкой, скрепкой или перетаскиванием;
+                        аудио при этом вставится short-кодом, файл попадёт в «Медиа».
                     </p>
                 </div>
             </div>
@@ -162,13 +177,23 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="font-semibold text-gray-700 mb-3">Прикреплённые медиа</h3>
                     @forelse ($page->media as $item)
-                        <div class="flex items-center justify-between py-2 border-b last:border-0 text-sm">
-                            <div>
-                                <span class="text-gray-400">#{{ $item->id }}</span>
-                                {{ $item->title }}
-                                <span class="text-xs text-gray-400">({{ $item->type }}{{ $item->durationLabel() ? ', '.$item->durationLabel() : '' }})</span>
+                        <div class="flex items-center justify-between gap-3 py-2 border-b last:border-0 text-sm">
+                            <div class="flex items-center gap-2 min-w-0">
+                                @if ($item->type === 'image')
+                                    <img src="{{ $item->url() }}" alt="" class="w-10 h-10 object-cover rounded shrink-0">
+                                @endif
+                                <div class="min-w-0">
+                                    <span class="text-gray-400">#{{ $item->id }}</span>
+                                    {{ $item->title }}
+                                    <span class="text-xs text-gray-400">({{ $item->type }}{{ $item->durationLabel() ? ', '.$item->durationLabel() : '' }})</span>
+                                </div>
                             </div>
-                            <code class="text-xs bg-gray-100 px-2 py-0.5 rounded">[[audio:{{ $item->id }}]]</code>
+                            {{-- Short-код разворачивается в аудиоплеер только для типа audio (см. PageRenderer) --}}
+                            @if ($item->type === 'audio')
+                                <code class="text-xs bg-gray-100 px-2 py-0.5 rounded shrink-0">[[audio:{{ $item->id }}]]</code>
+                            @else
+                                <a href="{{ $item->url() }}" target="_blank" class="text-xs text-indigo-600 hover:underline shrink-0">открыть ↗</a>
+                            @endif
                         </div>
                     @empty
                         <p class="text-sm text-gray-400">Нет файлов. Загрузите в разделе «Медиа» и привяжите к этой странице.</p>

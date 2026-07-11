@@ -1,2 +1,5 @@
 *
 !.gitignore
+!media/
+!media/**
+media/audio/**

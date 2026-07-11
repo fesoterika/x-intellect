@@ -124,7 +124,9 @@ class ImportOfflineWiki extends Command
                 continue;
             }
 
-            $body = $cleaner->clean($this->innerHtml($node, $doc), $base);
+            // keepBlockquote: false — MediaWiki-статьи целиком обёрнуты в
+            // декоративный blockquote, на новом сайте выглядели бы цитатой
+            $body = $cleaner->clean($this->innerHtml($node, $doc), $base, keepBlockquote: false);
             if (Str::length(strip_tags($body)) < 25) {
                 $skipped++;
 
