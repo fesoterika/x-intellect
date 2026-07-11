@@ -1079,3 +1079,48 @@ html { scroll-padding-top: 84px; }
     .site-search input { width: 100%; }
     .xi-card { padding: 20px 18px; }
 }
+
+/* ── Страница 404 ─────────────────────────────────────────────────────── */
+.xi-404 { max-width: 640px; margin: 6vh auto 0; text-align: center; }
+.xi-404__code {
+    font-family: var(--xi-font-serif);
+    font-size: clamp(72px, 16vw, 140px); line-height: 1; margin: 0 0 4px;
+    color: var(--xi-accent); opacity: 0.35; letter-spacing: 0.04em;
+}
+.xi-404 .title-rule { margin-left: auto; margin-right: auto; }
+.xi-404__text { color: var(--xi-ink-soft); font-size: 16.5px; margin: 14px 0 26px; }
+.xi-404__actions { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.xi-404__home {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 12px;
+    background: var(--xi-accent); color: #fff !important; border-bottom: none !important;
+    font-weight: 600; font-size: 15px; text-decoration: none;
+}
+.xi-404__home:hover { background: var(--xi-accent-deep); }
+.xi-404__home svg { width: 18px; height: 18px; }
+.xi-404__search { max-width: 280px; }
+.xi-404__hint { margin-top: 30px; font-size: 14px; color: var(--xi-ink-faint); }
+.xi-404__hint a { color: var(--xi-accent); }
+
+/* ── Кнопка скачивания файла-вложения (рендерит AttachmentDownloads) ──── */
+.xi-prose a.xi-download,
+a.xi-download {
+    /* всегда отдельной строкой, ширина по содержимому */
+    display: flex; width: fit-content; align-items: center; gap: 10px;
+    margin: 14px 0; padding: 11px 18px;
+    background: var(--xi-accent); color: #fff !important;
+    border: none; border-bottom: none !important; border-radius: 12px;
+    font-size: 15px; text-decoration: none; line-height: 1.25;
+    box-shadow: 0 3px 14px var(--xi-accent-soft);
+}
+.xi-prose a.xi-download:hover, a.xi-download:hover { background: var(--xi-accent-deep); }
+a.xi-download svg { width: 20px; height: 20px; flex-shrink: 0; }
+a.xi-download .xi-download__label { font-weight: 700; }
+a.xi-download .xi-download__meta {
+    font-size: 12.5px; opacity: 0.85; font-weight: 400;
+    max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (max-width: 560px) {
+    a.xi-download { max-width: 100%; }
+    a.xi-download .xi-download__meta { max-width: 45vw; }
+}

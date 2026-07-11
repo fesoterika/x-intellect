@@ -212,3 +212,11 @@ trix-editor.trix-content figure[data-trix-attachment*='"alignment":"right"'] + s
     width: auto !important;
     overflow: hidden;
 }
+
+/* Чекбокс «открывать в новом окне» в диалоге ссылки */
+.trix-dialog .xi-link-blank {
+    display: flex; align-items: center; gap: 7px;
+    margin-top: 8px; font-size: 13.5px; color: #4b4570; cursor: pointer;
+    user-select: none;
+}
+.trix-dialog .xi-link-blank input { accent-color: #6a4cd6; }

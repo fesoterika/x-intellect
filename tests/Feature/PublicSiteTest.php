@@ -483,6 +483,58 @@ class PublicSiteTest extends TestCase
         $this->assertSame(1, substr_count($rendered, 'xi-imgtable xi-imgtable--'));
     }
 
+    public function test_custom_404_page_with_search_and_noindex(): void
+    {
+        $this->seedCore();
+
+        $response = $this->get('/takoy-stranicy-tochno-net');
+
+        $response->assertNotFound()
+            ->assertSee('Страница не найдена')
+            ->assertSee('На главную');
+        $this->assertStringContainsString('noindex', $response->getContent());
+        $this->assertStringContainsString('action="'.url('/search').'"', $response->getContent());
+    }
+
+    public function test_blank_marker_link_renders_with_target_blank(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $page->update(['body' => '<div><a href="https://example.com/doc#_blank">внешняя</a> и <a href="https://example.com/plain">обычная</a></div>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('href="https://example.com/doc" target="_blank" rel="noopener noreferrer"', $rendered);
+        // обычная ссылка без маркера target не получает
+        $this->assertStringNotContainsString('plain" target', $rendered);
+        // сырое тело сохраняет маркер — редактор восстановит галочку
+        $this->assertStringContainsString('#_blank', $page->fresh()->body);
+    }
+
+    public function test_file_attachment_renders_as_download_button(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $json = htmlspecialchars(json_encode([
+            'contentType' => 'application/pdf',
+            'filename' => 'kniga.pdf',
+            'filesize' => 1820373,
+            'href' => '/storage/media/pdf/kniga.pdf',
+            'url' => '/storage/media/pdf/kniga.pdf',
+        ], JSON_UNESCAPED_SLASHES), ENT_QUOTES);
+
+        $page->update(['body' => '<div><a href="/storage/media/pdf/kniga.pdf"><figure data-trix-attachment="'.$json.'" class="attachment attachment--file">kniga.pdf</figure></a></div>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('class="xi-download"', $rendered);
+        $this->assertStringContainsString('Скачать', $rendered);
+        $this->assertStringContainsString('kniga.pdf · 1,7 МБ', $rendered);
+        $this->assertStringContainsString('href="/storage/media/pdf/kniga.pdf"', $rendered);
+        // фигуры Trix в рендере не осталось
+        $this->assertStringNotContainsString('attachment--file', $rendered);
+    }
+
     public function test_trix_tables_extract_sanitizes_and_keeps_other_attachments(): void
     {
         $service = app(\App\Services\TrixTables::class);
