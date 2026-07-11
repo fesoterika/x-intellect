@@ -423,6 +423,8 @@ function enhanceEditor(editorEl) {
     // Активность/подсветка кнопок выравнивания при изменении выделения
     editorEl.addEventListener('trix-selection-change', () => updateAlignButtons(editorEl, alignBtns, editTableBtn));
 
+    enhanceLinkDialog(toolbar);
+
     // Восстановление выравнивания импортированных картинок: событие
     // trix-attachment-add для уже загруженного контента не гарантировано,
     // поэтому проходим по всем вложениям после инициализации. Предпросмотр
@@ -436,6 +438,53 @@ function enhanceEditor(editorEl) {
     });
 
     return true;
+}
+
+// Чекбокс «открыть в новом окне» в диалоге ссылки. Модель Trix хранит у
+// ссылки только href, поэтому выбор кодируется суффиксом #_blank в адресе:
+// сервер при рендере снимает маркер и ставит target="_blank" (LinkTargets),
+// а при повторном открытии диалога галочка восстанавливается по маркеру.
+const BLANK_MARKER = '#_blank';
+
+function enhanceLinkDialog(toolbar) {
+    const dialog = toolbar?.querySelector('[data-trix-dialog="href"]');
+    const input = dialog?.querySelector('input[name="href"]');
+    if (!dialog || !input || dialog.querySelector('[data-x-blank]')) {
+        return;
+    }
+
+    const label = document.createElement('label');
+    label.className = 'xi-link-blank';
+    label.innerHTML = '<input type="checkbox" data-x-blank> открывать в новом окне';
+    const checkbox = label.querySelector('input');
+    const fields = dialog.querySelector('.trix-dialog__link-fields');
+    if (fields) {
+        fields.after(label);
+    } else {
+        dialog.appendChild(label);
+    }
+
+    // маркер в поле не показываем: прячем в чекбокс при открытии диалога
+    // (Trix фокусирует поле при показе — ловим focusin)
+    input.addEventListener('focusin', () => {
+        if (input.value.endsWith(BLANK_MARKER)) {
+            checkbox.checked = true;
+            input.value = input.value.slice(0, -BLANK_MARKER.length);
+        }
+    });
+
+    // перед тем как Trix прочитает значение (кнопка Link или Enter) —
+    // подставляем/снимаем маркер по чекбоксу
+    const normalize = () => {
+        const bare = input.value.endsWith(BLANK_MARKER)
+            ? input.value.slice(0, -BLANK_MARKER.length)
+            : input.value;
+        input.value = checkbox.checked && bare.trim() !== '' ? bare + BLANK_MARKER : bare;
+    };
+    dialog.querySelector('[data-trix-method="setAttribute"]')?.addEventListener('mousedown', normalize, true);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') normalize();
+    }, true);
 }
 
 // Дообогащение панели не привязано к событию trix-initialize: оно может

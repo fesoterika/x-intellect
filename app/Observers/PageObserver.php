@@ -8,6 +8,8 @@ use App\Services\GlossaryLinker;
 use App\Services\ImageAligner;
 use App\Services\ImageSeo;
 use App\Services\SeoService;
+use App\Services\AttachmentDownloads;
+use App\Services\LinkTargets;
 use App\Services\TableImagePairer;
 use App\Services\TimelineTagger;
 use App\Services\TrixTables;
@@ -22,6 +24,8 @@ class PageObserver
         protected ImageAligner $imageAligner,
         protected TrixTables $tables,
         protected TableImagePairer $pairer,
+        protected LinkTargets $linkTargets,
+        protected AttachmentDownloads $downloads,
     ) {}
 
     public function saving(Page $page): void
@@ -39,10 +43,15 @@ class PageObserver
         $this->seo->fillDefaults($page);
 
         if ($page->isDirty('body') || $page->body_rendered === null) {
-            // выравнивание картинок (класс на фигуру по alignment из Trix) →
-            // пары «картинка + таблица» в одну линию → тултипы глоссария
+            // маркеры «в новом окне» → target=_blank; выравнивание картинок
+            // (класс на фигуру по alignment из Trix) → файлы-вложения кнопкой
+            // «Скачать» → пары «картинка + таблица» → тултипы глоссария
             $page->body_rendered = $this->glossary->process(
-                $this->pairer->process($this->imageAligner->process($page->body)),
+                $this->pairer->process(
+                    $this->downloads->process(
+                        $this->imageAligner->process($this->linkTargets->process($page->body)),
+                    ),
+                ),
             );
         }
 
