@@ -49,6 +49,11 @@ Alpine.data('audioPlayer', (tracks) => ({
             }
         });
 
+        // Флаг playing синхронизируется с реальными событиями <audio> —
+        // иначе он расходится с фактом (отклонённый play(), смена src, ended)
+        audio.addEventListener('play', () => { this.playing = true; });
+        audio.addEventListener('pause', () => { this.playing = false; });
+
         if (this.tracks.length) {
             audio.src = this.tracks[0].url;
         }
@@ -60,19 +65,20 @@ Alpine.data('audioPlayer', (tracks) => ({
 
     toggle() {
         const audio = this.$refs.audio;
-        this.playing ? audio.pause() : audio.play();
-        this.playing = !this.playing;
+        // по фактическому состоянию <audio>, а не по флагу — флаг обновят события play/pause
+        audio.paused ? audio.play() : audio.pause();
     },
 
     select(index, autoplay = false) {
         const audio = this.$refs.audio;
+        // запоминаем ДО смены src: она ставит аудио на паузу и сбрасывает флаг
+        const resume = autoplay || this.playing;
         this.current = index;
         audio.src = this.tracks[index].url;
         audio.playbackRate = this.rate;
 
-        if (autoplay || this.playing) {
+        if (resume) {
             audio.play();
-            this.playing = true;
         }
     },
 
@@ -88,7 +94,11 @@ Alpine.data('audioPlayer', (tracks) => ({
 
     skip(seconds) {
         const audio = this.$refs.audio;
-        audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + seconds));
+        // duration до загрузки метаданных = NaN: «|| 0» превращал +15с
+        // в прыжок на начало (Math.min(0, …)) — ограничиваем сверху
+        // только когда длительность уже известна
+        const max = isFinite(audio.duration) ? audio.duration : Infinity;
+        audio.currentTime = Math.max(0, Math.min(max, audio.currentTime + seconds));
     },
 
     setRate(rate) {

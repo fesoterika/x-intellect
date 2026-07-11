@@ -16,7 +16,9 @@ class MediaController extends Controller
         $media = Media::query()
             ->with('page')
             ->when($request->query('type'), fn ($q, $t) => $q->where('type', $t))
-            ->when($request->query('page'), fn ($q, $p) => $q->where('page_id', $p))
+            // Фильтр по привязанной странице — параметр page_id: имя page
+            // занято пагинатором (?page=2 ломало бы и фильтр, и пагинацию)
+            ->when($request->query('page_id'), fn ($q, $p) => $q->where('page_id', $p))
             ->latest()
             ->paginate(30)
             ->withQueryString();

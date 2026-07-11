@@ -12,8 +12,10 @@ use Illuminate\Support\Str;
 /**
  * Чистит HTML статей архива до форматирования, доступного в редакторе
  * (Trix): b/strong, i/em, s/del, a, h2-h5, ul/ol/li, blockquote, pre/code,
- * img. Разметку цвета текста и любые инлайновые стили/классы игнорируем
- * (по требованию). Неизвестные обёртки (span/font/div/table…) разворачиваем,
+ * img, плюс таблицы из тела материала (table/tr/td…) — они сохраняются
+ * как есть и рендерятся на публичной странице (Trix их не редактирует).
+ * Разметку цвета текста и любые инлайновые стили/классы игнорируем
+ * (по требованию). Неизвестные обёртки (span/font/div…) разворачиваем,
  * сохраняя текст. Локальные картинки копируются в storage.
  */
 class ArchiveHtmlCleaner
@@ -23,7 +25,15 @@ class ArchiveHtmlCleaner
         'p', 'br', 'strong', 'em', 's', 'del', 'a',
         'h2', 'h3', 'h4', 'h5', 'ul', 'ol', 'li',
         'blockquote', 'pre', 'code', 'img',
+        'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption',
     ];
+
+    /**
+     * Разворачивать blockquote, поднимая содержимое (для вики: MediaWiki-статьи
+     * целиком обёрнуты в декоративный blockquote — на новом сайте весь контент
+     * выглядел бы цитатой).
+     */
+    private bool $keepBlockquote = true;
 
     /** Синонимы приводим к каноническим тегам редактора. */
     private array $rename = [
@@ -33,11 +43,12 @@ class ArchiveHtmlCleaner
     public int $imagesCopied = 0;
     public int $imagesDropped = 0;
 
-    public function clean(?string $html, string $baseDir): string
+    public function clean(?string $html, string $baseDir, bool $keepBlockquote = true): string
     {
         if (blank($html)) {
             return '';
         }
+        $this->keepBlockquote = $keepBlockquote;
 
         $doc = new DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
@@ -119,6 +130,12 @@ class ArchiveHtmlCleaner
                 continue;
             }
 
+            if ($tag === 'blockquote' && ! $this->keepBlockquote) {
+                $this->unwrap($node, $doc, $baseDir);
+
+                continue;
+            }
+
             if (in_array($tag, $this->allowed, true)) {
                 // переименовать при необходимости
                 if (strtolower($node->tagName) !== $tag) {
@@ -154,6 +171,8 @@ class ArchiveHtmlCleaner
                 $t = $this->rename[strtolower($child->tagName)] ?? strtolower($child->tagName);
                 if ($t === 'img') {
                     $this->handleImage($child, $baseDir);
+                } elseif ($t === 'blockquote' && ! $this->keepBlockquote) {
+                    $this->unwrap($child, $doc, $baseDir);
                 } elseif (in_array($t, $this->allowed, true)) {
                     if (strtolower($child->tagName) !== $t) {
                         $child = $this->renameElement($child, $t, $doc);
@@ -182,6 +201,8 @@ class ArchiveHtmlCleaner
     {
         $keep = match ($tag) {
             'a' => ['href'],
+            // структурные атрибуты объединения ячеек (стили/классы не тянем)
+            'td', 'th' => ['colspan', 'rowspan'],
             default => [],
         };
 
