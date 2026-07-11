@@ -22,7 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // JSON-ошибки: для api/* и для XHR с Accept: application/json
+        // (загрузки из Trix-редактора) — иначе валидация отвечает
+        // редиректом и клиент не видит причину отказа
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
     })->create();

@@ -460,6 +460,26 @@ html { scroll-padding-top: 84px; }
 .xi-prose li::marker { color: var(--xi-accent); }
 .xi-prose blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 1.2em 0; padding: 0.3em 0 0.3em 1em; color: var(--xi-ink-soft); font-style: italic; }
 .xi-prose img { max-width: 100%; border-radius: 10px; }
+/* Таблицы из архивных материалов (импорт сохраняет table/tr/td без стилей исходника) */
+.xi-prose table { border-collapse: collapse; margin: 1.2em 0; width: 100%; font-size: 0.95em; }
+/* Пара «картинка с обтеканием + таблица» (обёртку рендерит TableImagePairer):
+   картинка на своей стороне, таблица напротив. Приоритет ширины — у текста
+   таблицы: он не сжимается (нет min-width:0), первой сжимается картинка
+   (flex-shrink 4, до 96px). На узких экранах пара складывается в колонку. */
+.xi-prose .xi-imgtable { display: flex; gap: 18px; align-items: flex-start; margin: 1.2em 0; overflow-x: auto; }
+.xi-prose .xi-imgtable--right { flex-direction: row-reverse; }
+.xi-prose .xi-imgtable > img,
+.xi-prose .xi-imgtable > a,
+.xi-prose .xi-imgtable > figure {
+    flex: 0 4 auto; min-width: 96px; max-width: min(40%, 320px);
+    float: none !important; margin: 0 !important;
+}
+.xi-prose .xi-imgtable img { float: none !important; margin: 0 !important; max-width: 100%; height: auto; }
+.xi-prose .xi-imgtable > table { flex: 1 1 auto; width: auto; margin: 0; }
+.xi-prose td, .xi-prose th { border: 1px solid var(--xi-line); padding: 8px 12px; text-align: left; vertical-align: top; }
+.xi-prose th, .xi-prose caption { color: var(--xi-ink-soft); font-weight: 600; }
+.xi-prose caption { caption-side: top; text-align: left; padding-bottom: 6px; }
+.xi-prose td p:last-child, .xi-prose th p:last-child { margin-bottom: 0; }
 /* Обтекание картинок из исходников архива (WordPress alignleft / MediaWiki tleft) */
 .xi-prose img.xi-float-left { float: left; margin: 4px 20px 10px 0; max-width: min(45%, 320px); height: auto; }
 .xi-prose img.xi-float-right { float: right; margin: 4px 0 10px 20px; max-width: min(45%, 320px); height: auto; }
@@ -483,6 +503,12 @@ html { scroll-padding-top: 84px; }
     .xi-prose figure.xi-float-left, .xi-prose figure.xi-float-right {
         float: none; display: block; margin: 0 auto 1em; max-width: 100%;
     }
+    /* пара «картинка + таблица» на смартфоне — колонкой, картинка сверху */
+    .xi-prose .xi-imgtable, .xi-prose .xi-imgtable--right { flex-direction: column; align-items: center; }
+    .xi-prose .xi-imgtable > img, .xi-prose .xi-imgtable > a, .xi-prose .xi-imgtable > figure {
+        max-width: min(80%, 320px);
+    }
+    .xi-prose .xi-imgtable > table { width: 100%; }
 }
 .xi-prose em { color: var(--xi-ink-soft); }
 

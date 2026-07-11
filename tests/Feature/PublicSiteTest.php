@@ -353,17 +353,153 @@ class PublicSiteTest extends TestCase
         $admin = User::where('email', 'admin@x-intellect.org')->first();
         $file = \Illuminate\Http\Testing\File::image('photo.jpg', 400, 300);
 
-        $response = $this->actingAs($admin)->post('/admin/editor/image', ['file' => $file]);
+        $page = Page::first();
 
-        $response->assertOk()->assertJsonStructure(['url']);
+        $response = $this->actingAs($admin)->post('/admin/editor/upload', [
+            'file' => $file,
+            'page_id' => $page->id,
+        ]);
+
+        $response->assertOk()->assertJsonStructure(['id', 'url', 'type']);
+        // URL корне-относительный (/storage/…) — абсолютный из APP_URL ломается
+        // при несовпадении хоста/порта (см. Media::url())
+        $this->assertStringStartsWith('/storage/media/inline/', $response->json('url'));
+        $this->assertSame('image', $response->json('type'));
 
         $stored = \Illuminate\Support\Facades\Storage::disk('public')->allFiles('media/inline');
         $this->assertCount(1, $stored);
+
+        // Загрузка регистрируется в разделе «Медиа» с привязкой к странице
+        $this->assertDatabaseHas('media', [
+            'id' => $response->json('id'),
+            'page_id' => $page->id,
+            'type' => 'image',
+            'title' => 'photo',
+        ]);
     }
 
-    public function test_editor_image_upload_requires_auth(): void
+    public function test_editor_audio_upload_creates_media_of_type_audio(): void
     {
-        $this->post('/admin/editor/image', [])->assertRedirect('/login');
+        $this->seedCore();
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $admin = User::where('email', 'admin@x-intellect.org')->first();
+        // валидный минимальный mp3-фрейм (MPEG-1 Layer III), чтобы finfo дал audio/mpeg
+        $mp3 = "\xFF\xFB\x90\x00".str_repeat("\x00", 417);
+        $file = \Illuminate\Http\Testing\File::createWithContent('session.mp3', $mp3);
+
+        $response = $this->actingAs($admin)->post('/admin/editor/upload', ['file' => $file]);
+
+        $response->assertOk();
+        $this->assertSame('audio', $response->json('type'));
+        $this->assertStringStartsWith('/storage/media/audio/', $response->json('url'));
+        $this->assertDatabaseHas('media', [
+            'id' => $response->json('id'),
+            'type' => 'audio',
+            'title' => 'session',
+        ]);
+    }
+
+    public function test_editor_upload_rejects_unsupported_type(): void
+    {
+        $this->seedCore();
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $admin = User::where('email', 'admin@x-intellect.org')->first();
+        $file = \Illuminate\Http\Testing\File::createWithContent('script.exe', 'MZ binary');
+
+        $this->actingAs($admin)
+            ->withHeader('Accept', 'application/json')
+            ->post('/admin/editor/upload', ['file' => $file])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('file');
+
+        $this->assertDatabaseCount('media', 0);
+    }
+
+    public function test_editor_upload_requires_auth(): void
+    {
+        $this->post('/admin/editor/upload', [])->assertRedirect('/login');
+    }
+
+    public function test_page_tables_survive_trix_editor_roundtrip(): void
+    {
+        $this->seedCore();
+        $admin = User::where('email', 'admin@x-intellect.org')->first();
+
+        $page = Page::first();
+        // archive_wiki: регресс — PageRequest не пропускал этот source_type,
+        // и вики-страницы молча не сохранялись (редирект назад без ошибок)
+        $page->update([
+            'body' => '<p>До таблицы</p><table><tr><td>Проект</td><td>Чакры</td></tr></table>',
+            'source_type' => 'archive_wiki',
+        ]);
+
+        // Форма правки: таблица обёрнута в content-вложение Trix, иначе
+        // редактор вырезал бы её при разборе HTML
+        $this->actingAs($admin)
+            ->get('/admin/pages/'.$page->slug.'/edit')
+            ->assertOk()
+            ->assertSee('vnd.xi-table', false);
+
+        // Сохранение из редактора: figure с JSON → в БД чистый <table>
+        $trixBody = app(\App\Services\TrixTables::class)->embed($page->fresh()->body);
+        $this->actingAs($admin)->put('/admin/pages/'.$page->slug, [
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'section_id' => $page->section_id,
+            'page_type' => $page->page_type,
+            'status' => $page->status,
+            'source_type' => $page->source_type,
+            'is_listed' => '1',
+            'body' => $trixBody,
+        ])->assertRedirect();
+
+        $page->refresh();
+        $this->assertStringContainsString('<table>', $page->body);
+        $this->assertStringContainsString('<td>Проект</td>', $page->body);
+        $this->assertStringNotContainsString('data-trix-attachment', $page->body);
+        // служебный contenteditable из embed() не протекает в БД
+        $this->assertStringNotContainsString('contenteditable', $page->body);
+        // и в публичном рендере таблица тоже на месте
+        $this->assertStringContainsString('<table>', $page->body_rendered);
+    }
+
+    public function test_float_image_before_table_renders_as_flex_pair(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        // картинка с обтеканием прямо перед таблицей → пара в одну линию
+        $page->update(['body' => '<img src="/storage/x.jpg" alt="Схема" class="xi-float-right">
+<table><tr><td>Проект</td><td>Чакры</td></tr></table>
+<p>Дальше текст</p><table><tr><td>Одинокая таблица</td></tr></table>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('class="xi-imgtable xi-imgtable--right"', $rendered);
+        // сырое тело остаётся без обвязки
+        $this->assertStringNotContainsString('xi-imgtable', $page->fresh()->body);
+        // таблица без картинки перед ней в пару не попадает
+        $this->assertSame(1, substr_count($rendered, 'xi-imgtable xi-imgtable--'));
+    }
+
+    public function test_trix_tables_extract_sanitizes_and_keeps_other_attachments(): void
+    {
+        $service = app(\App\Services\TrixTables::class);
+
+        // чужие вложения (картинки) не разворачиваются
+        $img = '<figure data-trix-attachment="{&quot;contentType&quot;:&quot;image/png&quot;,&quot;url&quot;:&quot;/storage/x.png&quot;}"><img src="/storage/x.png"></figure>';
+        $this->assertSame($img, $service->extract($img));
+
+        // скрипты и on-атрибуты из таблицы вырезаются
+        $dirty = json_encode([
+            'content' => '<table><tr><td onclick="hack()">A<script>bad()</script></td></tr></table>',
+            'contentType' => \App\Services\TrixTables::CONTENT_TYPE,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $out = $service->extract('<figure data-trix-attachment="'.htmlspecialchars($dirty, ENT_QUOTES).'"></figure>');
+        $this->assertStringContainsString('<td>A</td>', $out);
+        $this->assertStringNotContainsString('script', $out);
+        $this->assertStringNotContainsString('onclick', $out);
     }
 
     public function test_privacy_policy_page_is_published(): void

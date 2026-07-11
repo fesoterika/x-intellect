@@ -26,7 +26,7 @@ class PageRequest extends FormRequest
             'page_type' => ['required', Rule::in(['page', 'author'])],
             'status' => ['required', Rule::in(['draft', 'published'])],
             'is_listed' => ['boolean'],
-            'source_type' => ['required', Rule::in(['archive_sferarazuma', 'archive_xintellect', 'new'])],
+            'source_type' => ['required', Rule::in(array_keys(\App\Models\Page::SOURCE_TYPES))],
             'source_url' => ['nullable', 'url', 'max:2048'],
             'position' => ['nullable', 'integer', 'min:0'],
             'archived_at' => ['nullable', 'date'],

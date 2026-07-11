@@ -59,7 +59,13 @@
                 <tbody>
                     @forelse ($media as $item)
                         <tr class="border-t">
-                            <td class="px-5 py-3"><code class="text-xs bg-gray-100 px-2 py-0.5 rounded">[[audio:{{ $item->id }}]]</code></td>
+                            <td class="px-5 py-3">
+                                <span class="text-xs text-gray-400">#{{ $item->id }}</span>
+                                {{-- Short-код разворачивается в аудиоплеер только для типа audio (см. PageRenderer) --}}
+                                @if ($item->type === 'audio')
+                                    <code class="text-xs bg-gray-100 px-2 py-0.5 rounded">[[audio:{{ $item->id }}]]</code>
+                                @endif
+                            </td>
                             <td class="px-5 py-3">{{ $item->title }}
                                 @if ($item->durationLabel())<span class="text-xs text-gray-400">({{ $item->durationLabel() }})</span>@endif
                             </td>
