@@ -47,6 +47,19 @@
                     <span class="section-tile-count">{{ trans_choice('{0} нет материалов|{1} :count материал|[2,4] :count материала|[5,*] :count материалов', $section->published_pages_count) }}</span>
                 </a>
             @endforeach
+
+            {{-- Архив форума - отдельная плитка (не раздел страниц, а слепок phpBB 2015 года) --}}
+            @if (($forumTopicsCount ?? 0) > 0)
+                <a class="section-tile" href="{{ route('forum.index') }}">
+                    <span class="section-tile-head">
+                        <span class="section-tile-title">Архив форума</span>
+                        <span class="section-tile-arrow" aria-hidden="true">→</span>
+                    </span>
+                    <span class="section-tile-rule" aria-hidden="true"></span>
+                    <span class="section-tile-desc">Темы и сообщения форума проекта 2012-2015 годов. Только чтение - архивная копия.</span>
+                    <span class="section-tile-count">{{ trans_choice('{1} :count тема|[2,4] :count темы|[5,*] :count тем', $forumTopicsCount) }}</span>
+                </a>
+            @endif
         </div>
     </section>
 
