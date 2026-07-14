@@ -9,7 +9,7 @@
     $links = [
         'ВКонтакте'    => "https://vk.com/share.php?url={$u}&title={$t}",
         'Одноклассники'=> "https://connect.ok.ru/offer?url={$u}&title={$t}",
-        'Телеграм'     => "https://t.me/share/url?url={$u}&text={$t}",
+        'Телеграм'     => "https://telegram.me/share/url?url={$u}&text={$t}",
         'MAX'          => "https://max.ru/:share?text={$t}%20{$u}",
         'LiveJournal'  => "https://www.livejournal.com/update.bml?subject={$t}&event={$u}",
         'Мой Мир'      => "https://connect.mail.ru/share?url={$u}&title={$t}",

@@ -1,9 +1,9 @@
 @extends('layouts.site')
 
-@section('title', 'Архив форума (2015) — X-Intellect')
+@section('title', 'Архив форума (2012–2019) — X-Intellect')
 
 @section('meta')
-    <meta name="description" content="Архивная копия форума проекта X-Intellect за 2012–2015 годы: {{ $topicsCount }} тем и {{ $postsCount }} сообщений участников. Форум неактивен, материалы доступны только для чтения.">
+    <meta name="description" content="Архивная копия форума проекта X-Intellect за 2012–2019 годы: {{ $topicsCount }} тем и {{ $postsCount }} сообщений участников. Форум неактивен, материалы доступны только для чтения.">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/forum">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Архив форума X-Intellect">
@@ -21,7 +21,7 @@
     <p class="forum-stats">
         {{ trans_choice('{1} :count тема|[2,4] :count темы|[5,*] :count тем', $topicsCount) }} ·
         {{ trans_choice('{1} :count сообщение|[2,4] :count сообщения|[5,*] :count сообщений', $postsCount) }} ·
-        2012–2015 годы
+        2012–2019 годы
     </p>
 
     @include('site.partials.forum-disclaimer')

@@ -56,7 +56,7 @@
                         <span class="section-tile-arrow" aria-hidden="true">→</span>
                     </span>
                     <span class="section-tile-rule" aria-hidden="true"></span>
-                    <span class="section-tile-desc">Темы и сообщения форума проекта 2012-2015 годов. Только чтение - архивная копия.</span>
+                    <span class="section-tile-desc">Темы и сообщения форума проекта 2012-2019 годов. Только чтение - архивная копия.</span>
                     <span class="section-tile-count">{{ trans_choice('{1} :count тема|[2,4] :count темы|[5,*] :count тем', $forumTopicsCount) }}</span>
                 </a>
             @endif
