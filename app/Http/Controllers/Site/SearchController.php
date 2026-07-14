@@ -15,7 +15,12 @@ class SearchController extends Controller
         $results = null;
 
         if (mb_strlen($query) >= 2) {
-            $builder = Page::published()->listed()->with('section');
+            // Архивные unlisted-страницы (стенограммы сеансов) скрыты из списков,
+            // но должны находиться поиском; служебные страницы нового сайта
+            // (политики и т.п., source_type=new + unlisted) — по-прежнему нет.
+            $builder = Page::published()
+                ->where(fn ($q) => $q->where('is_listed', true)->orWhere('source_type', '!=', 'new'))
+                ->with('section');
 
             // MySQL FULLTEXT на проде, LIKE-фолбэк на локальном SQLite (Этап 1 плана)
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {

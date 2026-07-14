@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
  *   - главный сайт:  «slug/default.htm», «../slug/default.htm»;
  *   - вики:          «index.php@title=<двойная кодировка>», «../wiki/index.php@title=…».
  * Команда переписывает их на актуальные адреса нового сайта по карте
- * (редиректы → страницы, заголовки вики → страницы, термины → /glossary#slug).
+ * (редиректы → страницы, заголовки вики → страницы, термины → /glossary?term=slug).
  * Ссылки, которые некуда вести (служебные Файл:/Служебная:, неимпортированные
  * страницы, форум, битые относительные) — разворачиваются: текст остаётся,
  * мёртвый <a> убирается. Внешние http(s)/mailto — не трогаем.
@@ -32,7 +32,7 @@ class RemapArchiveLinks extends Command
 
     private array $slugMap = [];   // старый плоский slug → новый url
     private array $wikiMap = [];   // заголовок вики (lower) → /wiki/slug
-    private array $glossMap = [];  // термин (lower) → /glossary#slug
+    private array $glossMap = [];  // термин (lower) → /glossary?term=slug
 
     public function handle(): int
     {
@@ -80,7 +80,7 @@ class RemapArchiveLinks extends Command
             $this->wikiMap[mb_strtolower(str_replace('_', ' ', $p->title))] = '/wiki/'.$p->slug;
         }
         foreach (GlossaryTerm::all(['term', 'slug']) as $t) {
-            $this->glossMap[mb_strtolower($t->term)] = '/glossary#'.$t->slug;
+            $this->glossMap[mb_strtolower($t->term)] = $t->url();
         }
 
         $this->line(sprintf('Карта: главный %d, вики %d, глоссарий %d.', count($this->slugMap), count($this->wikiMap), count($this->glossMap)));
@@ -113,7 +113,14 @@ class RemapArchiveLinks extends Command
                 continue; // внешняя/оставляем как есть
             }
             if ($target === '') {
-                $this->unwrap($a);
+                // Битая ссылка с якорем-id: текст и якорь сохраняем, href убираем
+                if ($a->hasAttribute('id')) {
+                    $a->removeAttribute('href');
+                    $a->removeAttribute('target');
+                    $a->removeAttribute('rel');
+                } else {
+                    $this->unwrap($a);
+                }
                 $unwrapped++;
 
                 continue;
@@ -143,29 +150,91 @@ class RemapArchiveLinks extends Command
     {
         $href = trim($href);
         if ($href === '' || str_starts_with($href, '#')) {
-            return null;
+            return null; // внутристраничный якорь — не трогаем
         }
-        // Внешние — не трогаем
-        if (preg_match('#^(https?:)?//#i', $href) || str_starts_with($href, 'mailto:')) {
+
+        // Якорную часть отделяем до сопоставления и возвращаем на новый адрес
+        // страницы (термины глоссария — без фрагмента: у них ?term=slug).
+        [$path, $frag] = array_pad(explode('#', $href, 2), 2, null);
+        $frag = $frag !== null && $frag !== '' ? '#'.$frag : '';
+
+        // Снимки Wayback Machine (тела, скачанные из веб-архива): разворачиваем
+        // обёртку /web/<ts>/<url>; ссылки на старый x-intellect.org — внутренние.
+        if (preg_match('#^(?:https?:)?//web\.archive\.org/web/[0-9a-z_*]+/(.+)$#i', $path, $m)) {
+            $inner = preg_match('#^(?:https?:)?//#', $m[1]) ? $m[1] : 'http://'.$m[1];
+            $parts = parse_url($inner);
+            $host = strtolower($parts['host'] ?? '');
+            if (! in_array($host, ['x-intellect.org', 'www.x-intellect.org'], true)) {
+                return null; // чужой сайт в веб-архиве — оставляем как есть
+            }
+            $innerPath = $parts['path'] ?? '/';
+            // /wiki/index.php?title=<одинарная кодировка>
+            if (str_contains($innerPath, 'index.php') && preg_match('/(?:^|&)title=([^&]+)/', $parts['query'] ?? '', $qm)) {
+                $title = trim(str_replace('_', ' ', rawurldecode($qm[1])));
+                if ($title === '' || str_contains($title, ':')) {
+                    return '';
+                }
+                $key = mb_strtolower($title);
+
+                return isset($this->wikiMap[$key])
+                    ? $this->wikiMap[$key].$frag
+                    : ($this->glossMap[$key] ?? '');
+            }
+            // /slug/ главного сайта
+            if (preg_match('#^/([a-z0-9_\-]+)/?$#i', $innerPath, $pm)) {
+                $to = $this->slugMap[mb_strtolower($pm[1])] ?? '';
+
+                return $to !== '' ? $to.$frag : '';
+            }
+
+            return '';
+        }
+
+        // Абсолютные ссылки на старый сайт — внутренние
+        if (preg_match('#^(?:https?:)?//(?:www\.)?x-intellect\.org(/.*)?$#i', $path, $m)) {
+            $path = $m[1] ?? '/';
+        } elseif (preg_match('#^(https?:)?//#i', $path) || str_starts_with($path, 'mailto:')) {
+            // Внешние — не трогаем
             return null;
         }
 
+        // Живой URL MediaWiki: index.php?title=<одинарная кодировка>
+        // (сырые снимки id_ из Wayback Machine и абсолютные старые ссылки)
+        if (preg_match('#index\.php\?title=([^&\#"]+)#', $path, $m)) {
+            $title = trim(str_replace('_', ' ', rawurldecode($m[1])));
+            if ($title === '' || str_contains($title, ':')) {
+                return '';
+            }
+            $key = mb_strtolower($title);
+
+            return isset($this->wikiMap[$key])
+                ? $this->wikiMap[$key].$frag
+                : ($this->glossMap[$key] ?? '');
+        }
+
         // Вики-ссылка: index.php@title=<код> (в т.ч. ../wiki/…)
-        if (preg_match('#index\.php@title=([^"&?]+)#', $href, $m)) {
+        if (preg_match('#index\.php@title=([^"&?\#]+)#', $path, $m)) {
             $title = $this->decodeWikiTitle($m[1]);
             if ($title === '' || str_contains($title, ':')) {
                 return ''; // Файл:/Служебная:/Категория: и пр. — развернуть
             }
             $key = mb_strtolower($title);
 
-            return $this->wikiMap[$key] ?? $this->glossMap[$key] ?? '';
+            return isset($this->wikiMap[$key])
+                ? $this->wikiMap[$key].$frag
+                : ($this->glossMap[$key] ?? '');
         }
 
         // Главный сайт: …/slug/default.htm
-        if (preg_match('#([a-z0-9_\-]+)/default\.htm#i', $href, $m)) {
-            $slug = mb_strtolower($m[1]);
+        if (preg_match('#([a-z0-9_\-]+)/default\.htm#i', $path, $m)) {
+            $to = $this->slugMap[mb_strtolower($m[1])] ?? '';
 
-            return $this->slugMap[$slug] ?? '';
+            return $to !== '' ? $to.$frag : '';
+        }
+
+        // Главный сайт, живой корне-относительный путь: /slug/ (сырые снимки Wayback)
+        if (preg_match('#^/([a-z0-9_\-]+)/?$#i', $path, $m) && isset($this->slugMap[mb_strtolower($m[1])])) {
+            return $this->slugMap[mb_strtolower($m[1])].$frag;
         }
 
         // Прочие относительные (forum, wp-content, ../../внешние-как-относительные) — развернуть

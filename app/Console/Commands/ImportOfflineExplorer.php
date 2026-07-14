@@ -109,9 +109,15 @@ class ImportOfflineExplorer extends Command
             // --refresh: обновляем тело существующего черновика (перечистка из
             // исходника: обтекание картинок и пр.), остальное не трогаем
             if ($existing) {
-                $existing->body = $body;
-                $existing->save();
-                $created++;
+                // Не затирать страницы, правленные вручную после импорта
+                if ($existing->revisions()->where('note', 'like', 'Отредактирована вручную%')->exists()) {
+                    $this->warn('Пропуск (ручные правки): '.$existing->title);
+                    $skipped++;
+                } else {
+                    $existing->body = $body;
+                    $existing->save();
+                    $created++;
+                }
 
                 continue;
             }
@@ -220,7 +226,7 @@ class ImportOfflineExplorer extends Command
             return 'library';
         }
         if ($has('дайджест')) {
-            return 'mag';
+            return 'articles';
         }
         if ($has('кольцо|беседа с силами|взаимодействие и манипул')) {
             return 'courses';
@@ -229,12 +235,12 @@ class ImportOfflineExplorer extends Command
             return 'projects';
         }
         if ($has('лотос|талисман|тандем|камни|инкарнац|чистк|частот|деструктивн|целительств')) {
-            return 'mag';
+            return 'articles';
         }
         if ($has('глаз|уш[её]л|день рождения|53 года|40 дней|памят|миссия|мнение сил о сайте|ченнелинг')) {
             return 'about';
         }
 
-        return 'mag'; // прочее содержательное → Статьи
+        return 'articles'; // прочее содержательное → Статьи
     }
 }

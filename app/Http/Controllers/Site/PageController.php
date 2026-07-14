@@ -6,16 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Section;
 use App\Services\PageRenderer;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function __construct(protected PageRenderer $renderer) {}
 
-    public function show(Section $section, string $pageSlug)
+    public function show(Request $request, Section $section, string $pageSlug)
     {
+        // Страницы подразделов доступны по URL корневого раздела
+        // (/wiki/<slug> и для страниц подраздела «Сеансы»).
+        $sectionIds = $section->children()->pluck('id')->push($section->id);
+
         $page = Page::where('slug', $pageSlug)
-            ->where('section_id', $section->id)
-            ->firstOrFail();
+            ->whereIn('section_id', $sectionIds)
+            ->first();
+
+        if (! $page) {
+            // /{раздел}/{подраздел} — листинг подраздела тем же маршрутом.
+            $child = Section::where('slug', $pageSlug)
+                ->where('parent_id', $section->id)
+                ->first();
+
+            if ($child) {
+                return app(SectionController::class)->show($request, $child);
+            }
+
+            abort(404);
+        }
 
         abort_unless($page->isPublished() || auth()->user()?->isEditor(), 404);
 

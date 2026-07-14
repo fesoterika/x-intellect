@@ -23,7 +23,7 @@ class PageController extends Controller
 
         return view('admin.pages.index', [
             'pages' => $pages,
-            'sections' => Section::orderBy('position')->get(),
+            'sections' => Section::root()->with('children')->orderBy('position')->get(),
         ]);
     }
 
@@ -31,7 +31,7 @@ class PageController extends Controller
     {
         return view('admin.pages.form', [
             'page' => new Page(['status' => 'draft', 'source_type' => 'new', 'page_type' => 'page', 'is_listed' => true]),
-            'sections' => Section::orderBy('position')->get(),
+            'sections' => Section::root()->with('children')->orderBy('position')->get(),
         ]);
     }
 
@@ -47,7 +47,7 @@ class PageController extends Controller
     {
         return view('admin.pages.form', [
             'page' => $page->load(['media', 'revisions']),
-            'sections' => Section::orderBy('position')->get(),
+            'sections' => Section::root()->with('children')->orderBy('position')->get(),
         ]);
     }
 

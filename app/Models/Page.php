@@ -84,8 +84,10 @@ class Page extends Model
             return '/'.$this->slug;
         }
 
+        // Страницы подразделов живут под URL корневого раздела:
+        // перенос страницы в подраздел не меняет её адрес.
         return $this->section
-            ? '/'.$this->section->slug.'/'.$this->slug
+            ? '/'.$this->section->rootAncestor()->slug.'/'.$this->slug
             : '/'.$this->slug;
     }
 
