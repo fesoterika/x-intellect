@@ -46,7 +46,7 @@ class ImageSeo
 
     protected function altText(string $title, int $n): string
     {
-        return 'Изображение к материалу «'.trim($title).'» №'.$n;
+        return 'Изображение к материалу «'.trim($title).'» - №'.$n;
     }
 
     protected function esc(string $value): string

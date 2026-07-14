@@ -2,7 +2,7 @@
     <div class="meta">
         <x-source-badge :page="$page" />
         @if ($page->archived_at)
-            <span>редакция {{ $page->archived_at->format('Y') }} г.</span>
+            <span>из архива {{ $page->archived_at->format('Y') }} г.</span>
         @endif
         @if ($page->audio->count())
             <span class="meta-audio">

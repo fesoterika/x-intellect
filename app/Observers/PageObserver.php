@@ -6,6 +6,7 @@ use App\Jobs\RegenerateSitemap;
 use App\Models\Page;
 use App\Services\GlossaryLinker;
 use App\Services\ImageAligner;
+use App\Services\ImageFigures;
 use App\Services\ImageSeo;
 use App\Services\SeoService;
 use App\Services\AttachmentDownloads;
@@ -22,6 +23,7 @@ class PageObserver
         protected ImageSeo $imageSeo,
         protected TimelineTagger $timeline,
         protected ImageAligner $imageAligner,
+        protected ImageFigures $imageFigures,
         protected TrixTables $tables,
         protected TableImagePairer $pairer,
         protected LinkTargets $linkTargets,
@@ -44,12 +46,15 @@ class PageObserver
 
         if ($page->isDirty('body') || $page->body_rendered === null) {
             // маркеры «в новом окне» → target=_blank; выравнивание картинок
-            // (класс на фигуру по alignment из Trix) → файлы-вложения кнопкой
-            // «Скачать» → пары «картинка + таблица» → тултипы глоссария
+            // (класс на фигуру по alignment из Trix) → подписи и ссылки на
+            // картинки → файлы-вложения кнопкой «Скачать» → пары «картинка +
+            // таблица» → тултипы глоссария
             $page->body_rendered = $this->glossary->process(
                 $this->pairer->process(
                     $this->downloads->process(
-                        $this->imageAligner->process($this->linkTargets->process($page->body)),
+                        $this->imageFigures->process(
+                            $this->imageAligner->process($this->linkTargets->process($page->body)),
+                        ),
                     ),
                 ),
             );
@@ -73,7 +78,7 @@ class PageObserver
                 'source_type' => $page->getOriginal('source_type'),
                 'source_url' => $page->getOriginal('source_url'),
                 'archived_at' => $page->getOriginal('archived_at'),
-                'note' => 'Автосохранение перед правкой '.now()->format('d.m.Y H:i'),
+                'note' => 'Отредактирована вручную '.now()->format('d.m.Y H:i'),
             ]);
         }
     }

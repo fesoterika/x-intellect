@@ -54,6 +54,18 @@ class GenerateSitemap extends Command
             }
         });
 
+        // Архив форума: список + темы (только чтение, phpBB-слепок 2015)
+        if (\App\Models\ForumTopic::query()->exists()) {
+            $urls[] = ['loc' => $base.'/forum', 'lastmod' => now()->toAtomString(), 'priority' => '0.6'];
+            foreach (\App\Models\ForumTopic::all() as $topic) {
+                $urls[] = [
+                    'loc' => $base.$topic->url(),
+                    'lastmod' => ($topic->last_posted_at ?? $topic->updated_at)?->toAtomString(),
+                    'priority' => '0.5',
+                ];
+            }
+        }
+
         file_put_contents(public_path('sitemap.xml'), $this->buildXml($urls));
         $this->info('public/sitemap.xml: '.count($urls).' URL');
 

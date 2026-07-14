@@ -134,7 +134,7 @@ html { scroll-padding-top: 84px; }
 }
 
 /* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
-   читались как звёзды, а не дефекты экрана) + два замощённых слоя мягких
+   читались как звёзды) + два замощённых слоя мягких
    звёзд (SVG-тайл) с деликатным мерцанием и лёгким параллаксом. */
 .starfield {
     position: fixed;
@@ -489,8 +489,13 @@ html { scroll-padding-top: 84px; }
    блок по центру; пустую подпись не показываем. */
 .xi-prose figure.attachment { margin: 1.2em auto; text-align: center; max-width: 100%; }
 .xi-prose figure.attachment img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
-.xi-prose figure.attachment figcaption { font-size: 13.5px; color: var(--xi-ink-faint); margin-top: 6px; }
+.xi-prose figure.attachment figcaption { font-size: 13.5px; color: var(--xi-ink-faint); text-align: center; margin-top: 6px; }
 .xi-prose figure.attachment figcaption:empty { display: none; }
+/* Служебные имя/размер файла Trix — не подпись; прячем, если редактор не заполнил caption */
+.xi-prose figure.attachment figcaption .attachment__name,
+.xi-prose figure.attachment figcaption .attachment__size { display: none; }
+.xi-prose figure.attachment figcaption:not(:has(:not(.attachment__name):not(.attachment__size))) { display: none; }
+.xi-prose a:has(> img) { cursor: zoom-in; }
 .xi-prose figure.xi-float-left { float: left; max-width: min(45%, 320px); margin: 4px 22px 10px 0; text-align: left; }
 .xi-prose figure.xi-float-right { float: right; max-width: min(45%, 320px); margin: 4px 0 10px 22px; text-align: right; }
 .xi-prose figure.xi-align-center { max-width: min(80%, 520px); margin: 1.2em auto; }
@@ -1123,4 +1128,87 @@ a.xi-download .xi-download__meta {
 @media (max-width: 560px) {
     a.xi-download { max-width: 100%; }
     a.xi-download .xi-download__meta { max-width: 45vw; }
+}
+
+/* ── Архив форума (слепок phpBB 2015, только чтение) ──────────────────── */
+.forum-stats { color: var(--xi-ink-faint); font-size: 14px; margin: 6px 0 18px; }
+
+.forum-disclaimer {
+    display: flex; gap: 12px; align-items: flex-start;
+    /* верхний отступ — как на главной форума (там его даёт .forum-stats
+       перед дисклеймером); на странице темы после title-rule ничего нет,
+       без явного margin-top блок прилипал прямо к линии-акценту */
+    margin: 18px 0 26px; padding: 14px 18px;
+    background: var(--xi-accent-soft);
+    border: 1px solid var(--xi-line);
+    border-left: 3px solid var(--xi-accent);
+    border-radius: 12px;
+    color: var(--xi-ink-soft); font-size: 14px; line-height: 1.55;
+}
+.forum-disclaimer svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; color: var(--xi-accent); }
+.forum-disclaimer a { color: var(--xi-accent); white-space: nowrap; }
+
+.forum-group { margin-top: 30px; }
+.forum-block { padding: 0; margin-top: 14px; overflow: hidden; }
+.forum-block-title {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0; padding: 14px 22px;
+    background: var(--xi-accent-soft);
+    border-bottom: 1px solid var(--xi-line);
+    font-family: var(--xi-font-serif); font-size: 17px; font-weight: 600;
+    color: var(--xi-ink);
+}
+.forum-block-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--xi-accent); color: #fff;
+}
+.forum-block-icon svg { width: 19px; height: 19px; }
+.forum-block-name { flex: 1; min-width: 0; }
+.forum-block-count {
+    flex-shrink: 0;
+    padding: 3px 11px; border-radius: 999px;
+    background: var(--xi-surface); border: 1px solid var(--xi-line);
+    color: var(--xi-ink-soft);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0;
+}
+.forum-topic-list { list-style: none; margin: 0; padding: 4px 22px 10px; }
+.forum-topic-list li {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-top: 1px solid var(--xi-line);
+}
+.forum-topic-list li:first-child { border-top: 0; }
+.forum-topic-link { color: var(--xi-ink); text-decoration: none; font-size: 15.5px; }
+.forum-topic-link:hover { color: var(--xi-accent); }
+.forum-topic-meta { color: var(--xi-ink-faint); font-size: 12.5px; white-space: nowrap; }
+
+.forum-topic-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.forum-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: var(--xi-accent-soft); color: var(--xi-accent);
+    font-size: 12.5px; font-weight: 600;
+}
+.forum-topic-dates { color: var(--xi-ink-faint); font-size: 12.5px; }
+
+.forum-posts { display: grid; gap: 14px; margin-top: 18px; }
+.forum-post { padding: 18px 22px; }
+.forum-post-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    padding-bottom: 10px; margin-bottom: 12px;
+    border-bottom: 1px solid var(--xi-line);
+}
+.forum-post-author { font-weight: 700; color: var(--xi-accent); font-size: 15px; }
+.forum-post-date { color: var(--xi-ink-faint); font-size: 12.5px; }
+.forum-post-body { font-size: 15.5px; }
+.forum-post-body blockquote p:first-child { margin-bottom: 4px; }
+.forum-pagination { margin-top: 22px; display: flex; justify-content: center; }
+
+@media (max-width: 560px) {
+    .forum-topic-list li { flex-direction: column; gap: 2px; }
+    .forum-post-head { flex-direction: column; gap: 2px; }
+    .forum-block-title { padding: 12px 16px; font-size: 16px; }
+    .forum-topic-list { padding: 4px 16px 8px; }
+    .forum-disclaimer a { white-space: normal; }
 }

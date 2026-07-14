@@ -294,8 +294,40 @@ class ArchiveHtmlCleaner
         }
         $img->setAttribute('src', '/storage/'.$dest);
         $img->setAttribute('alt', $alt !== '' ? $alt : 'Иллюстрация из архива');
+
+        // Формат Trix: figure.attachment--preview, обтекание — на фигуре
+        $figureClasses = ['attachment', 'attachment--preview'];
         if ($float === 'left' || $float === 'right') {
-            $img->setAttribute('class', 'xi-float-'.$float);
+            $figureClasses[] = 'xi-float-'.$float;
         }
+
+        $figure = $img->ownerDocument->createElement('figure');
+        $figure->setAttribute('class', implode(' ', $figureClasses));
+
+        if ($parent instanceof DOMElement && strtolower($parent->tagName) === 'p'
+            && $this->paragraphOnlyContainsImage($parent, $img)) {
+            $parent->parentNode?->replaceChild($figure, $parent);
+        } else {
+            $parent?->replaceChild($figure, $img);
+        }
+        $figure->appendChild($img);
+    }
+
+    /** Абзац содержит только img (и пробелы/br) — заменяем целиком на figure. */
+    private function paragraphOnlyContainsImage(DOMElement $p, DOMElement $img): bool
+    {
+        foreach (iterator_to_array($p->childNodes) as $child) {
+            if ($child === $img) {
+                continue;
+            }
+            if ($child instanceof DOMElement) {
+                return false;
+            }
+            if (trim($child->textContent) !== '') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
