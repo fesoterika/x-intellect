@@ -6,6 +6,7 @@ use App\Models\GlossaryTerm;
 use App\Models\Page;
 use App\Models\Redirect;
 use App\Models\Section;
+use App\Services\ArchiveHtmlCleaner;
 use App\Services\MediaWikiArchive;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -47,9 +48,12 @@ class AuditArchive extends Command
 
     private MediaWikiArchive $mw;
 
-    public function handle(MediaWikiArchive $mw): int
+    private ArchiveHtmlCleaner $cleaner;
+
+    public function handle(MediaWikiArchive $mw, ArchiveHtmlCleaner $cleaner): int
     {
         $this->mw = $mw;
+        $this->cleaner = $cleaner;
 
         $base = rtrim($this->argument('archive'), '/');
         if (! File::isDirectory($base)) {
@@ -122,7 +126,7 @@ class AuditArchive extends Command
                 continue;
             }
 
-            $archiveLen = $this->mainBodyTextLength($html);
+            $archiveLen = $this->mainBodyTextLength($html, dirname($file));
             $page = Page::where('source_url', 'like', '%/'.$slug.'/')->first();
             if (! $page) {
                 // фолбэк: по редиректу со старого пути
@@ -169,14 +173,19 @@ class AuditArchive extends Command
         return (bool) preg_match('/Страница не найдена|File moved|IIS|403|Forbidden|Карта сайта/ui', $title);
     }
 
-    private function mainBodyTextLength(string $html): int
+    private function mainBodyTextLength(string $html, string $baseDir): int
     {
         try {
             $crawler = new Crawler($html);
             foreach (['.entry', '.post-content', '.entry-content', 'article', '#content'] as $sel) {
                 $node = $crawler->filter($sel);
                 if ($node->count()) {
-                    return mb_strlen(trim(preg_replace('/\s+/u', ' ', $node->first()->text(''))));
+                    // Сравниваем с ОЧИЩЕННЫМ текстом — тем же конвейером, что и
+                    // импорт: иначе блоки «Поделиться»/похожие записи (~340 симв.
+                    // на каждой странице WordPress) дают ложные «короче архива»
+                    $clean = $this->cleaner->clean($node->first()->html(''), $baseDir);
+
+                    return mb_strlen(trim(preg_replace('/\s+/u', ' ', strip_tags($clean))));
                 }
             }
         } catch (\Throwable) {
@@ -197,7 +206,7 @@ class AuditArchive extends Command
             ->reject(fn ($f) => (bool) preg_match('/\.(png|jpe?g|gif|svg|mp3|pdf|css|js|tmp|ico|webp|bmp)$/i', $f));
 
         $pagesByTitle = [];
-        foreach (Page::where('source_type', 'archive_wiki')->get(['id', 'title', 'slug', 'status', 'body']) as $p) {
+        foreach (Page::where('source_type', 'archive_wiki')->get(['id', 'section_id', 'title', 'slug', 'status', 'body']) as $p) {
             $pagesByTitle[mb_strtolower(trim($p->title))] = $p;
         }
         $termsByTitle = [];
