@@ -1,6 +1,6 @@
 # Лишние и системные страницы — для ручной проверки
 
-Сформировано: 14.07.2026 22:41. Ничего из перечисленного не удалялось.
+Сформировано: 14.07.2026 23:10. Ничего из перечисленного не удалялось.
 
 ## Страницы БД без соответствия в слепке 2015 (кроме Wayback-импорта)
 
@@ -8,10 +8,7 @@
 
 ## Дубли по заголовку
 
-| Страница | Раздел | Источник | Статус |
-|---|---|---|---|
-| [День Рождения Александра Глаза](http://localhost/about/2012-07-04-2) | О центре | archive_xintellect | draft |
-| [День Рождения Александра Глаза](http://localhost/about/2012-07-04) | О центре | archive_xintellect | draft |
+Нет.
 
 ## Архив: пропущено по правилам импорта (системное/сервисное) — основной сайт
 
@@ -131,17 +128,8 @@
 | Просмотр исходного текста страницы Кредовое кольцо биоэкрана (кредовое кольцо полевого мозга) | http://www.x-intellect.org/wiki/index.php?title=%D0%9F%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80_%D0%B8%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B_%D0%9A%D1%80%D0%B5%D0%B4%D0%BE%D0%B2%D0%BE%D0%B5_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE_%D0%B1%D0%B8%D0%BE%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0_%28%D0%BA%D1%80%D0%B5%D0%B4%D0%BE%D0%B2%D0%BE%D0%B5_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE_%D0%BF%D0%BE%D0%BB%D0%B5%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BC%D0%BE%D0%B7%D0%B3%D0%B0%29 |
 | Просмотр исходного текста страницы Кредовые программы | http://www.x-intellect.org/wiki/index.php?title=%D0%9F%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80_%D0%B8%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B_%D0%9A%D1%80%D0%B5%D0%B4%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B |
 | Кредовые программы — история изменений | http://www.x-intellect.org/wiki/index.php?title=%D0%9A%D1%80%D0%B5%D0%B4%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B_%E2%80%94_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F_%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B5%D0%BD%D0%B8%D0%B9 |
-| Личная консультация 20130312 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20130312 |
 | Личная консультация 20130312 — история изменений | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20130312_%E2%80%94_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F_%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B5%D0%BD%D0%B8%D0%B9 |
-| Личная консультация 20100924 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20100924 |
-| Личная консультация 20100722 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20100722 |
-| Личная консультация 20100612 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20100612 |
-| Личная консультация 20110421 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20110421 |
-| Личная консультация 20110525 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20110525 |
-| Личная консультация 20120706 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20120706 |
-| Личная консультация 20120524 | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20120524 |
 | Просмотр исходного текста страницы Личная консультация 20130312 | http://www.x-intellect.org/wiki/index.php?title=%D0%9F%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80_%D0%B8%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B_%D0%9B%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D1%8F_20130312 |
-| Личные консультации | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D1%8B%D0%B5_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D0%B8 |
 | Просмотр исходного текста страницы Личные консультации | http://www.x-intellect.org/wiki/index.php?title=%D0%9F%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80_%D0%B8%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B_%D0%9B%D0%B8%D1%87%D0%BD%D1%8B%D0%B5_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D0%B8 |
 | Личные консультации — история изменений | http://www.x-intellect.org/wiki/index.php?title=%D0%9B%D0%B8%D1%87%D0%BD%D1%8B%D0%B5_%D0%BA%D0%BE%D0%BD%D1%81%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%86%D0%B8%D0%B8_%E2%80%94_%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F_%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B5%D0%BD%D0%B8%D0%B9 |
 | Просмотр исходного текста страницы Луч 6-й чакры (базового энергоцентра) | http://www.x-intellect.org/wiki/index.php?title=%D0%9F%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80_%D0%B8%D1%81%D1%85%D0%BE%D0%B4%D0%BD%D0%BE%D0%B3%D0%BE_%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D1%8B_%D0%9B%D1%83%D1%87_6-%D0%B9_%D1%87%D0%B0%D0%BA%D1%80%D1%8B_%28%D0%B1%D0%B0%D0%B7%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%BE%D1%86%D0%B5%D0%BD%D1%82%D1%80%D0%B0%29 |
