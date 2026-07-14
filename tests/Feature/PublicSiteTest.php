@@ -326,8 +326,8 @@ class PublicSiteTest extends TestCase
         ]);
 
         // Оба изображения получают описательный alt с названием и номером
-        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» №1"', $page->body);
-        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» №2"', $page->body);
+        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» - №1"', $page->body);
+        $this->assertStringContainsString('alt="Изображение к материалу «Энергетический двойник» - №2"', $page->body);
     }
 
     public function test_image_alt_set_by_editor_is_preserved(): void
@@ -533,6 +533,141 @@ class PublicSiteTest extends TestCase
         $this->assertStringContainsString('href="/storage/media/pdf/kniga.pdf"', $rendered);
         // фигуры Trix в рендере не осталось
         $this->assertStringNotContainsString('attachment--file', $rendered);
+    }
+
+    public function test_image_figure_strips_empty_caption_and_opens_in_new_tab(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $json = htmlspecialchars(json_encode([
+            'alignment' => 'left',
+            'contentType' => 'image/webp',
+            'filename' => 'cover.webp',
+            'filesize' => 63668,
+            'href' => '/storage/media/inline/cover.webp',
+            'url' => '/storage/media/inline/cover.webp',
+        ], JSON_UNESCAPED_SLASHES), ENT_QUOTES);
+
+        $page->update(['body' => '<figure data-trix-attachment="'.$json.'" class="attachment attachment--preview">'
+            .'<a href="/storage/media/inline/cover.webp"><img src="/storage/media/inline/cover.webp" alt="Обложка">'
+            .'<figcaption class="attachment__caption"><span class="attachment__name">cover.webp</span>'
+            .' <span class="attachment__size">62 KB</span></figcaption></a></figure>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringNotContainsString('attachment__name', $rendered);
+        $this->assertStringNotContainsString('attachment__size', $rendered);
+        $this->assertStringNotContainsString('<figcaption', $rendered);
+        $this->assertStringContainsString('target="_blank"', $rendered);
+        $this->assertStringContainsString('rel="noopener noreferrer"', $rendered);
+    }
+
+    public function test_image_figure_keeps_user_caption(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $page->update(['body' => '<figure class="attachment attachment--preview">'
+            .'<img src="/storage/media/inline/cover.webp" alt="Обложка">'
+            .'<figcaption class="attachment__caption"><span class="attachment__name">cover.webp</span>'
+            .' <span class="attachment__size">62 KB</span> Авторская подпись</figcaption></figure>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('<figcaption', $rendered);
+        $this->assertStringContainsString('Авторская подпись', $rendered);
+        $this->assertStringNotContainsString('attachment__name', $rendered);
+        $this->assertStringContainsString('target="_blank"', $rendered);
+    }
+
+    public function test_archive_image_gets_link_to_open_in_new_tab(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $page->update(['body' => '<p><img src="/storage/media/archive/sample.png" alt="Иллюстрация" class="xi-float-left"></p>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('<figure class="attachment attachment--preview xi-float-left">', $rendered);
+        $this->assertStringContainsString('<a href="/storage/media/archive/sample.png"', $rendered);
+        $this->assertStringContainsString('target="_blank"', $rendered);
+    }
+
+    public function test_archive_image_before_table_renders_as_flex_pair(): void
+    {
+        $this->seedCore();
+        $page = Page::first();
+
+        $page->update(['body' => '<figure class="attachment attachment--preview xi-float-right">'
+            .'<img src="/storage/media/archive/scheme.jpg" alt="Схема"></figure>'
+            .'<table><tr><td>Проект</td><td>Чакры</td></tr></table>']);
+
+        $rendered = $page->fresh()->body_rendered;
+        $this->assertStringContainsString('class="xi-imgtable xi-imgtable--right"', $rendered);
+    }
+
+    private function seedForumTopic(): \App\Models\ForumTopic
+    {
+        $topic = \App\Models\ForumTopic::create([
+            'old_id' => 502,
+            'forum_old_id' => 30,
+            'forum_title' => 'Цивилизация «Зелёные»',
+            'forum_group' => 'Исследования',
+            'forum_position' => 10,
+            'slug' => 'struktura-vselennoy',
+            'title' => 'Структура Вселенной',
+            'posts_count' => 2,
+            'started_at' => '2012-08-11 03:26:00',
+            'last_posted_at' => '2012-08-12 10:00:00',
+        ]);
+        $topic->posts()->createMany([
+            ['old_id' => 635, 'author' => 'Max9003', 'posted_at' => '2012-08-11 03:26:00', 'body' => '<p>Вопрос о тёмной материи Вселенной.</p>', 'position' => 0],
+            ['old_id' => 638, 'author' => 'Орлангур', 'posted_at' => '2012-08-12 10:00:00', 'body' => '<blockquote><p><strong>Max9003 писал(а):</strong></p>Вопрос</blockquote><p>Ответ по существу.</p>', 'position' => 1],
+        ]);
+
+        return $topic;
+    }
+
+    public function test_forum_archive_index_lists_topics_with_disclaimer(): void
+    {
+        $this->seedCore();
+        $this->seedForumTopic();
+
+        $this->get('/forum')
+            ->assertOk()
+            ->assertSee('Архив форума')
+            ->assertSee('Структура Вселенной')
+            ->assertSee('Цивилизация «Зелёные»')
+            ->assertSee('архивная копия форума X-Intellect', false)
+            ->assertSee('web.archive.org/web/2015/http://x-intellect.org/forum', false)
+            // никакого функционала регистрации/отправки
+            ->assertDontSee('Регистрация</a>', false)
+            ->assertDontSee('posting.php', false);
+    }
+
+    public function test_forum_topic_shows_posts_with_authors_and_schema(): void
+    {
+        $this->seedCore();
+        $topic = $this->seedForumTopic();
+
+        $this->get('/forum/'.$topic->slug)
+            ->assertOk()
+            ->assertSee('Структура Вселенной')
+            ->assertSee('Max9003')
+            ->assertSee('Орлангур')
+            ->assertSee('Ответ по существу')
+            ->assertSee('DiscussionForumPosting', false)  // SEO-разметка
+            ->assertSee('Форум неактивен');
+    }
+
+    public function test_forum_tile_on_home_when_topics_exist(): void
+    {
+        $this->seedCore();
+
+        // без тем плитки нет
+        $this->get('/')->assertOk()->assertDontSee('Архив форума');
+
+        $this->seedForumTopic();
+        $this->get('/')->assertOk()->assertSee('Архив форума');
     }
 
     public function test_trix_tables_extract_sanitizes_and_keeps_other_attachments(): void

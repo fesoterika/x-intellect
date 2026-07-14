@@ -20,6 +20,11 @@ Route::get('/glossary', Site\GlossaryController::class)->name('glossary');
 // Персональная страница автора/хранителя — фиксированный slug вне разделов
 Route::get('/fesoterika', [Site\PageController::class, 'fesoterika'])->name('fesoterika');
 
+// Архив форума phpBB (слепок 2015 года) — только чтение; регистрируется ДО
+// динамических маршрутов разделов, чтобы /forum не ушёл в section.show
+Route::get('/forum', [Site\ForumController::class, 'index'])->name('forum.index');
+Route::get('/forum/{topic:slug}', [Site\ForumController::class, 'show'])->name('forum.topic');
+
 /*
 |--------------------------------------------------------------------------
 | Админка: /admin/*, закрыта auth + role, noindex в layout
