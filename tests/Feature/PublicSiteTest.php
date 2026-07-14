@@ -638,7 +638,7 @@ class PublicSiteTest extends TestCase
             ->assertSee('Структура Вселенной')
             ->assertSee('Цивилизация «Зелёные»')
             ->assertSee('архивная копия форума X-Intellect', false)
-            ->assertSee('web.archive.org/web/2015/http://x-intellect.org/forum', false)
+            ->assertSee('web.archive.org/web/20160408131611/http://www.x-intellect.org/forum/index.php', false)
             // никакого функционала регистрации/отправки
             ->assertDontSee('Регистрация</a>', false)
             ->assertDontSee('posting.php', false);
@@ -668,6 +668,45 @@ class PublicSiteTest extends TestCase
 
         $this->seedForumTopic();
         $this->get('/')->assertOk()->assertSee('Архив форума');
+    }
+
+    public function test_old_forum_topic_url_redirects_to_new_slug(): void
+    {
+        $this->seedCore();
+        $topic = $this->seedForumTopic();
+
+        // редиректы, которые создаёт import:offline-forum (обе исторические формы)
+        Redirect::create(['from_path' => '/forum/viewtopic.php?f=30&t=502', 'to_url' => $topic->url(), 'status_code' => 301, 'comment' => 'Архив форума: тест']);
+        Redirect::create(['from_path' => '/forum/viewtopic.php?t=502', 'to_url' => $topic->url(), 'status_code' => 301, 'comment' => 'Архив форума: тест']);
+
+        $this->get('/forum/viewtopic.php?f=30&t=502')->assertStatus(301)->assertRedirect($topic->url());
+        $this->get('/forum/viewtopic.php?t=502')->assertStatus(301)->assertRedirect($topic->url());
+    }
+
+    public function test_phpbb_parser_extracts_posts_quotes_and_identity(): void
+    {
+        $html = <<<'HTML'
+        <h2><a class="titles" href="viewtopic.php@f=30&t=502">Структура Вселенной</a></h2>
+        <a name="p635"></a> <b class="postauthor">Max9003</b>
+        <td class="gensmall"><b>Добавлено:</b> 11 авг 2012, 03:26</td>
+        <div class="postbody">Первый вопрос о тёмной материи.</div>
+        <a name="p638"></a> <b class="postauthor">Орлангур</b>
+        <td class="gensmall"><b>Добавлено:</b> 12 авг 2012, 10:00</td>
+        <div class="postbody"><div class="quotetitle">Max9003 писал(а):</div><div class="quotecontent">вопрос</div>Ответ по существу.</div>
+        HTML;
+
+        $page = app(\App\Services\PhpbbParser::class)->parsePage($html);
+
+        $this->assertSame(30, $page['forum_id']);
+        $this->assertSame(502, $page['topic_id']);
+        $this->assertSame('Структура Вселенной', $page['title']);
+        $this->assertCount(2, $page['posts']);
+        $this->assertSame('Max9003', $page['posts'][635]['author']);
+        $this->assertSame('Орлангур', $page['posts'][638]['author']);
+        $this->assertSame('2012-08-11', $page['posts'][635]['posted_at']->format('Y-m-d'));
+        // цитата phpBB → blockquote с подписью
+        $this->assertStringContainsString('<blockquote>', $page['posts'][638]['body']);
+        $this->assertStringContainsString('Ответ по существу', $page['posts'][638]['body']);
     }
 
     public function test_trix_tables_extract_sanitizes_and_keeps_other_attachments(): void

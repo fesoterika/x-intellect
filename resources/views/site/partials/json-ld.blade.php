@@ -15,7 +15,7 @@
             // связывать страницу с личностью автора
             'sameAs' => [
                 'https://dzen.ru/fesoterika',
-                'https://t.me/+Gd6NUYTFGG9iY2Q6',
+                'https://telegram.me/+Gd6NUYTFGG9iY2Q6',
                 'https://vk.com/fesoterika',
                 'https://github.com/Fesoterika',
             ],
