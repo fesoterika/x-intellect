@@ -53,6 +53,22 @@ class ApplySiteStructure2026 extends Command
         ]],
     ];
 
+    /**
+     * Подразделы раздела «Проекты» (главный сайт, не вики): slug, заголовок,
+     * позиция и regex по названию страницы. Порядок правил важен: «Картины
+     * Учителей Ноосферы» раньше «Ноосферы», иначе перехват по подстроке.
+     */
+    private array $projectRules = [
+        ['kartiny-uchitelei', 'Картины Учителей Ноосферы', 5, '/картины учител/ui'],
+        ['izosfera', 'Изосфера и параллельные миры', 3, '/изосфера|параллельны[е\s]+миры/ui'],
+        ['muzhchina-i-zhenshhina', 'Мужчина и Женщина', 4, '/мужчина и женщина/ui'],
+        ['noosfera-proekt', 'Ноосфера', 2, '/ноосфера/ui'],
+        ['dusha', 'Душа', 1, '/душа/ui'],
+        ['celitelstvo-proekt', 'Целительство', 7, '/целительств/ui'],
+        ['bioekran-proekt', 'Биоэкран', 6, '/биоэкран/ui'],
+        ['etalonizaciia', 'Эталонизация', 8, '/эталониз/ui'],
+    ];
+
     public function handle(): int
     {
         $dry = (bool) $this->option('dry');
@@ -107,6 +123,32 @@ class ApplySiteStructure2026 extends Command
             $this->movePage($page, $children['seansy'], null, $dry, listed: false);
         }
         $this->info('Стенограмм в подразделе «Сеансы» (скрыты из списков): '.$transcripts->count().'.');
+
+        // 5. Проекты (главный сайт): подразделы по названиям проектов.
+        // Кандидаты — страницы корня «Проектов» и «Проект…» из «Статей»
+        // (страницы курсов и вики не трогаем). Не-проектные (мемориальные
+        // и пр., без «проект» в названии) остаются в корне.
+        $projects = Section::root()->where('slug', 'projects')->first();
+        if ($projects) {
+            $candidates = Page::where('section_id', $projects->id)->get()
+                ->concat(Page::where('section_id', $articles->id)->where('title', 'like', 'Проект%')->get());
+
+            $byProject = 0;
+            foreach ($candidates as $page) {
+                if (! preg_match('/проект/ui', $page->title)) {
+                    continue;
+                }
+                foreach ($this->projectRules as [$slug, $title, $position, $re]) {
+                    if (preg_match($re, $page->title)) {
+                        $child = $this->ensureChild($projects, $slug, $title, $position, $dry);
+                        $byProject += $this->movePage($page, $child, null, $dry);
+
+                        break;
+                    }
+                }
+            }
+            $this->info("Страниц проектов разложено по подразделам: {$byProject}.");
+        }
 
         $this->info(($dry ? '[dry] ' : '').'Структура применена.');
 
