@@ -156,6 +156,15 @@ class ArchiveHtmlCleaner
     private function unwrap(DOMElement $node, DOMDocument $doc, string $baseDir): void
     {
         $parent = $node->parentNode;
+
+        // Якорь секции MediaWiki живёт на <span class="mw-headline" id=…>
+        // внутри заголовка — перед разворачиванием поднимаем id на заголовок.
+        if ($node->hasAttribute('id') && $parent instanceof DOMElement
+            && in_array($this->rename[strtolower($parent->tagName)] ?? strtolower($parent->tagName), ['h2', 'h3', 'h4', 'h5'], true)
+            && ! $parent->hasAttribute('id')) {
+            $parent->setAttribute('id', $node->getAttribute('id'));
+        }
+
         // блочные обёртки заменяем на абзац, чтобы не слиплось
         $blocky = in_array(strtolower($node->tagName), ['div', 'section', 'article', 'table', 'tbody', 'tr', 'p'], true);
 
@@ -200,11 +209,23 @@ class ArchiveHtmlCleaner
     private function stripAttributes(DOMElement $node, string $tag): void
     {
         $keep = match ($tag) {
-            'a' => ['href'],
+            // id — это якоря (<a name=…> в старом WordPress, id заголовков
+            // MediaWiki): без них внутристраничные ссылки #… ведут в никуда
+            'a' => ['href', 'id'],
+            'h2', 'h3', 'h4', 'h5' => ['id'],
             // структурные атрибуты объединения ячеек (стили/классы не тянем)
             'td', 'th' => ['colspan', 'rowspan'],
             default => [],
         };
+
+        // старый синтаксис якоря <a name="0001"> → <a id="0001">
+        if ($tag === 'a' && ! $node->hasAttribute('id') && $node->hasAttribute('name')) {
+            $node->setAttribute('id', $node->getAttribute('name'));
+        }
+        if (in_array('id', $keep, true) && $node->hasAttribute('id')) {
+            $id = preg_replace('/[^\w.\-:]/u', '', $node->getAttribute('id'));
+            $id === '' ? $node->removeAttribute('id') : $node->setAttribute('id', $id);
+        }
 
         foreach (iterator_to_array($node->attributes ?? []) as $attr) {
             if (! in_array(strtolower($attr->name), $keep, true)) {

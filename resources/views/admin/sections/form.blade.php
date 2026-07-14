@@ -30,6 +30,17 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Родительский раздел</label>
+                <select name="parent_id" class="w-full rounded-md border-gray-300">
+                    <option value="">— корневой раздел —</option>
+                    @foreach ($parents as $parent)
+                        <option value="{{ $parent->id }}" @selected(old('parent_id', $section->parent_id) == $parent->id)>{{ $parent->title }}</option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Подраздел показывается по адресу /{родитель}/{slug}; адреса его страниц остаются под корневым разделом. Глубина — один уровень.</p>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
                 <textarea name="description" rows="3" class="w-full rounded-md border-gray-300">{{ old('description', $section->description) }}</textarea>
             </div>

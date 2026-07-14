@@ -72,13 +72,18 @@ class PageObserver
     public function updating(Page $page): void
     {
         if ($page->isDirty(['title', 'body'])) {
+            // «Отредактирована вручную» — только правки из админки; изменения
+            // консольных команд (импорт/перелинковка) помечаются отдельно,
+            // иначе refresh-защита импортёров принимает их за ручные правки
+            $manual = ! app()->runningInConsole() || app()->runningUnitTests();
+
             $page->revisions()->create([
                 'title' => $page->getOriginal('title'),
                 'body' => $page->getOriginal('body'),
                 'source_type' => $page->getOriginal('source_type'),
                 'source_url' => $page->getOriginal('source_url'),
                 'archived_at' => $page->getOriginal('archived_at'),
-                'note' => 'Отредактирована вручную '.now()->format('d.m.Y H:i'),
+                'note' => ($manual ? 'Отредактирована вручную ' : 'Обновлена командой ').now()->format('d.m.Y H:i'),
             ]);
         }
     }

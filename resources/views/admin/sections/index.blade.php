@@ -22,21 +22,24 @@
                 </thead>
                 <tbody>
                     @foreach ($sections as $section)
-                        <tr class="border-t">
-                            <td class="px-5 py-3">
-                                <a class="text-indigo-700 hover:underline font-medium" href="{{ route('admin.sections.edit', $section) }}">{{ $section->title }}</a>
-                            </td>
-                            <td class="px-5 py-3 text-gray-500">/{{ $section->slug }}</td>
-                            <td class="px-5 py-3">{{ $section->pages_count }}</td>
-                            <td class="px-5 py-3">{{ $section->is_visible ? 'видим' : 'скрыт' }}</td>
-                            <td class="px-5 py-3">{{ $section->position }}</td>
-                            <td class="px-5 py-3 text-right">
-                                <form method="POST" action="{{ route('admin.sections.destroy', $section) }}" onsubmit="return confirm('Удалить раздел «{{ $section->title }}»? Страницы останутся без раздела.')">
-                                    @csrf @method('DELETE')
-                                    <button class="text-red-600 hover:underline text-xs">Удалить</button>
-                                </form>
-                            </td>
-                        </tr>
+                        @foreach ([$section, ...$section->children] as $row)
+                            <tr class="border-t">
+                                <td class="px-5 py-3">
+                                    @unless ($row->isRoot())<span class="text-gray-400 pl-4">↳</span>@endunless
+                                    <a class="text-indigo-700 hover:underline font-medium" href="{{ route('admin.sections.edit', $row) }}">{{ $row->title }}</a>
+                                </td>
+                                <td class="px-5 py-3 text-gray-500">{{ $row->url() }}</td>
+                                <td class="px-5 py-3">{{ $row->pages_count }}</td>
+                                <td class="px-5 py-3">{{ $row->is_visible ? 'видим' : 'скрыт' }}</td>
+                                <td class="px-5 py-3">{{ $row->position }}</td>
+                                <td class="px-5 py-3 text-right">
+                                    <form method="POST" action="{{ route('admin.sections.destroy', $row) }}" onsubmit="return confirm('Удалить раздел «{{ $row->title }}»? Страницы останутся без раздела.')">
+                                        @csrf @method('DELETE')
+                                        <button class="text-red-600 hover:underline text-xs">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>

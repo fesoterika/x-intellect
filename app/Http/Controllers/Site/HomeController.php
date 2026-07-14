@@ -13,7 +13,8 @@ class HomeController extends Controller
     {
         return view('site.home', [
             'forumTopicsCount' => ForumTopic::count(),
-            'sections' => Section::where('is_visible', true)
+            'sections' => Section::root()
+                ->where('is_visible', true)
                 ->where('show_on_home', true)
                 ->orderBy('position')
                 ->withCount(['pages as published_pages_count' => fn ($q) => $q->where('status', 'published')->where('is_listed', true)])
