@@ -13,7 +13,7 @@ class MenuSeeder extends Seeder
         $rootItems = [
             ['label' => 'Вики', 'url' => '/wiki', 'location' => 'header', 'position' => 1],
             ['label' => 'Библиотека', 'url' => '/library', 'location' => 'header', 'position' => 3],
-            ['label' => 'Статьи', 'url' => '/mag', 'location' => 'header', 'position' => 4],
+            ['label' => 'Статьи', 'url' => '/articles', 'location' => 'header', 'position' => 4],
             ['label' => 'Курсы', 'url' => '/courses', 'location' => 'header', 'position' => 5],
             ['label' => 'О проекте', 'url' => '/about', 'location' => 'header', 'position' => 7],
 

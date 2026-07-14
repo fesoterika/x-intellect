@@ -35,6 +35,19 @@ class GenerateSitemap extends Command
             ];
         }
 
+        // Глоссарий: сам список + собственный адрес каждого термина
+        // (/glossary?term=<slug> — цель 301 со старых вики-адресов).
+        if (\App\Models\GlossaryTerm::query()->exists()) {
+            $urls[] = ['loc' => $base.'/glossary', 'lastmod' => now()->toAtomString(), 'priority' => '0.7'];
+            foreach (\App\Models\GlossaryTerm::all() as $term) {
+                $urls[] = [
+                    'loc' => $base.$term->url(),
+                    'lastmod' => $term->updated_at?->toAtomString(),
+                    'priority' => '0.5',
+                ];
+            }
+        }
+
         $mediaUrls = [];
 
         Page::published()->with(['section', 'media'])->chunk(200, function ($pages) use (&$urls, &$mediaUrls, $base) {

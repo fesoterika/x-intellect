@@ -118,6 +118,93 @@ class PublicSiteTest extends TestCase
             ->assertSee('FAQPage', false);
     }
 
+    public function test_glossary_term_has_own_indexable_url(): void
+    {
+        $this->seedCore();
+
+        $term = \App\Models\GlossaryTerm::where('term', 'Биоэкран')->firstOrFail();
+        $base = rtrim(config('app.url'), '/');
+
+        $this->get('/glossary?term='.$term->slug)
+            ->assertOk()
+            ->assertSee('Биоэкран - глоссарий проекта X-Intellect')
+            // canonical ведёт на сам термин, а не на общий список
+            ->assertSee('<link rel="canonical" href="'.$base.'/glossary?term='.$term->slug.'">', false)
+            ->assertSee('DefinedTerm', false)
+            ->assertDontSee('noindex', false);
+    }
+
+    public function test_glossary_free_text_search_url_is_not_indexable(): void
+    {
+        $this->seedCore();
+
+        $base = rtrim(config('app.url'), '/');
+
+        // ?q= — служебное состояние поиска: noindex + canonical на /glossary
+        $this->get('/glossary?q=биоэк')
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, follow">', false)
+            ->assertSee('<link rel="canonical" href="'.$base.'/glossary">', false);
+
+        // сам список остаётся индексируемым
+        $this->get('/glossary')->assertOk()->assertDontSee('noindex', false);
+    }
+
+    public function test_glossary_unknown_term_redirects_to_list(): void
+    {
+        $this->seedCore();
+
+        $this->get('/glossary?term=takogo-termina-net')->assertRedirect('/glossary');
+    }
+
+    public function test_old_wiki_term_url_redirects_to_term_query(): void
+    {
+        $this->seedCore();
+
+        $term = \App\Models\GlossaryTerm::where('term', 'Биоэкран')->firstOrFail();
+
+        \App\Models\Redirect::create([
+            'from_path' => '/wiki/index.php?title=Биоэкран',
+            'to_url' => $term->url(),
+            'status_code' => 301,
+        ]);
+
+        // Старый вики-адрес ведёт на адрес термина, а не на якорь #slug
+        $this->get('/wiki/index.php?title=%D0%91%D0%B8%D0%BE%D1%8D%D0%BA%D1%80%D0%B0%D0%BD')
+            ->assertStatus(301)
+            ->assertRedirect('/glossary?term='.$term->slug);
+    }
+
+    public function test_glossary_terms_are_listed_in_sitemap(): void
+    {
+        $this->seedCore();
+
+        $this->artisan('sitemap:generate')->assertSuccessful();
+
+        $xml = file_get_contents(public_path('sitemap.xml'));
+        $base = rtrim(config('app.url'), '/');
+        $term = \App\Models\GlossaryTerm::where('term', 'Биоэкран')->firstOrFail();
+
+        $this->assertStringContainsString($base.'/glossary</loc>', $xml);
+        // в XML амперсанда нет — только один параметр, но loc экранируется e()
+        $this->assertStringContainsString($base.'/glossary?term='.$term->slug.'</loc>', $xml);
+    }
+
+    public function test_articles_section_replaced_mag_everywhere(): void
+    {
+        $this->seedCore();
+
+        $this->get('/articles')->assertOk();
+
+        // Старый слаг раздела не должен воскресать из сидеров
+        $this->assertNull(\App\Models\Section::where('slug', 'mag')->first());
+        $this->assertNotNull(\App\Models\MenuItem::where('location', 'header')->where('url', '/articles')->first());
+        $this->assertNull(\App\Models\MenuItem::where('url', '/mag')->first());
+
+        // Ни один редирект не ведёт на мёртвый префикс /mag/
+        $this->assertSame(0, \App\Models\Redirect::where('to_url', 'like', '/mag/%')->count());
+    }
+
     public function test_header_menu_contains_glossary_as_wiki_submenu(): void
     {
         $this->seedCore();
@@ -194,7 +281,7 @@ class PublicSiteTest extends TestCase
     {
         $this->seedCore();
 
-        $section = Section::where('slug', 'mag')->first();
+        $section = Section::where('slug', 'articles')->firstOrFail();
         for ($i = 1; $i <= 25; $i++) {
             Page::create([
                 'section_id' => $section->id,
@@ -204,7 +291,7 @@ class PublicSiteTest extends TestCase
             ]);
         }
 
-        $this->get('/mag')
+        $this->get('/articles')
             ->assertOk()
             ->assertSee('Показать ещё')
             ->assertSee('class="load-more"', false)
@@ -215,7 +302,7 @@ class PublicSiteTest extends TestCase
     {
         $this->seedCore();
 
-        $section = Section::where('slug', 'mag')->first();
+        $section = Section::where('slug', 'articles')->firstOrFail();
         for ($i = 1; $i <= 25; $i++) {
             Page::create([
                 'section_id' => $section->id,
@@ -225,7 +312,7 @@ class PublicSiteTest extends TestCase
             ]);
         }
 
-        $partial = $this->get('/mag?'.http_build_query(['page' => 2, 'partial' => 1]));
+        $partial = $this->get('/articles?'.http_build_query(['page' => 2, 'partial' => 1]));
 
         $partial->assertOk()
             ->assertSee('section-items', false)   // фрагмент со списком карточек

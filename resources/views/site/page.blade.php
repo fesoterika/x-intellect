@@ -7,6 +7,14 @@
 @endsection
 
 @section('content')
+    @php
+        // Шорткод [[audio:...]] встраивает записи прямо в текст — тогда отдельной
+        // секции «Аудиозаписи» внизу нет, и подсказка-якорь не нужна.
+        $shortcodeUsed = str_contains((string) $page->body, '[[audio:');
+        $playlist = $page->audio;
+        $hasAudioSection = $playlist->isNotEmpty() && ! $shortcodeUsed;
+    @endphp
+
     <article>
         @include('site.partials.breadcrumbs', ['crumbs' => [
             'Главная' => '/',
@@ -16,19 +24,32 @@
             $page->title => null,
         ]])
 
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px;">
+        <div class="page-meta">
             <x-source-badge :page="$page" />
             @if ($page->archived_at)
-                <span style="font-size: 12.5px; color: var(--xi-ink-faint);">Материал из архива {{ $page->archived_at->format('Y') }} года</span>
+                <span style="color: var(--xi-ink-faint);">из архива {{ $page->archived_at->format('Y') }} г.</span>
             @endif
             @if ($page->source_url)
                 <a href="{{ $page->source_url }}" target="_blank" rel="noopener noreferrer"
-                   style="font-size: 12.5px; color: var(--xi-ink-soft);">архивная копия ↗</a>
+                   style="color: var(--xi-ink-soft);">архивная копия ↗</a>
             @endif
         </div>
 
         <h1 class="page-title">{{ $page->title }}</h1>
-        <hr class="title-rule" aria-hidden="true">
+
+        {{-- Строка с линией-акцентом: пустое место справа от затухающей линии
+             занимает подсказка-якорь к аудио — верх страницы не перегружается --}}
+        <div class="title-rule-row">
+            <hr class="title-rule" aria-hidden="true">
+            @if ($hasAudioSection)
+                <a class="audio-hint" href="#audio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                    {{ trans_choice('{1} :count аудиозапись|[2,4] :count аудиозаписи|[5,*] :count аудиозаписей', $playlist->count()) }}
+                    <span class="sep" aria-hidden="true">—</span>
+                    <span class="tail">ниже текста <span class="arr" aria-hidden="true">↓</span></span>
+                </a>
+            @endif
+        </div>
 
         @if ($section->slug === 'courses')
             {{-- Предупреждение об ответственном использовании техник -
@@ -45,13 +66,8 @@
             {!! $body !!}
         </div>
 
-        @php
-            $shortcodeUsed = str_contains((string) $page->body, '[[audio:');
-            $playlist = $page->audio;
-        @endphp
-
-        @if ($playlist->isNotEmpty() && ! $shortcodeUsed)
-            <section style="margin-top: 22px;">
+        @if ($hasAudioSection)
+            <section id="audio" style="margin-top: 22px;">
                 <h2 class="section-title">Аудиозаписи</h2>
                 @include('site.partials.audio-player', ['tracks' => $playlist, 'playerId' => 'page-playlist'])
             </section>
