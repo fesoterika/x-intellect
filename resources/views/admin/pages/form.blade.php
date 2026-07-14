@@ -44,7 +44,16 @@
                         <select name="section_id" class="w-full rounded-md border-gray-300">
                             <option value="">- без раздела -</option>
                             @foreach ($sections as $section)
-                                <option value="{{ $section->id }}" @selected(old('section_id', $page->section_id) == $section->id)>{{ $section->title }}</option>
+                                @if ($section->children->isEmpty())
+                                    <option value="{{ $section->id }}" @selected(old('section_id', $page->section_id) == $section->id)>{{ $section->title }}</option>
+                                @else
+                                    <optgroup label="{{ $section->title }}">
+                                        <option value="{{ $section->id }}" @selected(old('section_id', $page->section_id) == $section->id)>{{ $section->title }}</option>
+                                        @foreach ($section->children as $child)
+                                            <option value="{{ $child->id }}" @selected(old('section_id', $page->section_id) == $child->id)>↳ {{ $child->title }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endif
                             @endforeach
                         </select>
                     </div>

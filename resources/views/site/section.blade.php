@@ -10,6 +10,7 @@
 @section('content')
     @include('site.partials.breadcrumbs', ['crumbs' => [
         'Главная' => '/',
+        ...($section->isRoot() ? [] : [$section->parent->title => $section->parent->url()]),
         $section->title => null,
     ]])
 
@@ -19,17 +20,31 @@
         <p style="color: var(--xi-ink-soft); max-width: 760px; margin-bottom: 26px;">{{ $section->description }}</p>
     @endif
 
-    @if ($section->slug === 'wiki')
+    @if ($section->rootAncestor()->slug === 'wiki')
         {{-- Переосмысленная структура MediaWiki: боковая навигация по вики --}}
         <div style="display: grid; grid-template-columns: 240px 1fr; gap: 24px;" class="wiki-layout">
             <aside>
                 <div class="xi-card" style="padding: 18px 20px; position: sticky; top: 90px;">
                     <h2 class="section-title" style="margin-bottom: 10px;">Страницы вики</h2>
                     <nav style="display: grid; gap: 4px;">
-                        <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
-                        @foreach ($pages as $page)
-                            <a href="{{ url($page->url()) }}" style="color: var(--xi-ink-soft); text-decoration: none; font-size: 14px; padding: 4px 0;">{{ $page->title }}</a>
-                        @endforeach
+                        @forelse ($menuGroups ?? [] as $group)
+                            @php $hasPages = $group->publishedPages->isNotEmpty(); @endphp
+                            @if ($hasPages || $group->slug === 'obshhii-razdel')
+                                <a href="{{ url($group->url()) }}" style="color: var(--xi-ink); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 10px 0 2px;">{{ $group->title }}</a>
+                                @if ($group->slug === 'obshhii-razdel' && ! $group->publishedPages->contains('slug', 'pravila-vikipedii'))
+                                    <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
+                                @endif
+                                @foreach ($group->publishedPages as $page)
+                                    <a href="{{ url($page->url()) }}" style="color: var(--xi-ink-soft); text-decoration: none; font-size: 14px; padding: 4px 0;">{{ $page->title }}</a>
+                                    {{-- Глоссарий — отдельная страница; в меню стоит после «Правил Википедии» --}}
+                                    @if ($group->slug === 'obshhii-razdel' && $page->slug === 'pravila-vikipedii')
+                                        <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @empty
+                            <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
+                        @endforelse
                     </nav>
                 </div>
             </aside>
