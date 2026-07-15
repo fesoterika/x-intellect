@@ -26,6 +26,8 @@
 
     @include('site.partials.forum-disclaimer')
 
+    @include('site.forum.search-box')
+
     @foreach ($groups as $group => $forums)
         <section class="forum-group">
             <h2 class="section-title">{{ $group }}</h2>

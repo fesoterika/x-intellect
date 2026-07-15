@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\GlossaryTerm;
 use App\Models\Page;
+use App\Support\RussianText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,18 +28,15 @@ class SearchController extends Controller
                 ->where(fn ($q) => $q->where('is_listed', true)->orWhere('source_type', '!=', 'new'))
                 ->with('section');
 
-            // MySQL FULLTEXT на проде, LIKE-фолбэк на локальном SQLite (Этап 1 плана)
+            // MySQL FULLTEXT на проде, LIKE-фолбэк на локальном SQLite (Этап 1 плана):
+            // LIKE в SQLite не сворачивает регистр кириллицы — App\Support\RussianText
+            // регистрирует на соединении функцию xi_lower() = mb_strtolower
             if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {
                 $builder->whereFullText(['title', 'body'], $query);
             } else {
-                // LIKE в SQLite не сворачивает регистр кириллицы («Аура» ≠ «аура») —
-                // сравниваем через PHP-функцию mb_strtolower, зарегистрированную
-                // в соединении; спецсимволы LIKE в запросе экранируем
-                $this->registerSqliteLower();
-                $needle = '%'.addcslashes(mb_strtolower($query, 'UTF-8'), '%_\\').'%';
-                $builder->where(function ($q) use ($needle) {
-                    $q->whereRaw("xi_lower(title) LIKE ? ESCAPE '\\'", [$needle])
-                        ->orWhereRaw("xi_lower(body) LIKE ? ESCAPE '\\'", [$needle]);
+                $builder->where(function ($q) use ($query) {
+                    RussianText::contains($q, 'title', $query);
+                    RussianText::contains($q, 'body', $query, 'or');
                 });
             }
 
@@ -68,15 +66,5 @@ class SearchController extends Controller
             ->sortBy(fn ($term) => mb_stripos($term->term, $query) === false ? 1 : 0)
             ->take(self::GLOSSARY_LIMIT)
             ->values();
-    }
-
-    /** Регистронезависимость для кириллицы в SQLite: xi_lower() = mb_strtolower. */
-    protected function registerSqliteLower(): void
-    {
-        $pdo = DB::connection()->getPdo();
-
-        if (method_exists($pdo, 'sqliteCreateFunction')) {
-            $pdo->sqliteCreateFunction('xi_lower', fn ($value) => mb_strtolower((string) $value, 'UTF-8'), 1);
-        }
     }
 }
