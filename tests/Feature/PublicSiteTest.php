@@ -301,7 +301,7 @@ class PublicSiteTest extends TestCase
             ->assertSee('не менее двух символов');
     }
 
-    public function test_section_shows_load_more_when_more_pages(): void
+    public function test_section_shows_pagination_and_sort_control(): void
     {
         $this->seedCore();
 
@@ -317,31 +317,62 @@ class PublicSiteTest extends TestCase
 
         $this->get('/articles')
             ->assertOk()
-            ->assertSee('Показать ещё')
-            ->assertSee('class="load-more"', false)
-            ->assertSee('page=2', false);
+            ->assertSee('xi-pagination', false) // страницы пагинации внизу
+            ->assertSee('page=2', false)
+            ->assertSee('Сортировка')
+            ->assertSee('по алфавиту: А → Я');
     }
 
-    public function test_section_partial_returns_only_cards_without_layout(): void
+    public function test_section_sorting_orders_titles_and_dates(): void
     {
         $this->seedCore();
 
         $section = Section::where('slug', 'articles')->firstOrFail();
-        for ($i = 1; $i <= 25; $i++) {
+        foreach ([
+            ['Яблоко', '2013-05-01'],
+            ['арбуз', '2012-01-01'],   // нижний регистр — сортировка регистронезависима
+            ['Берёза', '2014-09-09'],
+        ] as [$title, $date]) {
             Page::create([
                 'section_id' => $section->id,
-                'title' => "Статья номер {$i}",
-                'body' => '<p>Тело статьи '.$i.'</p>',
+                'title' => $title,
+                'body' => '<p>Тело…</p>',
                 'status' => 'published',
+                'published_at' => $date,
             ]);
         }
 
-        $partial = $this->get('/articles?'.http_build_query(['page' => 2, 'partial' => 1]));
+        $this->get('/articles')->assertOk()->assertSeeInOrder(['арбуз', 'Берёза', 'Яблоко']);
+        $this->get('/articles?sort=zyx')->assertOk()->assertSeeInOrder(['Яблоко', 'Берёза', 'арбуз']);
+        $this->get('/articles?sort=new')->assertOk()->assertSeeInOrder(['Берёза', 'Яблоко', 'арбуз']);
+        $this->get('/articles?sort=old')->assertOk()->assertSeeInOrder(['арбуз', 'Яблоко', 'Берёза']);
+    }
 
-        $partial->assertOk()
-            ->assertSee('section-items', false)   // фрагмент со списком карточек
-            ->assertDontSee('site-header', false) // но без общего layout
-            ->assertDontSee('Владелец этого сайта не является автором'); // без футера
+    public function test_subsection_page_breadcrumbs_include_subsection(): void
+    {
+        $this->seedCore();
+
+        $root = Section::where('slug', 'articles')->firstOrFail();
+        $child = Section::create([
+            'parent_id' => $root->id,
+            'title' => 'Дайджесты',
+            'slug' => 'daidzesty',
+            'position' => 1,
+            'is_visible' => true,
+        ]);
+        $page = Page::create([
+            'section_id' => $child->id,
+            'title' => 'Дайджест сентябрь',
+            'body' => '<p>Тело…</p>',
+            'status' => 'published',
+        ]);
+
+        // страница подраздела живёт под URL корневого раздела,
+        // а в крошках между разделом и материалом — сам подраздел
+        $this->get('/articles/'.$page->slug)
+            ->assertOk()
+            ->assertSeeInOrder(['Статьи', 'Дайджесты', 'Дайджест сентябрь'])
+            ->assertSee('/articles/daidzesty', false);
     }
 
     public function test_admin_area_requires_authentication(): void
@@ -768,6 +799,37 @@ class PublicSiteTest extends TestCase
             ->assertSee('Ответ по существу')
             ->assertSee('DiscussionForumPosting', false)  // SEO-разметка
             ->assertSee('Форум неактивен');
+    }
+
+    public function test_forum_search_finds_topics_by_title_and_post_body(): void
+    {
+        $this->seedCore();
+        $topic = $this->seedForumTopic();
+
+        // строка поиска — на главной форума, под дисклеймером
+        $this->get('/forum')->assertOk()->assertSee('Поиск по форуму', false);
+
+        // по заголовку, без учёта регистра
+        $this->get('/forum/search?'.http_build_query(['q' => 'структура вселенной']))
+            ->assertOk()
+            ->assertSee('Структура Вселенной')
+            ->assertSee($topic->url(), false);
+
+        // по содержанию сообщений
+        $this->get('/forum/search?'.http_build_query(['q' => 'ТЁМНОЙ МАТЕРИИ']))
+            ->assertOk()
+            ->assertSee('Структура Вселенной');
+
+        // фрагмент подсказок — без общего layout
+        $this->get('/forum/search?'.http_build_query(['q' => 'вселенной', 'partial' => 1]))
+            ->assertOk()
+            ->assertSee('Структура Вселенной')
+            ->assertDontSee('site-header', false);
+
+        // мимо
+        $this->get('/forum/search?'.http_build_query(['q' => 'квазар']))
+            ->assertOk()
+            ->assertSee('тем не найдено');
     }
 
     public function test_forum_tile_on_home_when_topics_exist(): void
