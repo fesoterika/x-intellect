@@ -220,3 +220,11 @@ trix-editor.trix-content figure[data-trix-attachment*='"alignment":"right"'] + s
     user-select: none;
 }
 .trix-dialog .xi-link-blank input { accent-color: #6a4cd6; }
+
+/* Компактный редактор описаний раздела и определений глоссария (.xi-def-editor):
+   только текстовое оформление — медиа-кнопки, выравнивание, заголовки,
+   скрепка и таблицы для короткого текста не нужны */
+.xi-def-editor trix-toolbar .xi-media-group,
+.xi-def-editor trix-toolbar .xi-align-group,
+.xi-def-editor trix-toolbar .trix-button-group--file-tools,
+.xi-def-editor trix-toolbar [data-trix-attribute^="heading"] { display: none !important; }

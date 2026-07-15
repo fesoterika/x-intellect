@@ -71,6 +71,17 @@ class SectionRequest extends FormRequest
         $data['is_visible'] = $this->boolean('is_visible');
         $data['show_on_home'] = $this->boolean('show_on_home');
 
+        // Пустой документ Trix (<div><br></div> и т.п.) — это отсутствие описания
+        if (array_key_exists('description', $data)
+            && trim(strip_tags((string) $data['description'])) === '') {
+            $data['description'] = null;
+        }
+
+        // Ссылки на localhost из редактора → относительные
+        if (! empty($data['description'])) {
+            $data['description'] = app(\App\Services\LocalLinks::class)->relativize($data['description']);
+        }
+
         return $data;
     }
 }

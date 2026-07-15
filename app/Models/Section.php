@@ -67,4 +67,23 @@ class Section extends Model
             ? '/'.$this->slug
             : '/'.$this->parent->slug.'/'.$this->slug;
     }
+
+    /** Описание без разметки — для meta description и плиток главной. */
+    public function descriptionPlain(): string
+    {
+        return trim(html_entity_decode(strip_tags((string) $this->description), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    /**
+     * Описание для вывода как HTML. Старые описания — чистый текст (экранируем,
+     * переносы в <br>); новые из Trix-редактора содержат разметку.
+     */
+    public function descriptionHtml(): string
+    {
+        $description = (string) $this->description;
+
+        return str_contains($description, '<')
+            ? $description
+            : nl2br(e($description));
+    }
 }

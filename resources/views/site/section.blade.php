@@ -3,7 +3,7 @@
 @section('title', $section->title.' - X-Intellect')
 
 @section('meta')
-    <meta name="description" content="{{ Str::limit($section->description ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158) }}">
+    <meta name="description" content="{{ Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158) }}">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $section->url() }}">
 @endsection
 
@@ -17,7 +17,20 @@
     <h1 class="page-title">{{ $section->title }}</h1>
 
     @if ($section->description)
-        <p style="color: var(--xi-ink-soft); max-width: 760px; margin-bottom: 26px;">{{ $section->description }}</p>
+        {{-- Панель «О разделе»: визуально отделена от заголовка и плиток.
+             Длинное описание сворачивается до нескольких строк; «Подробнее»
+             разворачивает. Без JS текст просто показан целиком. --}}
+        <div class="section-desc-card" x-data="sectionDesc()" :class="{ 'is-collapsed': collapsed }">
+            <span class="section-desc-label">О разделе</span>
+            <div class="section-desc-body" x-ref="body" :style="bodyStyle">
+                <div class="section-desc">{!! $section->descriptionHtml() !!}</div>
+            </div>
+            <button type="button" class="section-desc-toggle" x-show="collapsible" x-cloak
+                    :aria-expanded="(!collapsed).toString()" @click="collapsed = !collapsed">
+                <span x-text="collapsed ? 'Подробнее' : 'Свернуть'"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+        </div>
     @endif
 
     @if ($section->rootAncestor()->slug === 'wiki')
@@ -62,6 +75,29 @@
 
 @push('scripts')
 <script>
+    /* Сворачивание длинного описания раздела: короткий текст показывается
+       целиком без кнопки; порог с запасом, чтобы не прятать пару строк */
+    function sectionDesc() {
+        const LIMIT = 112;  // высота свёрнутого описания, ~4 строки
+        const SLACK = 44;   // сворачиваем, только если скрыто заметно больше
+
+        return {
+            collapsible: false,
+            collapsed: false,
+
+            init() {
+                this.collapsible = this.$refs.body.scrollHeight > LIMIT + SLACK;
+                this.collapsed = this.collapsible;
+            },
+
+            get bodyStyle() {
+                if (!this.collapsible) return '';
+                // Явный max-height в обе стороны — ради плавной анимации
+                return 'max-height: ' + (this.collapsed ? LIMIT : this.$refs.body.scrollHeight) + 'px';
+            },
+        };
+    }
+
     /* «Показать ещё»: дозагрузка следующей страницы раздела без перезагрузки.
        Без JS ссылка .load-more просто ведёт на ?page=N (полная страница). */
     function sectionPager() {
