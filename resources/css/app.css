@@ -928,24 +928,213 @@ html { scroll-padding-top: 84px; }
     border-bottom: 1px solid var(--xi-line);
 }
 .glossary-list { display: grid; gap: 12px; }
-.glossary-item { padding: 18px 22px; scroll-margin-top: 90px; transition: border-color .2s, box-shadow .2s; }
+/* Карточка термина — стекло, как у плиток разделов на главной */
+.glossary-item {
+    position: relative;
+    overflow: hidden;
+    padding: 18px 22px 14px;
+    scroll-margin-top: 90px;
+    background: var(--xi-glass-bg);
+    border: 1px solid var(--xi-glass-line);
+    border-radius: 14px;
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow:
+        0 10px 30px -18px var(--xi-glass-shadow),
+        inset 0 1px 0 var(--xi-glass-edge);
+    transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.glossary-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(150deg, var(--xi-glass-sheen), transparent 42%);
+    opacity: 0.45;
+    transition: opacity .25s ease;
+}
+.glossary-item > * { position: relative; }
+.glossary-item:hover {
+    background: var(--xi-glass-bg-hover);
+    border-color: var(--xi-accent-deep);
+}
+.glossary-item:hover::before { opacity: 0.9; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glossary-item { background: var(--xi-surface); border-color: var(--xi-line); }
+}
 /* Термин, открытый по /glossary?term=<slug> — подсветить, куда привёл адрес */
 .glossary-item.is-active {
     border-color: var(--xi-accent-deep);
     box-shadow: 0 0 0 1px var(--xi-accent-deep), 0 6px 22px -12px var(--xi-accent);
 }
-.glossary-term-title { font-family: var(--xi-font-serif); margin: 0 0 8px; font-size: 18px; color: var(--xi-accent); }
+.glossary-term-title { font-family: var(--xi-font-serif); margin: 0 0 6px; font-size: 18px; color: var(--xi-accent); }
 .glossary-term-title a { color: inherit; text-decoration: none; }
 .glossary-term-title a:hover { color: var(--xi-accent-deep); text-decoration: underline; }
+/* Акцентная черта под термином — растёт при наведении, как у плиток */
+.glossary-term-rule {
+    display: block;
+    width: 28px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--xi-accent), var(--xi-accent-deep));
+    margin: 0 0 10px;
+    transition: width .25s ease;
+}
+.glossary-item:hover .glossary-term-rule { width: 52px; }
 .glossary-def { margin: 0; color: var(--xi-ink-soft); }
+/* Определение может содержать разметку редактора (абзацы, списки, ссылки) —
+   размеры и цвета согласованы с карточкой термина, а не с .xi-prose статей */
+.glossary-def p, .glossary-def > div:not([class]) { margin: 0 0 0.65em; }
+.glossary-def > :last-child { margin-bottom: 0; }
+.glossary-def strong { color: var(--xi-ink); }
+.glossary-def a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
+.glossary-def a:hover { border-bottom-color: var(--xi-accent); }
+.glossary-def ul { padding-left: 1.3em; margin: 0 0 0.65em; list-style: disc outside; }
+.glossary-def ol { padding-left: 1.3em; margin: 0 0 0.65em; list-style: decimal outside; }
+.glossary-def li { margin-bottom: 0.25em; }
+.glossary-def li::marker { color: var(--xi-accent); }
+.glossary-def blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 0.8em 0; padding: 0.2em 0 0.2em 0.9em; color: var(--xi-ink-soft); font-style: italic; }
 
-/* Копировать термин / ссылку — кнопки того же вида, что в блоке «Поделиться» */
-.glossary-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+/* Подвал карточки термина: «Подробнее» слева, копирование справа,
+   отделён тонкой линией от определения */
+.glossary-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 11px;
+    border-top: 1px solid var(--xi-line);
+}
 .glossary-actions .share-btn { width: 30px; height: 30px; }
 .glossary-actions .share-btn svg { width: 15px; height: 15px; }
-.glossary-more { font-size: 13.5px; color: var(--xi-accent); text-decoration: none; margin-left: auto; }
+/* Группа копирования прижата вправо (и когда «Подробнее» нет) */
+.glossary-copy { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.glossary-more { font-size: 13.5px; font-weight: 600; color: var(--xi-accent); text-decoration: none; }
 .glossary-more:hover { text-decoration: underline; }
+.glossary-more .arr { transition: transform .2s ease; display: inline-block; }
+.glossary-more:hover .arr { transform: translateX(3px); }
 .glossary-empty { color: var(--xi-ink-faint); margin-top: 20px; }
+
+/* --- Термины глоссария в общем поиске --- */
+.search-glossary { display: grid; gap: 10px; max-width: 760px; margin-bottom: 30px; }
+.search-glossary-item {
+    display: block;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.search-glossary-item:hover {
+    border-color: var(--xi-accent-deep);
+    box-shadow: 0 6px 22px -14px var(--xi-accent);
+}
+.search-glossary-term {
+    display: block;
+    font-family: var(--xi-font-serif);
+    font-size: 17px;
+    color: var(--xi-accent);
+    margin-bottom: 4px;
+}
+.search-glossary-item:hover .search-glossary-term { text-decoration: underline; }
+.search-glossary-def { display: block; font-size: 14px; line-height: 1.55; color: var(--xi-ink-soft); }
+
+/* --- Описание раздела: панель «О разделе» между заголовком и плитками.
+       Стекло — как у плиток разделов на главной (.section-tile) --- */
+.section-desc-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--xi-glass-bg);
+    border: 1px solid var(--xi-glass-line);
+    border-radius: 14px;
+    padding: 18px 26px 16px;
+    margin: 4px 0 30px;
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow:
+        0 10px 30px -18px var(--xi-glass-shadow),
+        inset 0 1px 0 var(--xi-glass-edge);
+}
+/* Блик по верхнему краю — тот же, что у плиток разделов */
+.section-desc-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(150deg, var(--xi-glass-sheen), transparent 42%);
+    opacity: 0.55;
+}
+.section-desc-card > * { position: relative; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .section-desc-card { background: var(--xi-surface); border-color: var(--xi-line); }
+}
+.section-desc-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--xi-ink-faint);
+    margin-bottom: 8px;
+}
+.section-desc-body {
+    position: relative;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+/* Затухание последних строк в свёрнутом виде — маска в прозрачность:
+   на стекле нет цветной полосы-подложки, сквозь текст виден фон (обе темы) */
+.is-collapsed .section-desc-body {
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 54px), transparent);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 54px), transparent);
+}
+.section-desc-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--xi-accent);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+.section-desc-toggle:hover { color: var(--xi-accent-deep); }
+.section-desc-toggle svg { width: 14px; height: 14px; transition: transform 0.25s; }
+.section-desc-card:not(.is-collapsed) .section-desc-toggle svg { transform: rotate(180deg); }
+
+.section-desc {
+    color: var(--xi-ink-soft);
+    font-size: 15.5px;
+    line-height: 1.7;
+    margin: 0;
+}
+@media (max-width: 760px) {
+    .section-desc-card { padding: 15px 18px 13px; }
+}
+.section-desc p, .section-desc > div:not([class]) { margin: 0 0 0.8em; }
+.section-desc > :last-child { margin-bottom: 0; }
+.section-desc strong { color: var(--xi-ink); }
+.section-desc em { color: var(--xi-ink-soft); }
+.section-desc a { color: var(--xi-accent); text-decoration: none; border-bottom: 1px solid rgba(155, 134, 236, 0.35); }
+.section-desc a:hover { border-bottom-color: var(--xi-accent); }
+.section-desc ul { padding-left: 1.35em; margin: 0 0 0.8em; list-style: disc outside; }
+.section-desc ol { padding-left: 1.35em; margin: 0 0 0.8em; list-style: decimal outside; }
+.section-desc li { margin-bottom: 0.3em; }
+.section-desc li::marker { color: var(--xi-accent); }
+.section-desc blockquote { border-left: 3px solid var(--xi-accent-deep); margin: 1em 0; padding: 0.25em 0 0.25em 1em; font-style: italic; }
+.section-desc h2, .section-desc h3, .section-desc h4, .section-desc h5 {
+    font-family: var(--xi-font-serif);
+    color: var(--xi-ink);
+    line-height: 1.3;
+    margin: 1.1em 0 0.45em;
+    font-weight: 400;
+}
+.section-desc h2 { font-size: 1.3em; }
+.section-desc h3 { font-size: 1.15em; }
+.section-desc h4 { font-size: 1.05em; }
+.section-desc h5 { font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* --- Таймлайн истории проекта ---
    Селекторы с `.xi-prose` — чтобы перебить общие `.xi-prose ul/li`

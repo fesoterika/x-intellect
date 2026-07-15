@@ -453,6 +453,12 @@ function enhanceLinkDialog(toolbar) {
         return;
     }
 
+    // Штатное поле Trix — type=url: браузер требует протокол и не даёт вставить
+    // относительную ссылку (/wiki/…). Меняем на text; абсолютные ссылки на
+    // localhost сервер при сохранении сам превращает в относительные (LocalLinks).
+    input.type = 'text';
+    input.placeholder = 'https://… или /wiki/stranica';
+
     const label = document.createElement('label');
     label.className = 'xi-link-blank';
     label.innerHTML = '<input type="checkbox" data-x-blank> открывать в новом окне';

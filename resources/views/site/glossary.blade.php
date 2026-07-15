@@ -10,7 +10,7 @@
 
 @section('meta')
     <meta name="description" content="{{ $active
-        ? Str::limit($active->term.' - '.$active->definition, 300)
+        ? Str::limit($active->term.' - '.$active->definitionPlain(), 300)
         : 'Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.' }}">
 
     {{-- В индекс идут только /glossary и /glossary?term=<slug>; состояние
@@ -27,7 +27,7 @@
         'mainEntity' => $terms->map(fn ($term) => [
             '@type' => 'Question',
             'name' => $term->term,
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $term->definition],
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $term->definitionPlain()],
         ])->values()->all(),
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 
@@ -37,7 +37,7 @@
             '@context' => 'https://schema.org',
             '@type' => 'DefinedTerm',
             'name' => $active->term,
-            'description' => $active->definition,
+            'description' => $active->definitionPlain(),
             'url' => $base.$active->url(),
             'inDefinedTermSet' => [
                 '@type' => 'DefinedTermSet',
@@ -90,7 +90,7 @@
             <nav class="glossary-alphabet" aria-label="Алфавитный указатель">
                 @foreach ($letters as $letter)
                     <a href="#g-{{ $letter }}"
-                       data-letter-search="{{ mb_strtolower($groups[$letter]->pluck('term')->implode(' ').' '.$groups[$letter]->pluck('definition')->implode(' ')) }}"
+                       data-letter-search="{{ mb_strtolower($groups[$letter]->pluck('term')->implode(' ').' '.$groups[$letter]->map->definitionPlain()->implode(' ')) }}"
                        x-show="letterVisible($el)">{{ $letter }}</a>
                 @endforeach
             </nav>
@@ -104,10 +104,10 @@
                             @foreach ($groups[$letter] as $term)
                                 @php
                                     $termUrl = $base.$term->url();
-                                    $termText = $term->term.' - '.$term->definition;
+                                    $termText = $term->term.' - '.$term->definitionPlain();
                                 @endphp
                                 <div class="xi-card glossary-item" id="{{ $term->slug }}"
-                                     data-search="{{ mb_strtolower($term->term.' '.$term->definition) }}"
+                                     data-search="{{ mb_strtolower($term->term.' '.$term->definitionPlain()) }}"
                                      :class="{ 'is-active': active === @js($term->slug) }"
                                      x-show="cardVisible($el)">
                                     <h3 class="glossary-term-title">
@@ -116,31 +116,36 @@
                                         <a href="{{ url($term->url()) }}"
                                            @click.prevent="openTerm(@js($term->slug))">{{ $term->term }}</a>
                                     </h3>
-                                    <p class="glossary-def">{{ $term->definition }}</p>
+                                    <span class="glossary-term-rule" aria-hidden="true"></span>
+                                    {{-- Разметка из редактора определения (абзацы, списки, ссылки) --}}
+                                    <div class="glossary-def">{!! $term->definitionHtml() !!}</div>
 
+                                    {{-- Подвал: «Подробнее» слева, копирование справа --}}
                                     <div class="glossary-actions">
-                                        <button type="button" class="share-btn"
-                                                title="Скопировать термин с определением"
-                                                aria-label="Скопировать термин с определением"
-                                                @click="copy(@js($termText), @js($term->slug), 'text', 'Термин скопирован')">
-                                            <svg x-show="!isCopied(@js($term->slug), 'text')" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 1H5a2 2 0 0 0-2 2v13h2V3h10V1z"/><path d="M19 5H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H9V7h10v14z"/></svg>
-                                            <svg x-show="isCopied(@js($term->slug), 'text')" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
-                                        </button>
-
-                                        <button type="button" class="share-btn"
-                                                title="Скопировать ссылку на термин"
-                                                aria-label="Скопировать ссылку на термин"
-                                                @click="copy(@js($termUrl), @js($term->slug), 'link', 'Ссылка скопирована')">
-                                            <svg x-show="!isCopied(@js($term->slug), 'link')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                                            <svg x-show="isCopied(@js($term->slug), 'link')" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
-                                        </button>
-
-                                        <span class="share-copied" x-show="copied.slug === @js($term->slug)" x-cloak
-                                              aria-live="polite" x-text="copied.msg"></span>
-
                                         @if ($term->page && $term->page->isPublished())
-                                            <a href="{{ url($term->page->url()) }}" class="glossary-more">Подробнее →</a>
+                                            <a href="{{ url($term->page->url()) }}" class="glossary-more">Подробнее <span class="arr" aria-hidden="true">→</span></a>
                                         @endif
+
+                                        <span class="glossary-copy">
+                                            <span class="share-copied" x-show="copied.slug === @js($term->slug)" x-cloak
+                                                  aria-live="polite" x-text="copied.msg"></span>
+
+                                            <button type="button" class="share-btn"
+                                                    title="Скопировать термин с определением"
+                                                    aria-label="Скопировать термин с определением"
+                                                    @click="copy(@js($termText), @js($term->slug), 'text', 'Термин скопирован')">
+                                                <svg x-show="!isCopied(@js($term->slug), 'text')" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 1H5a2 2 0 0 0-2 2v13h2V3h10V1z"/><path d="M19 5H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H9V7h10v14z"/></svg>
+                                                <svg x-show="isCopied(@js($term->slug), 'text')" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
+                                            </button>
+
+                                            <button type="button" class="share-btn"
+                                                    title="Скопировать ссылку на термин"
+                                                    aria-label="Скопировать ссылку на термин"
+                                                    @click="copy(@js($termUrl), @js($term->slug), 'link', 'Ссылка скопирована')">
+                                                <svg x-show="!isCopied(@js($term->slug), 'link')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                                <svg x-show="isCopied(@js($term->slug), 'link')" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
+                                            </button>
+                                        </span>
                                     </div>
                                 </div>
                             @endforeach
