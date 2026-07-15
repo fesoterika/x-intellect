@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use App\Models\ForumTopic;
+use App\Support\RussianText;
+use Illuminate\Http\Request;
 
 /**
  * Архив форума phpBB (слепок 2015 года) — только чтение: темы и сообщения
@@ -37,5 +39,36 @@ class ForumController extends Controller
             'topic' => $topic,
             'posts' => $topic->posts()->paginate(25),
         ]);
+    }
+
+    /**
+     * Поиск по архиву форума: темы по заголовку и содержанию сообщений,
+     * без учёта регистра. С ?partial=1 отдаёт только список найденных тем —
+     * живые подсказки под строкой поиска (Alpine), без JS — обычная страница.
+     */
+    public function search(Request $request)
+    {
+        $query = trim((string) $request->query('q', ''));
+        $topics = collect();
+
+        if (mb_strlen($query) >= 2) {
+            $topics = ForumTopic::query()
+                ->where(function ($q) use ($query) {
+                    RussianText::contains($q, 'title', $query);
+                    $q->orWhereHas('posts', fn ($p) => RussianText::contains($p, 'body', $query));
+                })
+                ->orderBy('forum_position')
+                ->orderByDesc('last_posted_at')
+                ->get()
+                // совпадения в заголовке — выше совпадений только в сообщениях
+                ->sortBy(fn ($t) => mb_stripos($t->title, $query) === false ? 1 : 0)
+                ->values();
+        }
+
+        if ($request->boolean('partial')) {
+            return view('site.forum.results', ['query' => $query, 'topics' => $topics]);
+        }
+
+        return view('site.forum.search', ['query' => $query, 'topics' => $topics]);
     }
 }

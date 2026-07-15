@@ -15,14 +15,25 @@
         $hasAudioSection = $playlist->isNotEmpty() && ! $shortcodeUsed;
     @endphp
 
+    @php
+        // Крошки строятся от фактического раздела страницы: для страницы
+        // подраздела между корневым разделом и материалом есть своя крошка.
+        // Скрытый раздел (is_visible=false) не имеет доступной страницы-листинга —
+        // крошка остаётся текстом, без ссылки на 404.
+        $crumbSection = $page->section ?? $section;
+        $crumbRoot = $crumbSection->rootAncestor();
+        $crumbs = ['Главная' => '/'];
+        $crumbs[$crumbRoot->title] = $crumbRoot->is_visible ? $crumbRoot->url() : null;
+        if (! $crumbSection->isRoot()) {
+            $crumbs[$crumbSection->title] = ($crumbRoot->is_visible && $crumbSection->is_visible)
+                ? $crumbSection->url()
+                : null;
+        }
+        $crumbs[$page->title] = null;
+    @endphp
+
     <article>
-        @include('site.partials.breadcrumbs', ['crumbs' => [
-            'Главная' => '/',
-            // скрытый раздел (is_visible=false) не имеет доступной страницы-листинга —
-            // крошка остаётся текстом, без ссылки на 404
-            $section->title => $section->is_visible ? $section->url() : null,
-            $page->title => null,
-        ]])
+        @include('site.partials.breadcrumbs', ['crumbs' => $crumbs])
 
         <div class="page-meta">
             <x-source-badge :page="$page" />

@@ -61,7 +61,7 @@ html { scroll-padding-top: 84px; }
 ::selection { background: rgba(106, 76, 214, 0.25); }
 
 /* Тактильный отклик: лёгкое «нажатие» на активных элементах */
-:where(.load-more, .author-links a, .theme-toggle, .glossary-alphabet a,
+:where(.author-links a, .theme-toggle, .glossary-alphabet a, .section-sort select,
        .xi-page, .ap-btn, .ap-skip, .site-burger, .nav-caret):active {
     transform: translateY(1px) scale(0.99);
 }
@@ -1047,7 +1047,7 @@ html { scroll-padding-top: 84px; }
     border: 1px solid var(--xi-glass-line);
     border-radius: 14px;
     padding: 18px 26px 16px;
-    margin: 4px 0 30px;
+    margin: 18px 0 30px;
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     backdrop-filter: blur(14px) saturate(150%);
     box-shadow:
@@ -1222,25 +1222,63 @@ html { scroll-padding-top: 84px; }
 .section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
 .section-grid--wiki { grid-template-columns: 1fr; }
 
-.load-more-wrap { display: flex; justify-content: center; margin-top: 24px; }
-.load-more {
-    display: inline-flex;
+/* Листинг раздела: единый отступ от заголовка (описания может не быть) —
+   тот же ритм, что между заголовком материала и его карточкой текста */
+.section-listing { margin-top: 18px; }
+
+/* Низ листинга: страницы пагинации слева, сортировка справа */
+.section-footer {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 180px;
-    background: var(--xi-surface);
+    flex-wrap: wrap;
+    gap: 14px 18px;
+    margin-top: 26px;
+}
+
+.section-sort { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+.section-sort label { font-size: 13px; color: var(--xi-ink-faint); }
+
+/* Селектор — в стилистике кнопок пагинации (.xi-page) */
+.section-sort select {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 38px;
+    padding: 0 32px 0 14px;
+    border-radius: 10px;
+    background-color: var(--xi-surface);
     border: 1px solid var(--xi-line);
-    color: var(--xi-ink);
-    text-decoration: none;
-    padding: 12px 26px;
-    border-radius: 999px;
+    color: var(--xi-ink-soft);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f87a8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    transition: border-color .15s, background-color .15s, color .15s;
+}
+.section-sort select:hover { border-color: var(--xi-accent-deep); background-color: var(--xi-accent-soft); color: var(--xi-ink); }
+.section-sort select:focus { outline: none; border-color: var(--xi-accent-deep); }
+
+.section-sort-apply {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: var(--xi-accent-deep);
+    border: 1px solid var(--xi-accent-deep);
+    color: #fff;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color .15s, background .15s;
 }
-.load-more:hover { border-color: var(--xi-accent-deep); background: var(--xi-accent-soft); }
+
+/* На смартфоне сортировка встаёт под пагинацией */
+@media (max-width: 640px) {
+    .section-footer { flex-direction: column; align-items: flex-start; }
+    .section-sort { margin-left: 0; }
+}
 
 /* Номерная пагинация (поиск) в стилистике сайта */
 .xi-pagination { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -1449,6 +1487,22 @@ a.xi-download .xi-download__meta {
 }
 .forum-disclaimer svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; color: var(--xi-accent); }
 .forum-disclaimer a { color: var(--xi-accent); white-space: nowrap; }
+
+/* --- Поиск по форуму: строка — как в глоссарии, подсказки — карточкой --- */
+.forum-search { margin: 0 0 26px; }
+.forum-search .glossary-search { margin-bottom: 0; }
+.forum-search-panel { margin-top: 10px; max-width: 640px; padding: 8px 18px; }
+.forum-search-results { list-style: none; margin: 0; padding: 0; }
+.forum-search-results li {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border-top: 1px solid var(--xi-line);
+}
+.forum-search-results li:first-child { border-top: 0; }
+.forum-search-count, .forum-search-empty { color: var(--xi-ink-faint); font-size: 13px; margin: 8px 0; }
+.forum-search-panel .forum-search-count { margin-top: 4px; }
+@media (max-width: 560px) {
+    .forum-search-results li { flex-direction: column; gap: 2px; }
+}
 
 .forum-group { margin-top: 30px; }
 .forum-block { padding: 0; margin-top: 14px; overflow: hidden; }
