@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\Redirect;
 use App\Models\Section;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -46,6 +48,45 @@ class CourseDescriptionsSeeder extends Seeder
             Redirect::updateOrCreate(
                 ['from_path' => rtrim($oldPath, '/')],
                 ['to_url' => $page->url(), 'status_code' => 301, 'comment' => 'Курсы: '.Str::limit($page->title, 50)],
+            );
+        }
+
+        $this->attachAudio();
+    }
+
+    /**
+     * Аудио «А. Глаз о курсе …» → блок «Аудиозаписи» страницы курса.
+     * Файлы (storage/media/audio/courses, в git их НЕТ) заливаются на сервер
+     * вручную вместе с остальным аудио; при отсутствии файла запись
+     * не создаётся — сидер можно повторить после заливки.
+     */
+    protected function attachAudio(): void
+    {
+        $audio = [
+            'astralnye-peremeshheniia-vo-vremeni' => ['Course01Astral.mp3', 'А. Глаз о курсе «Астральные перемещения»'],
+            'izucenie-sobstvennyx-inkarnacionnyx-ziznei' => ['Course02Inkarnacii.mp3', 'А. Глаз о курсе «Изучение собственных инкарнационных жизней»'],
+            'karmiceskaia-korrekciia' => ['Course04Karma.mp3', 'А. Глаз о курсе «Кармическая коррекция»'],
+            'ziznennoe-prednaznacenie-programma-dusi-na-dannuiu-zizn' => ['Course05Dusha.mp3', 'А. Глаз о курсе «Программа души на данную жизнь»'],
+            'tvorceskaia-aktivizaciia-po-vybrannoi-celi' => ['Course07Tvorch.mp3', 'А. Глаз о курсе «Творческая активизация по выбранной цели»'],
+            'energeticeskoe-videnie' => ['Course03PolevoeVidenie.mp3', 'А. Глаз о курсе «Энергетическое видение»'],
+        ];
+
+        foreach ($audio as $slug => [$file, $title]) {
+            $path = 'media/audio/courses/'.$file;
+            $page = Page::where('slug', $slug)->first();
+
+            if (! $page || ! Storage::disk('public')->exists($path)) {
+                continue;
+            }
+
+            Media::firstOrCreate(
+                ['page_id' => $page->id, 'file_path' => $path],
+                [
+                    'type' => 'audio',
+                    'title' => $title,
+                    'disk' => 'public',
+                    'size' => Storage::disk('public')->size($path),
+                ],
             );
         }
     }
