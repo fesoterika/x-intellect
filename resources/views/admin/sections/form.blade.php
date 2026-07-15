@@ -40,9 +40,14 @@
                 <p class="text-xs text-gray-400 mt-1">Подраздел показывается по адресу /{родитель}/{slug}; адреса его страниц остаются под корневым разделом. Глубина — один уровень.</p>
             </div>
 
-            <div>
+            <div class="xi-def-editor">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
-                <textarea name="description" rows="3" class="w-full rounded-md border-gray-300">{{ old('description', $section->description) }}</textarea>
+                {{-- Тот же Trix, что у страниц: жирный/курсив, ссылки, списки, цитаты.
+                     Разметка отображается на странице раздела (класс .section-desc) --}}
+                <input id="section-description" type="hidden" name="description"
+                       value="{{ old('description', $section->descriptionHtml()) }}">
+                <trix-editor input="section-description" class="trix-content bg-white border border-gray-300 rounded-md" style="min-height: 7rem;"></trix-editor>
+                <p class="text-xs text-gray-400 mt-1">Показывается под заголовком раздела; на главной в плитке — как обычный текст без оформления.</p>
             </div>
 
             <label class="flex items-center gap-2 text-sm text-gray-700">

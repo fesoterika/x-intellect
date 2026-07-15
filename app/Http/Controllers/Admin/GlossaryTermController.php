@@ -42,13 +42,24 @@ class GlossaryTermController extends Controller
 
     protected function validated(Request $request, ?GlossaryTerm $term = null): array
     {
+        // Пустой документ Trix (<div><br></div> и т.п.) — это отсутствие
+        // определения: пусть сработает правило required
+        if (trim(strip_tags((string) $request->input('definition'))) === '') {
+            $request->merge(['definition' => null]);
+        }
+
         $data = $request->validate([
             'term' => ['required', 'string', 'max:255', Rule::unique('glossary_terms', 'term')->ignore($term)],
             'definition' => ['required', 'string'],
             'page_id' => ['nullable', 'exists:pages,id'],
         ]);
 
-        $data['slug'] = Str::slug($data['term']);
+        // Slug стабилен: переименование термина не меняет его адрес
+        // /glossary?term=<slug> — иначе ломаются редиректы, sitemap и
+        // внешние ссылки (см. кейс «Внеземные Цивилизации (ВЦ)»)
+        $data['slug'] = $term?->slug ?? Str::slug($data['term']);
+        // Ссылки на localhost из редактора → относительные
+        $data['definition'] = app(\App\Services\LocalLinks::class)->relativize($data['definition']);
 
         return $data;
     }

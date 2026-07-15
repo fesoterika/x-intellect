@@ -235,9 +235,33 @@ class PublicSiteTest extends TestCase
     {
         $this->seedCore();
 
+        // По запросу «Глаз» есть и страницы, и термины глоссария —
+        // заголовок списка страниц меняется на «Страницы»
         $this->get('/search?'.http_build_query(['q' => 'Глаз']))
             ->assertOk()
-            ->assertSee('Найдено');
+            ->assertSee('Страницы');
+    }
+
+    public function test_search_is_case_insensitive(): void
+    {
+        $this->seedCore();
+
+        // LIKE в SQLite не сворачивает регистр кириллицы — контроллер
+        // сравнивает через зарегистрированную функцию xi_lower()
+        $this->get('/search?'.http_build_query(['q' => 'хроносфера']))
+            ->assertOk()
+            ->assertSee('Хроносфера');
+    }
+
+    public function test_search_shows_matching_glossary_terms_with_links(): void
+    {
+        $this->seedCore();
+
+        // Термин находится независимо от регистра, карточка ведёт на его адрес
+        $this->get('/search?'.http_build_query(['q' => 'биоэкран']))
+            ->assertOk()
+            ->assertSee('В глоссарии')
+            ->assertSee('/glossary?term=bioekran', false);
     }
 
     public function test_search_results_are_paginated(): void

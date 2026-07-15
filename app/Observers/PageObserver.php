@@ -11,6 +11,7 @@ use App\Services\ImageSeo;
 use App\Services\SeoService;
 use App\Services\AttachmentDownloads;
 use App\Services\LinkTargets;
+use App\Services\LocalLinks;
 use App\Services\TableImagePairer;
 use App\Services\TimelineTagger;
 use App\Services\TrixTables;
@@ -28,6 +29,7 @@ class PageObserver
         protected TableImagePairer $pairer,
         protected LinkTargets $linkTargets,
         protected AttachmentDownloads $downloads,
+        protected LocalLinks $localLinks,
     ) {}
 
     public function saving(Page $page): void
@@ -36,6 +38,8 @@ class PageObserver
         // остальной обработки, чтобы alt картинок и тултипы глоссария
         // увидели содержимое таблиц
         $page->body = $this->tables->extract($page->body);
+        // Вставленные в редакторе ссылки на localhost → относительные
+        $page->body = $this->localLinks->relativize($page->body);
         // Проставляем alt изображениям до генерации slug/описания и рендера
         $page->body = $this->imageSeo->process($page->body, $page->title);
         // Восстанавливаем класс таймлайна (Trix его вырезает)

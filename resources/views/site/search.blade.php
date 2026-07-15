@@ -19,9 +19,9 @@
         @if (! $results)
             <p style="color: var(--xi-ink-faint);">Введите не менее двух символов для поиска.</p>
         @elseif ($results->total() === 0)
-            <h2 class="section-title">Ничего не найдено</h2>
+            <h2 class="section-title">{{ $glossaryTerms->isEmpty() ? 'Ничего не найдено' : 'Страниц не найдено' }}</h2>
         @else
-            <h2 class="section-title">Найдено: {{ $results->total() }}</h2>
+            <h2 class="section-title">{{ $glossaryTerms->isEmpty() ? 'Найдено' : 'Страницы' }}: {{ $results->total() }}</h2>
 
             <div style="display: grid; gap: 12px; max-width: 760px;">
                 @foreach ($results as $page)
@@ -30,6 +30,19 @@
             </div>
 
             <div style="margin-top: 24px; max-width: 760px;">{{ $results->links('site.partials.pagination') }}</div>
+        @endif
+
+        {{-- Совпавшие термины глоссария — после страниц, с переходом на адрес термина --}}
+        @if ($results && $glossaryTerms->isNotEmpty())
+            <h2 class="section-title" style="margin-top: 30px;">В глоссарии: {{ $glossaryTerms->count() }}</h2>
+            <div class="search-glossary">
+                @foreach ($glossaryTerms as $term)
+                    <a class="xi-card search-glossary-item" href="{{ url($term->url()) }}">
+                        <span class="search-glossary-term">{{ $term->term }}</span>
+                        <span class="search-glossary-def">{{ Str::limit($term->definitionPlain(), 180) }}</span>
+                    </a>
+                @endforeach
+            </div>
         @endif
     @endif
 @endsection

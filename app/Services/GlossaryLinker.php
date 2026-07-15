@@ -26,7 +26,9 @@ class GlossaryLinker
 
         foreach ($terms as $term) {
             $escaped = preg_quote($term->term, '/');
-            $definition = e($term->definition);
+            // Определение может содержать разметку редактора — в data-атрибут
+            // тултипа идёт только чистый текст
+            $definition = e($term->definitionPlain());
 
             // Одно (первое) вхождение вне HTML-тегов и вне уже проставленных ссылок
             $pattern = '/(?<![\p{L}\p{N}>-])('.$escaped.')(?![\p{L}\p{N}])(?![^<]*>)/ui';

@@ -38,7 +38,12 @@ class HandleRedirects
             if ($redirect) {
                 $redirect->increment('hits');
 
-                return redirect()->away($redirect->to_url, $redirect->status_code);
+                // Без заголовка браузеры кешируют 301 навечно — удалённый или
+                // исправленный редирект продолжал бы срабатывать у посетителя.
+                // Час кеша: SEO-вес передаётся, ошибки самоисправляются.
+                return redirect()
+                    ->away($redirect->to_url, $redirect->status_code)
+                    ->header('Cache-Control', 'public, max-age=3600');
             }
         }
 

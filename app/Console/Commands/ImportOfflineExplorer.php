@@ -134,11 +134,15 @@ class ImportOfflineExplorer extends Command
                 'source_url' => 'https://web.archive.org/web/2015/http://www.x-intellect.org'.$oldUrl.'/',
             ]);
 
-            // 301 со старого плоского адреса на новый
-            Redirect::updateOrCreate(
-                ['from_path' => $oldUrl],
-                ['to_url' => $page->url(), 'status_code' => 301, 'comment' => 'Архив: '.Str::limit($title, 60)],
-            );
+            // 301 со старого плоского адреса на новый — но не для адресов,
+            // совпадающих со slug раздела нового сайта (/hello, /library,
+            // /rules…): такой редирект перекрыл бы листинг живого раздела
+            if (! Section::where('slug', ltrim($oldUrl, '/'))->exists()) {
+                Redirect::updateOrCreate(
+                    ['from_path' => $oldUrl],
+                    ['to_url' => $page->url(), 'status_code' => 301, 'comment' => 'Архив: '.Str::limit($title, 60)],
+                );
+            }
 
             $created++;
         }

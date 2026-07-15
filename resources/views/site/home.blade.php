@@ -42,7 +42,7 @@
                     </span>
                     <span class="section-tile-rule" aria-hidden="true"></span>
                     @if ($section->description)
-                        <span class="section-tile-desc">{{ Str::limit($section->description, 100) }}</span>
+                        <span class="section-tile-desc">{{ Str::limit($section->descriptionPlain(), 100) }}</span>
                     @endif
                     <span class="section-tile-count">{{ trans_choice('{0} нет материалов|{1} :count материал|[2,4] :count материала|[5,*] :count материалов', $section->published_pages_count) }}</span>
                 </a>
