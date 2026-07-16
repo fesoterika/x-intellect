@@ -9,6 +9,7 @@ use App\Models\Section;
 use App\Services\ArchiveHtmlCleaner;
 use App\Services\MediaWikiArchive;
 use App\Services\OfflineSnapshotIndex;
+use App\Support\RussianText;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -597,7 +598,7 @@ class AuditArchive extends Command
         $md .= "## Термин и полная страница одновременно (намеренно)\n\n";
         $rows = [];
         foreach ($this->mw->forceAsPages as $key) {
-            $page = Page::whereRaw('LOWER(title) = ?', [$key])->first()
+            $page = Page::where(fn ($q) => RussianText::equals($q, 'title', $key))->first()
                 ?? Page::where('source_type', 'archive_wiki')->get()->first(fn ($p) => mb_strtolower($p->title) === $key);
             $term = $dbByKey[$key] ?? null;
             $rows[] = [

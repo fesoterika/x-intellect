@@ -38,6 +38,20 @@ class RussianText
         $query->whereRaw(self::lowerFn()."({$column}) LIKE ? ESCAPE '\\'", [$needle], $boolean);
     }
 
+    /**
+     * Условие «колонка равна значению» без учёта регистра.
+     *
+     * `whereRaw('LOWER(title) = ?', [mb_strtolower($t)])` для русских заголовков
+     * НЕ работает: SQLite сворачивает регистр только у латиницы, поэтому
+     * LOWER('Сеанс с Силами') остаётся как есть и никогда не совпадёт с
+     * 'сеанс с силами'. Такой поиск молча не находит существующую страницу —
+     * команда решает, что её нет.
+     */
+    public static function equals($query, string $column, string $value, string $boolean = 'and'): void
+    {
+        $query->whereRaw(self::lowerFn()."({$column}) = ?", [mb_strtolower($value, 'UTF-8')], $boolean);
+    }
+
     /** Имя SQL-функции нижнего регистра для текущего соединения. */
     protected static function lowerFn(): string
     {

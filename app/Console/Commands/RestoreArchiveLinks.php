@@ -8,7 +8,10 @@ use App\Models\Redirect;
 use App\Services\ArchiveLinkRestorer;
 use App\Services\MediaWikiArchive;
 use App\Services\OfflineSnapshotIndex;
+use App\Support\RussianText;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 /**
@@ -86,6 +89,11 @@ class RestoreArchiveLinks extends Command
             $source = $page->source_type === 'archive_wiki'
                 ? $this->wikiSource($entries, $index, $page)
                 : $this->siteSource($siteDir, $page);
+
+            // Страницы, импортированные из Wayback, в слепке 2015 отсутствуют —
+            // их источник качаем из веб-архива (снимок указан в source_url).
+            $source ??= $this->waybackSource($page);
+
             if ($source === null) {
                 continue;
             }
@@ -190,10 +198,14 @@ class RestoreArchiveLinks extends Command
             }
             $href = $h[1];
             $class = preg_match('/class="([^"]*)"/', $attrs, $c) ? explode(' ', $c[1]) : [];
-            if (in_array('new', $class, true) || in_array('image', $class, true)) {
-                continue; // красная ссылка / обёртка картинки
+            if (in_array('image', $class, true) || str_starts_with($href, '#')) {
+                continue; // обёртка картинки / внутристраничный якорь
             }
-            if (str_contains($href, 'action=edit') || str_starts_with($href, '#')) {
+            // Красные ссылки (class="new", …&action=edit&redlink=1) не выкидываем:
+            // на момент снимка страницы не было, но в архиве она может быть — её
+            // сняли другим снимком или взяли из слепка. Решает наличие цели в БД,
+            // а не цвет ссылки в конкретном снимке. Ссылку «править» отсеет CHROME.
+            if (str_contains($href, 'action=edit') && ! in_array('new', $class, true)) {
                 continue;
             }
             $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($inner), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
@@ -224,6 +236,19 @@ class RestoreArchiveLinks extends Command
     /** Архивный href → адрес на новом сайте. */
     private function resolve(string $href, string $text, string $sourceDir): ?string
     {
+        // Вики в снимке Wayback: обычный URL index.php?title=… (в отличие от
+        // офлайн-слепка, где Offline Explorer заменил «?» на «@»)
+        if (preg_match('~index\.php\?title=([^&"\#]+)~', $href, $m)) {
+            $title = trim(str_replace('_', ' ', rawurldecode($m[1])));
+            foreach (app(MediaWikiArchive::class)->skipNamespaces as $ns) {
+                if (str_starts_with(mb_strtolower($title), $ns)) {
+                    return null; // Файл:, Служебная:, Участник: — не статьи
+                }
+            }
+
+            return $title === '' ? null : $this->urlForWikiTitle($title);
+        }
+
         // Вики: index.php@title=…
         if (str_contains($href, 'index.php@title=')) {
             // Сначала идём по самому файлу: Offline Explorer обрезает длинные
@@ -295,12 +320,12 @@ class RestoreArchiveLinks extends Command
     {
         $norm = str_replace('_', ' ', $title);
 
-        $page = Page::whereRaw('LOWER(title) = ?', [mb_strtolower($norm)])->first();
+        $page = Page::where(fn ($q) => RussianText::equals($q, 'title', $norm))->first();
         if ($page) {
             return $page->url();
         }
 
-        $term = GlossaryTerm::whereRaw('LOWER(term) = ?', [mb_strtolower($norm)])->first();
+        $term = GlossaryTerm::where(fn ($q) => RussianText::equals($q, 'term', $norm))->first();
         if ($term) {
             return '/glossary?term='.$term->slug;
         }
@@ -348,6 +373,45 @@ class RestoreArchiveLinks extends Command
         $content = $index->contentHtml($html);
 
         return $content === null ? null : [$content, dirname($entry['path'])];
+    }
+
+    /**
+     * Исходник страницы из Wayback Machine (для импортированных оттуда).
+     *
+     * Ответы кешируются на диск: страниц десятки, а веб-архив легко отвечает
+     * 429/503 — повторный прогон не должен ходить в сеть заново.
+     *
+     * @return array{0:string,1:string}|null
+     */
+    private function waybackSource(Page $page): ?array
+    {
+        $url = (string) $page->source_url;
+        // /web/2015/… — метка импортёра слепка, а не настоящий снимок
+        if (! preg_match('#//web\.archive\.org/web/(\d{8,14})/#', $url, $m)) {
+            return null;
+        }
+
+        $cache = storage_path('app/wayback-pages/'.sha1($url).'.html');
+        if (is_file($cache)) {
+            $html = (string) file_get_contents($cache);
+        } else {
+            // id_ — сырой снимок без обвязки веб-архива
+            $raw = preg_replace('#(/web/\d{8,14})/#', '$1id_/', $url, 1);
+            $resp = Http::retry(2, 3000)->timeout(60)->get($raw);
+            if (! $resp->ok()) {
+                $this->warn('Wayback '.$resp->status().': '.Str::limit($page->title, 40));
+
+                return null;
+            }
+            $html = $resp->body();
+            File::ensureDirectoryExists(dirname($cache));
+            File::put($cache, $html);
+            usleep(700000); // веб-архив не любит частых запросов
+        }
+
+        $content = $this->index->contentHtml($html);
+
+        return $content === null ? null : [$content, ''];
     }
 
     /** @return array{0:string,1:string}|null */
