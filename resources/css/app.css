@@ -209,7 +209,13 @@ html { scroll-padding-top: 84px; }
     z-index: 20;
     border-bottom: 1px solid var(--xi-line);
     background: var(--xi-header-bg);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    /* Стабилизируем композиторный слой: без этого связка sticky + backdrop-filter
+       на дисплеях с DPR>1 подрагивает по субпикселю при каждой перерисовке
+       (ввод в поиске), из-за чего шапка «дёргается» вверх. will-change выносит
+       её в отдельный слой с фиксированным привязками — блюр и sticky сохраняются. */
+    will-change: transform;
 }
 
 .site-header-inner {

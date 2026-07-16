@@ -43,24 +43,16 @@
                 <div class="xi-card" style="padding: 18px 20px; position: sticky; top: 90px;">
                     <h2 class="section-title" style="margin-bottom: 10px;">Страницы вики</h2>
                     <nav style="display: grid; gap: 4px;">
-                        @forelse ($menuGroups ?? [] as $group)
-                            @php $hasPages = $group->publishedPages->isNotEmpty(); @endphp
-                            @if ($hasPages || $group->slug === 'obshhii-razdel')
-                                <a href="{{ url($group->url()) }}" style="color: var(--xi-ink); text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 10px 0 2px;">{{ $group->title }}</a>
-                                @if ($group->slug === 'obshhii-razdel' && ! $group->publishedPages->contains('slug', 'pravila-vikipedii'))
-                                    <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
-                                @endif
-                                @foreach ($group->publishedPages as $page)
-                                    <a href="{{ url($page->url()) }}" style="color: var(--xi-ink-soft); text-decoration: none; font-size: 14px; padding: 4px 0;">{{ $page->title }}</a>
-                                    {{-- Глоссарий — отдельная страница; в меню стоит после «Правил Википедии» --}}
-                                    @if ($group->slug === 'obshhii-razdel' && $page->slug === 'pravila-vikipedii')
-                                        <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
-                                    @endif
-                                @endforeach
-                            @endif
-                        @empty
-                            <a href="{{ route('glossary') }}" style="color: var(--xi-accent); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
-                        @endforelse
+                        {{-- Первый пункт — «Общий раздел» (/wiki/obshhii-razdel) --}}
+                        @if ($wikiMenuTop ?? null)
+                            <a href="{{ url($wikiMenuTop->url()) }}" style="color: var(--xi-ink); text-decoration: none; font-size: 14px; font-weight: 600; padding: 4px 0;">{{ $wikiMenuTop->title }}</a>
+                        @endif
+                        {{-- Второй пункт — Глоссарий (отдельная страница) --}}
+                        <a href="{{ route('glossary') }}" style="color: var(--xi-ink-soft); text-decoration: none; font-size: 14px; padding: 4px 0;">Глоссарий</a>
+                        {{-- Далее — только страницы с галочкой «Выводить в меню вики», в заданном порядке --}}
+                        @foreach ($wikiMenuPages ?? [] as $page)
+                            <a href="{{ url($page->url()) }}" style="color: var(--xi-ink-soft); text-decoration: none; font-size: 14px; padding: 4px 0;">{{ $page->title }}</a>
+                        @endforeach
                     </nav>
                 </div>
             </aside>
