@@ -9,10 +9,24 @@ use Illuminate\Validation\Rule;
 
 class RedirectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $redirects = Redirect::query()
+            ->when($request->query('q'), function ($q, $term) {
+                $like = '%'.mb_strtolower($term).'%';
+
+                $q->where(function ($sub) use ($like) {
+                    $sub->whereRaw('LOWER(from_path) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(to_url) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(comment) LIKE ?', [$like]);
+                });
+            })
+            ->orderBy('from_path')
+            ->paginate(50)
+            ->withQueryString();
+
         return view('admin.redirects.index', [
-            'redirects' => Redirect::orderBy('from_path')->paginate(50),
+            'redirects' => $redirects,
         ]);
     }
 

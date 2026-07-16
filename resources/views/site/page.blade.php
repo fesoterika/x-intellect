@@ -46,7 +46,10 @@
             @endif
         </div>
 
-        <h1 class="page-title">{{ $page->title }}</h1>
+        <div class="title-with-edit">
+            <h1 class="page-title">{{ $page->title }}</h1>
+            <x-edit-link :href="route('admin.pages.edit', $page)" label="Редактировать статью" />
+        </div>
 
         {{-- Строка с линией-акцентом: пустое место справа от затухающей линии
              занимает подсказка-якорь к аудио — верх страницы не перегружается --}}

@@ -44,6 +44,32 @@
             <button class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700">Добавить</button>
         </form>
 
+        <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap gap-3 items-end">
+            <div class="w-full sm:w-auto">
+                <label class="block text-xs text-gray-500 mb-1">Тип</label>
+                <select name="type" class="w-full sm:w-auto rounded-md border-gray-300 text-sm">
+                    <option value="">Все</option>
+                    <option value="audio" @selected(request('type') === 'audio')>Аудио</option>
+                    <option value="pdf" @selected(request('type') === 'pdf')>Книга / PDF</option>
+                    <option value="image" @selected(request('type') === 'image')>Изображение</option>
+                </select>
+            </div>
+            <div class="w-full sm:w-auto">
+                <label class="block text-xs text-gray-500 mb-1">Страница</label>
+                <select name="page_id" class="w-full sm:w-48 rounded-md border-gray-300 text-sm">
+                    <option value="">Все</option>
+                    @foreach ($pages as $p)
+                        <option value="{{ $p->id }}" @selected(request('page_id') == $p->id)>{{ $p->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="w-full sm:flex-1 sm:min-w-40">
+                <label class="block text-xs text-gray-500 mb-1">Поиск по названию и файлу</label>
+                <input type="text" name="q" value="{{ request('q') }}" class="w-full rounded-md border-gray-300 text-sm">
+            </div>
+            <button class="w-full sm:w-auto px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
+        </form>
+
         <div class="bg-white rounded-lg shadow overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-left text-gray-500">

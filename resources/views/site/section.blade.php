@@ -14,7 +14,10 @@
         $section->title => null,
     ]])
 
-    <h1 class="page-title">{{ $section->title }}</h1>
+    <div class="title-with-edit">
+        <h1 class="page-title">{{ $section->title }}</h1>
+        <x-edit-link :href="route('admin.sections.edit', $section)" label="Редактировать раздел" />
+    </div>
 
     @if ($section->description)
         {{-- Панель «О разделе»: визуально отделена от заголовка и плиток.

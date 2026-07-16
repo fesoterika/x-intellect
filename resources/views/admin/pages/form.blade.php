@@ -11,7 +11,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ confirmDelete: false }">
         @if ($errors->any())
             <div class="mb-4 rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-700">
                 <strong>Страница не сохранена - исправьте ошибки:</strong>
@@ -178,8 +178,39 @@
                 <button class="px-6 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700">Сохранить</button>
                 <a href="{{ route('admin.pages.index') }}" class="text-gray-500 hover:underline text-sm">Отмена</a>
                 <input type="hidden" name="position" value="{{ old('position', $page->position ?? 0) }}">
+                @if ($page->exists)
+                    <button type="button" @click="confirmDelete = true"
+                            class="ml-auto px-6 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700">
+                        Удалить статью
+                    </button>
+                @endif
             </div>
         </form>
+
+        @if ($page->exists)
+            {{-- Попап подтверждения удаления. Форма удаления вынесена из основной
+                 формы правки (вложенные <form> недопустимы) и повторяет действие
+                 кнопки «Удалить» в списке страниц: POST + @method('DELETE'). --}}
+            <div x-show="confirmDelete" x-cloak style="display: none"
+                 @keydown.escape.window="confirmDelete = false"
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-black/50" @click="confirmDelete = false"></div>
+                <div class="relative bg-white rounded-lg shadow-xl max-w-sm w-full p-6" role="dialog" aria-modal="true">
+                    <h3 class="text-lg font-semibold text-gray-800">Удалить статью?</h3>
+                    <p class="mt-2 text-sm text-gray-500">Вы уверены? Страница «{{ $page->title }}» будет удалена.</p>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" @click="confirmDelete = false"
+                                class="px-5 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100">Нет</button>
+                        <form method="POST" action="{{ route('admin.pages.destroy', $page) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="px-5 py-2 text-sm bg-red-600 text-white rounded-md font-medium hover:bg-red-700">Да</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         @if ($page->exists)
             <div class="mt-8 grid md:grid-cols-2 gap-6">

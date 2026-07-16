@@ -544,6 +544,25 @@ html { scroll-padding-top: 84px; }
    Georgia bold тяжеловесна, regular читается благороднее */
 .page-title { font-family: var(--xi-font-serif); font-size: clamp(26px, 4vw, 36px); line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.005em; font-weight: 400; }
 
+/* Заголовок + кнопка правки (видна только редактору/админу) */
+.title-with-edit { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 10px; }
+.title-with-edit .page-title { margin: 0; }
+.edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    color: var(--xi-accent);
+    background: var(--xi-accent-soft);
+    border: 1px solid transparent;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.edit-link:hover { color: var(--xi-accent-deep); background: var(--xi-surface); border-color: var(--xi-line); }
+.edit-link svg { width: 17px; height: 17px; }
+
 /* Линия-акцент под заголовком материала: короткий акцентный штрих,
    переходящий в тонкую затухающую линию */
 .title-rule {
