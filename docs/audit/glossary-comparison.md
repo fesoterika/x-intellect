@@ -1,11 +1,11 @@
 # Аудит глоссария: новый сайт vs архив
 
-Сформировано: 14.07.2026 23:10.
+Сформировано: 16.07.2026 00:52.
 
 | Источник | Терминов |
 |---|---|
 | Архивные индексы («Глоссарий» + «Термины и понятия») | 74 |
-| БД glossary_terms | 79 |
+| БД glossary_terms | 78 |
 
 ## В архиве есть, в БД нет
 
@@ -15,7 +15,6 @@
 
 | Термин | Ссылка |
 |---|---|
-| Внеземные Цивилизации | http://localhost/glossary?term=vnezemnye-civilizacii |
 | Оболочечный двойник | http://localhost/glossary?term=obolocecnyi-dvoinik |
 | Посредники | http://localhost/glossary?term=posredniki |
 | Силы Ближнего и Дальнего Космоса | http://localhost/glossary?term=sily-bliznego-i-dalnego-kosmosa |
@@ -29,7 +28,7 @@
 
 | Термин | Страница |
 |---|---|
-| Внеземные Цивилизации | http://localhost/wiki/vnezemnye-tsivilizatsii |
+| Внеземные Цивилизации (ВЦ) | http://localhost/wiki/vnezemnye-tsivilizatsii |
 
 ## Термин и полная страница одновременно (намеренно)
 
@@ -37,7 +36,7 @@
 |---|---|---|
 | биоэкран | http://localhost/wiki/bioekran | http://localhost/glossary?term=bioekran |
 | душа | http://localhost/wiki/dusa | http://localhost/glossary?term=dusa |
-| внеземные цивилизации (вц) | http://localhost/wiki/vnezemnye-tsivilizatsii | http://localhost/glossary?term=vnezemnye-civilizacii-vc |
+| внеземные цивилизации (вц) | http://localhost/wiki/vnezemnye-tsivilizatsii | http://localhost/glossary?term=vnezemnye-civilizacii |
 
 
 Полный список терминов БД: http://localhost/glossary

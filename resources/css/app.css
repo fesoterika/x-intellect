@@ -517,6 +517,13 @@ html { scroll-padding-top: 84px; }
 .xi-prose figure.xi-align-center { max-width: min(80%, 520px); margin: 1.2em auto; }
 .xi-prose figure.xi-align-wide { max-width: 100%; }
 
+/* Ряд миниатюр: идущие подряд картинки (в вики они стояли в строку) собирает
+   в этот контейнер ImageGallery. Переносится по ширине экрана; на смартфоне
+   помещаются две штуки. */
+.xi-prose .xi-gallery { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: center; margin: 1.2em 0; }
+.xi-prose .xi-gallery > figure.attachment { margin: 0; flex: 0 1 auto; max-width: min(200px, 45%); }
+.xi-prose .xi-gallery > figure.attachment img { max-width: 100%; height: auto; }
+
 .xi-prose::after { content: ''; display: block; clear: both; }
 @media (max-width: 560px) {
     /* на узких экранах обтекание мешает чтению — картинка в свой ряд */
@@ -566,10 +573,14 @@ html { scroll-padding-top: 84px; }
 .badge-sfera { background: rgba(214, 158, 46, 0.16); color: #8a5a00; border: 1px solid rgba(214, 158, 46, 0.45); }
 .badge-xintellect { background: rgba(106, 76, 214, 0.14); color: var(--xi-accent); border: 1px solid rgba(106, 76, 214, 0.4); }
 .badge-new { background: rgba(46, 160, 90, 0.14); color: #1f7a48; border: 1px solid rgba(46, 160, 90, 0.45); }
+/* Вики: #fafad2 — фон старого вики, взят как есть. Обводка и текст — тот же
+   тон (hsl 60°), затемнённый до контраста остальных бейджей семейства. */
+.badge-wiki { background: #fafad2; color: #6b6820; border: 1px solid #d8d68a; }
 
 /* Тёмная тема — исходные светлые цвета текста на тёмном фоне */
 :root[data-theme="dark"] .badge-sfera { background: rgba(214, 158, 46, 0.15); color: #e2b45c; border-color: rgba(214, 158, 46, 0.35); }
 :root[data-theme="dark"] .badge-new { background: rgba(72, 187, 120, 0.13); color: #6fce96; border-color: rgba(72, 187, 120, 0.35); }
+:root[data-theme="dark"] .badge-wiki { background: rgba(250, 250, 210, 0.13); color: #e3e0a4; border-color: rgba(250, 250, 210, 0.32); }
 
 /* --- Мета-строка над заголовком материала (бейдж, год архива, копия) --- */
 .page-meta {
@@ -1189,6 +1200,9 @@ html { scroll-padding-top: 84px; }
 }
 .page-card.epoch-archive_sferarazuma::before { background: #d69e2e; }
 .page-card.epoch-new::before { background: #2ea05a; }
+/* Вики: тот же тон 60°, что и #fafad2 у бейджа, но насыщенный — сам #fafad2
+   полоской в 2px не читается. */
+.page-card.epoch-archive_wiki::before { background: #a3a32c; }
 .page-card:hover::before { opacity: 1; }
 
 .page-card:hover {
