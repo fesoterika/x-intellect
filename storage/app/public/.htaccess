@@ -1,0 +1,20 @@
+# Каталог загруженных медиафайлов. Наружу виден как /storage (симлинк из
+# public/), файлы отдаёт веб-сервер напрямую — PHP и middleware приложения
+# здесь не работают, поэтому правила заданы рядом с самими файлами.
+#
+# Первый рубеж — белый список MIME при загрузке (App\Models\Media::MIMETYPES).
+# Ниже — второй: что бы сюда ни попало, оно отдаётся как статика.
+
+<IfModule mod_headers.c>
+    # Без nosniff браузер угадывает тип по содержимому и может исполнить
+    # загруженный файл как HTML — в контексте домена сайта
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Снимаем обработчики скриптовых расширений (mod_php, FastCGI, CGI)
+RemoveHandler .php .phtml .phar .php3 .php4 .php5 .php7 .php8 .cgi .pl .py
+RemoveType .php .phtml .phar
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
