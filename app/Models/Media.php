@@ -9,12 +9,43 @@ use Illuminate\Support\Str;
 
 class Media extends Model
 {
+    /**
+     * Разрешённые к загрузке MIME-типы по значению колонки type — единый
+     * список для раздела «Медиа» и редактора Trix (правила валидации держим
+     * на модели, как Page::SOURCE_TYPES).
+     *
+     * Файл уходит на public-диск и отдаётся с /storage/… — того же
+     * происхождения, что и сайт, а имя в хранилище получает расширение по
+     * настоящему MIME. Поэтому список — белый: image/svg+xml и text/html
+     * исполняют скрипты в контексте домена, то есть дают XSS.
+     */
+    public const MIMETYPES = [
+        'image' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+        'audio' => [
+            'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/aac',
+            'audio/ogg', 'audio/wav', 'audio/x-wav', 'audio/flac',
+        ],
+        'pdf' => ['application/pdf'],
+    ];
+
     protected $table = 'media';
 
     protected $fillable = [
         'page_id', 'type', 'title', 'file_path', 'disk',
         'mime', 'size', 'duration', 'position',
     ];
+
+    /**
+     * Правило mimetypes: для конкретного типа медиа либо (если тип не задан
+     * или неизвестен) для всех разрешённых — неизвестный тип отсеет
+     * отдельное правило Rule::in.
+     */
+    public static function mimetypesRule(?string $type = null): string
+    {
+        $allowed = self::MIMETYPES[$type] ?? array_merge(...array_values(self::MIMETYPES));
+
+        return 'mimetypes:'.implode(',', $allowed);
+    }
 
     public function page(): BelongsTo
     {

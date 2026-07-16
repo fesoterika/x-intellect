@@ -25,9 +25,7 @@ class EditorUploadController extends Controller
         $data = $request->validate([
             'file' => [
                 'required', 'file', 'max:174080', // 170 МБ в килобайтах
-                'mimetypes:image/jpeg,image/png,image/webp,image/gif,'
-                    .'audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/ogg,audio/wav,audio/x-wav,audio/flac,'
-                    .'application/pdf',
+                Media::mimetypesRule(), // общий белый список — см. Media::MIMETYPES
             ],
             'page_id' => ['nullable', 'integer', 'exists:pages,id'],
         ]);
