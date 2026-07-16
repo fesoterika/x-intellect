@@ -131,7 +131,9 @@
                         x-data="{ theme: document.documentElement.getAttribute('data-theme') || 'light' }"
                         @click="theme = (theme === 'dark' ? 'light' : 'dark');
                                 document.documentElement.setAttribute('data-theme', theme);
-                                try { localStorage.setItem('xi-theme', theme); } catch (e) {}"
+                                try { localStorage.setItem('xi-theme', theme); } catch (e) {}
+                                $dispatch('xi-theme', theme)"
+                        @xi-theme.window="theme = $event.detail"
                         :aria-label="theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'">
                     <template x-if="theme === 'dark'">
                         <span style="display:inline-flex; align-items:center; gap:8px;">
