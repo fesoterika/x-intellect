@@ -340,20 +340,24 @@ html { scroll-padding-top: 84px; }
     left: 13px;
     width: 16px;
     height: 16px;
-    color: var(--xi-ink-faint);
+    color: var(--xi-ink-soft);
     pointer-events: none;
+    z-index: 1;
 }
+/* Стеклянный стиль — как у кнопки-переключателя в hero: полупрозрачный фон,
+   верхний блик, мягкая тень, размытие. Тема-зависимо через --xi-glass-*. */
 .site-search input {
-    background: var(--xi-surface);
-    border: 1px solid var(--xi-line);
+    background: var(--xi-accent-soft);
+    border: 1px solid transparent;
     border-radius: 999px;
     color: var(--xi-ink);
     font-size: 13px;
     padding: 8px 14px 8px 36px;
     width: 180px;
+    transition: border-color .15s, background-color .15s;
 }
 .site-search input::placeholder { color: var(--xi-ink-faint); }
-.site-search input:focus { outline: none; border-color: var(--xi-accent-deep); }
+.site-search input:focus { outline: none; border-color: var(--xi-accent); }
 
 .site-search--mobile { display: none; }
 
@@ -431,17 +435,21 @@ html { scroll-padding-top: 84px; }
 
 .xi-card + .xi-card { margin-top: 16px; }
 
-/* Hero главной: полупрозрачный энергетический фон под затемняющим
-   оверлеем — оверлей держит контраст, чтобы текст явно читался */
+/* Hero главной: энергетический фон под сине-голубым «стеклянным» оверлеем.
+   Оформление «Голубое стекло»: глубокий синий тон (перекликается с голубым
+   старого сайта, но приглушённее) + стеклянная кромка по краям (::after:
+   световой блик из верхнего-левого угла, тонкая обводка, затемнение снизу).
+   Оверлей держит контраст, чтобы светлый текст читался в любой теме. */
 .home-hero {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    border-color: var(--xi-accent-deep);
+    border: 1px solid rgba(0, 127, 255, 0.65);
+    box-shadow: 0 5px 16px rgba(6, 26, 60, 0.18), inset 0 0 0 1px rgba(90, 170, 255, 0.2);
     /* Фон hero тёмный в любой теме (энергетическое изображение + оверлей),
        поэтому текст внутри держим светлым — независимо от светлой/тёмной темы */
     --xi-ink: #ece9fb;
-    --xi-ink-soft: #cbc6e8;
+    --xi-ink-soft: #e4e0f6;
     --xi-ink-faint: #a9a3c9;
     color: var(--xi-ink);
 }
@@ -450,12 +458,69 @@ html { scroll-padding-top: 84px; }
     content: '';
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: -2;
     background:
-        linear-gradient(150deg, rgba(11, 9, 24, 0.82) 0%, rgba(21, 18, 40, 0.72) 55%, rgba(28, 24, 54, 0.68) 100%),
+        linear-gradient(150deg, rgba(10, 22, 38, 0.56) 0%, rgba(7, 15, 28, 0.68) 55%, rgba(3, 9, 18, 0.80) 100%),
         url('/images/energy-background.webp') center / cover no-repeat;
 }
+/* Стеклянная кромка: приглушённый блик сверху-слева + лёгкий глянец и нижнее
+   затемнение (внутренний азуровый ободок даёт box-shadow на .home-hero) */
+.home-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+        radial-gradient(120% 80% at 8% -10%, rgba(170, 210, 255, 0.26) 0%, rgba(170, 210, 255, 0) 46%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0) 84%, rgba(4, 12, 26, 0.30) 100%);
+}
 .home-hero > * { position: relative; }
+
+/* Кнопка-переключатель темы в нижнем-правом углу hero: компактная азуровая
+   стеклянная иконка (солнце/луна), приглушённая, читается в обеих темах */
+.home-hero .hero-theme-toggle {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--xi-ink);
+    background: rgba(120, 180, 255, 0.14);
+    border: 1px solid rgba(140, 190, 255, 0.28);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.home-hero .hero-theme-toggle:hover { background: rgba(120, 180, 255, 0.24); border-color: rgba(140, 190, 255, 0.55); }
+.home-hero .hero-theme-toggle:active { transform: scale(0.93); }
+.home-hero .hero-theme-toggle svg { width: 16px; height: 16px; }
+/* Чтобы последняя строка (цитата) не подходила под кнопку в нижнем углу */
+.home-hero p:last-of-type { padding-right: 52px; }
+
+/* Тёмная тема: фон глубже и темнее, азуровая обводка чуть приглушена */
+:root[data-theme="dark"] .home-hero {
+    border-color: rgba(0, 120, 235, 0.5);
+    box-shadow: 0 5px 16px rgba(2, 12, 30, 0.4), inset 0 0 0 1px rgba(80, 150, 235, 0.2);
+}
+:root[data-theme="dark"] .home-hero::before {
+    background:
+        linear-gradient(150deg, rgba(8, 18, 32, 0.60) 0%, rgba(5, 12, 24, 0.72) 55%, rgba(2, 7, 16, 0.84) 100%),
+        url('/images/energy-background.webp') center / cover no-repeat;
+}
+:root[data-theme="dark"] .home-hero::after {
+    background:
+        radial-gradient(120% 80% at 8% -10%, rgba(150, 195, 240, 0.20) 0%, rgba(150, 195, 240, 0) 46%),
+        linear-gradient(180deg, rgba(210, 230, 255, 0.08) 0%, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0) 84%, rgba(2, 10, 26, 0.42) 100%);
+}
 
 .xi-prose { font-size: 16.5px; color: var(--xi-ink); overflow-wrap: break-word; }
 .xi-prose h2, .xi-prose h3, .xi-prose h4, .xi-prose h5 { font-family: var(--xi-font-serif); color: var(--xi-ink); line-height: 1.3; margin: 1.6em 0 0.6em; }
@@ -1410,21 +1475,22 @@ html { scroll-padding-top: 84px; }
 .share-copied { font-size: 12px; color: var(--xi-accent); }
 
 /* Переключатель темы (футер) */
+/* Стеклянный стиль — как у кнопки-переключателя в hero (тема-зависимо) */
 .theme-toggle {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--xi-surface);
-    border: 1px solid var(--xi-line);
+    background: var(--xi-accent-soft);
+    border: 1px solid transparent;
     color: var(--xi-ink-soft);
     border-radius: 999px;
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color .15s, color .15s, background .15s;
+    transition: border-color .15s, color .15s, background-color .15s;
 }
-.theme-toggle:hover { border-color: var(--xi-accent-deep); color: var(--xi-ink); }
+.theme-toggle:hover { border-color: var(--xi-accent); color: var(--xi-accent); }
 .theme-toggle svg { width: 16px; height: 16px; }
 
 /* --- Предупреждение (курсы) --- */
