@@ -16,7 +16,15 @@ class PageController extends Controller
             ->with('section')
             ->when($request->query('section'), fn ($q, $s) => $q->where('section_id', $s))
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
-            ->when($request->query('q'), fn ($q, $term) => $q->where('title', 'like', "%{$term}%"))
+            ->when($request->query('q'), function ($q, $term) {
+                $like = '%'.mb_strtolower($term).'%';
+
+                $q->where(function ($sub) use ($like) {
+                    $sub->whereRaw('LOWER(title) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(excerpt) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(body) LIKE ?', [$like]);
+                });
+            })
             ->latest('updated_at')
             ->paginate(25)
             ->withQueryString();

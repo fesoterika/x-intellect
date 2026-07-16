@@ -35,6 +35,14 @@
             </div>
         </form>
 
+        <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap gap-3 items-end">
+            <div class="flex-1 min-w-40">
+                <label class="block text-xs text-gray-500 mb-1">Поиск по пути, URL и комментарию</label>
+                <input type="text" name="q" value="{{ request('q') }}" class="w-full rounded-md border-gray-300 text-sm">
+            </div>
+            <button class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
+        </form>
+
         <div class="bg-white rounded-lg shadow overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-left text-gray-500">

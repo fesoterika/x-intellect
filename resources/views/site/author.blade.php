@@ -20,7 +20,10 @@
                 <img src="/images/f_color.webp" alt="Портрет автора - Ф. (@fesoterika)" width="76" height="76"
                      style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 1px solid var(--xi-accent-deep); background: var(--xi-accent-soft);">
                 <div>
-                    <h1 class="page-title" style="margin: 0;">{{ $page->title }}</h1>
+                    <div class="title-with-edit" style="margin: 0;">
+                        <h1 class="page-title" style="margin: 0;">{{ $page->title }}</h1>
+                        <x-edit-link :href="route('admin.pages.edit', $page)" label="Редактировать страницу" />
+                    </div>
                     <p style="margin: 4px 0 0; color: var(--xi-ink-faint);">Хранитель архива и разработчик сайта</p>
                 </div>
             </div>

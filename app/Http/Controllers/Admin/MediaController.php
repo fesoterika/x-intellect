@@ -19,6 +19,14 @@ class MediaController extends Controller
             // Фильтр по привязанной странице — параметр page_id: имя page
             // занято пагинатором (?page=2 ломало бы и фильтр, и пагинацию)
             ->when($request->query('page_id'), fn ($q, $p) => $q->where('page_id', $p))
+            ->when($request->query('q'), function ($q, $term) {
+                $like = '%'.mb_strtolower($term).'%';
+
+                $q->where(function ($sub) use ($like) {
+                    $sub->whereRaw('LOWER(title) LIKE ?', [$like])
+                        ->orWhereRaw('LOWER(file_path) LIKE ?', [$like]);
+                });
+            })
             ->latest()
             ->paginate(30)
             ->withQueryString();
