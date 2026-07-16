@@ -4,9 +4,11 @@ namespace App\Observers;
 
 use App\Jobs\RegenerateSitemap;
 use App\Models\Page;
+use App\Models\Redirect;
 use App\Services\GlossaryLinker;
 use App\Services\ImageAligner;
 use App\Services\ImageFigures;
+use App\Services\ImageGallery;
 use App\Services\ImageSeo;
 use App\Services\SeoService;
 use App\Services\AttachmentDownloads;
@@ -15,6 +17,7 @@ use App\Services\LocalLinks;
 use App\Services\TableImagePairer;
 use App\Services\TimelineTagger;
 use App\Services\TrixTables;
+use Illuminate\Support\Str;
 
 class PageObserver
 {
@@ -27,6 +30,7 @@ class PageObserver
         protected ImageFigures $imageFigures,
         protected TrixTables $tables,
         protected TableImagePairer $pairer,
+        protected ImageGallery $gallery,
         protected LinkTargets $linkTargets,
         protected AttachmentDownloads $downloads,
         protected LocalLinks $localLinks,
@@ -34,6 +38,13 @@ class PageObserver
 
     public function saving(Page $page): void
     {
+        // Раздел сменился — подтянутая ранее связь указывает на прежний,
+        // а из неё считается url() (и canonical ниже)
+        if ($page->isDirty('section_id')) {
+            $page->unsetRelation('section');
+        }
+        $this->refreshCanonicalOnMove($page);
+
         // Таблицы-вложения Trix → чистый <table> (см. TrixTables) — ДО
         // остальной обработки, чтобы alt картинок и тултипы глоссария
         // увидели содержимое таблиц
@@ -52,12 +63,15 @@ class PageObserver
             // маркеры «в новом окне» → target=_blank; выравнивание картинок
             // (класс на фигуру по alignment из Trix) → подписи и ссылки на
             // картинки → файлы-вложения кнопкой «Скачать» → пары «картинка +
-            // таблица» → тултипы глоссария
+            // таблица» → ряды миниатюр (строго после пар: обёртка галереи
+            // разорвала бы соседство фигуры с таблицей) → тултипы глоссария
             $page->body_rendered = $this->glossary->process(
-                $this->pairer->process(
-                    $this->downloads->process(
-                        $this->imageFigures->process(
-                            $this->imageAligner->process($this->linkTargets->process($page->body)),
+                $this->gallery->process(
+                    $this->pairer->process(
+                        $this->downloads->process(
+                            $this->imageFigures->process(
+                                $this->imageAligner->process($this->linkTargets->process($page->body)),
+                            ),
                         ),
                     ),
                 ),
@@ -94,8 +108,74 @@ class PageObserver
 
     public function saved(Page $page): void
     {
+        $this->keepOldUrlAlive($page);
+
         if ($page->isPublished() || $page->wasChanged('status')) {
             RegenerateSitemap::dispatch();
+        }
+    }
+
+    /**
+     * Переезд страницы: старый адрес сохраняем 301, иначе смена раздела в
+     * админке молча ломает ссылки и теряет накопленный вес.
+     *
+     * Адрес зависит от КОРНЕВОГО раздела (Page::url()), поэтому перенос между
+     * подразделами одного корня адреса не меняет — редирект не нужен.
+     */
+    private function keepOldUrlAlive(Page $page): void
+    {
+        // На вставке wasChanged() пуст, так что создание сюда не попадает
+        if (! $page->wasChanged(['section_id', 'slug'])) {
+            return;
+        }
+
+        $oldUrl = $page->urlBeforeSave();
+        $newUrl = $page->url();
+        if ($oldUrl === null || $oldUrl === $newUrl) {
+            return;
+        }
+
+        // Встречная запись (страницу вернули на прежний адрес) перехватила бы
+        // новый адрес: middleware отрабатывает ДО маршрутизации, и страница
+        // стала бы недоступна, а переходы зациклились.
+        Redirect::where('from_path', $newUrl)->delete();
+
+        Redirect::updateOrCreate(
+            ['from_path' => $oldUrl],
+            [
+                'to_url' => $newUrl,
+                'status_code' => 301,
+                'comment' => 'Смена адреса: '.Str::limit($page->title, 50),
+            ],
+        );
+
+        // Входящие редиректы ведём сразу на новый адрес: иначе накапливаются
+        // цепочки «старый → прежний → новый», которые теряют вес на каждом хопе.
+        Redirect::where('to_url', $oldUrl)
+            ->where('from_path', '!=', $oldUrl)
+            ->update(['to_url' => $newUrl]);
+    }
+
+    /**
+     * Canonical, выставленный автоматически для прежнего адреса, обязан
+     * переехать со страницей — иначе он спорит с собственным 301. Значение,
+     * заданное руками, не трогаем.
+     */
+    private function refreshCanonicalOnMove(Page $page): void
+    {
+        if (! $page->exists || ! $page->isDirty(['section_id', 'slug'])) {
+            return;
+        }
+
+        $oldUrl = $page->urlBeforeSave();
+        $seo = $page->seo ?? [];
+        if ($oldUrl === null || ! isset($seo['canonical'])) {
+            return;
+        }
+
+        if ($seo['canonical'] === rtrim(config('app.url'), '/').$oldUrl) {
+            $seo['canonical'] = null; // SeoService::fillDefaults подставит новый
+            $page->seo = $seo;
         }
     }
 

@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use App\Models\Section;
 use App\Services\ArchiveHtmlCleaner;
 use App\Services\MediaWikiArchive;
+use App\Services\OfflineSnapshotIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -201,9 +202,11 @@ class AuditArchive extends Command
      */
     private function auditWiki(string $wikiDir): array
     {
-        $files = collect(File::glob($wikiDir.'/index.php@title=*'))
-            ->reject(fn ($f) => str_contains($f, '&'))
-            ->reject(fn ($f) => (bool) preg_match('/\.(png|jpe?g|gif|svg|mp3|pdf|css|js|tmp|ico|webp|bmp)$/i', $f));
+        // Тот же индекс, что у импортёра: корень + подпапки %&OvrN, отбор
+        // канонических просмотров по содержимому. Прежний glob по корню видел
+        // лишь часть статей — отсюда бралось ложное «в архиве столько же».
+        $files = collect(app(OfflineSnapshotIndex::class)->build($wikiDir))
+            ->pluck('path');
 
         $pagesByTitle = [];
         foreach (Page::where('source_type', 'archive_wiki')->get(['id', 'section_id', 'title', 'slug', 'status', 'body']) as $p) {

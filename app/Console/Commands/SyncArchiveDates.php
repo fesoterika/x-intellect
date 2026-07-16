@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Page;
 use App\Services\MediaWikiArchive;
+use App\Services\OfflineSnapshotIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
@@ -179,9 +180,9 @@ class SyncArchiveDates extends Command
      */
     protected function collectWikiDates(string $base, MediaWikiArchive $mw): array
     {
-        $files = collect(File::glob($base.'/wiki/index.php@title=*'))
-            ->reject(fn ($f) => str_contains($f, '&'))
-            ->reject(fn ($f) => (bool) preg_match('/\.(png|jpe?g|gif|svg|mp3|pdf|css|js|tmp|ico|webp|bmp)$/i', $f));
+        // Через общий индекс: часть страниц лежит в подпапках %&OvrN, а имена
+        // файлов OE обрезает — glob по корню половину дат не находил.
+        $files = collect(app(OfflineSnapshotIndex::class)->build($base.'/wiki'))->pluck('path');
 
         $dates = [];
 

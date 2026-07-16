@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use App\Models\Section;
 use App\Services\ArchiveHtmlCleaner;
 use App\Services\MediaWikiArchive;
+use App\Services\OfflineSnapshotIndex;
 use DOMDocument;
 use DOMElement;
 use Illuminate\Console\Command;
@@ -43,7 +44,7 @@ class ImportOfflineWiki extends Command
 
     private MediaWikiArchive $mw;
 
-    public function handle(ArchiveHtmlCleaner $cleaner, MediaWikiArchive $mw): int
+    public function handle(ArchiveHtmlCleaner $cleaner, MediaWikiArchive $mw, OfflineSnapshotIndex $index): int
     {
         $this->mw = $mw;
 
@@ -64,9 +65,10 @@ class ImportOfflineWiki extends Command
         $termSet = $this->parseGlossaryIndex($base);
         $this->info('Терминов в индексе глоссария: '.count($termSet));
 
-        $files = collect(File::glob($base.'/index.php@title=*'))
-            ->reject(fn ($f) => str_contains($f, '&'))
-            ->reject(fn ($f) => (bool) preg_match('/\.(png|jpe?g|gif|svg|mp3|pdf|css|js|tmp|ico|webp|bmp)$/i', $f));
+        // Индекс обходит и корень, и подпапки %&OvrN, и отсеивает diff/старые
+        // ревизии по содержимому: имена файлов OE обрезает, полагаться на них нельзя.
+        $entries = $index->build($base);
+        $this->info('Статей в слепке (ns-0, канонических): '.count($entries));
 
         $limit = (int) $this->option('limit');
         $dry = (bool) $this->option('dry');
@@ -74,10 +76,9 @@ class ImportOfflineWiki extends Command
         $pages = 0;
         $terms = 0;
         $skipped = 0;
-        $seen = [];
 
-        foreach ($files as $file) {
-            [$title, $node, $doc] = $this->mw->parse(@File::get($file) ?: null);
+        foreach ($entries as $norm => $entry) {
+            [$title, $node, $doc] = $this->mw->parse(@File::get($entry['path']) ?: null);
             if ($title === null || $node === null) {
                 $skipped++;
 
@@ -90,17 +91,9 @@ class ImportOfflineWiki extends Command
                 continue;
             }
 
-            $norm = mb_strtolower(trim($title));
-            if (isset($seen[$norm])) {
-                $skipped++;
-
-                continue; // дубль-снимок той же страницы
-            }
-
             $isTerm = isset($termSet[$norm]) && ! in_array($norm, $this->mw->forceAsPages, true);
 
             if ($dry) {
-                $seen[$norm] = true;
                 $this->line(sprintf('[%s] %s', $isTerm ? 'термин' : 'вики', Str::limit($title, 70)));
                 $isTerm ? $terms++ : $pages++;
                 if ($limit && ($pages + $terms) >= $limit) {
@@ -118,8 +111,6 @@ class ImportOfflineWiki extends Command
 
                 continue; // пусто/заглушка/редирект
             }
-
-            $seen[$norm] = true;
 
             if ($isTerm) {
                 $this->createTerm($title, $node);
@@ -179,8 +170,10 @@ class ImportOfflineWiki extends Command
         $existing = Page::where('source_type', 'archive_wiki')->where('title', $title)->first();
         if ($existing) {
             if ($this->option('refresh')) {
-                // Не затирать страницы, правленные вручную после импорта
-                if ($existing->revisions()->where('note', 'like', 'Отредактирована вручную%')->exists()) {
+                // Опубликованное вычитано вручную и перезаписи не подлежит — даже
+                // если ревизии с пометкой о ручной правке ещё нет.
+                if ($existing->status === 'published'
+                    || $existing->revisions()->where('note', 'like', 'Отредактирована вручную%')->exists()) {
                     $this->refreshSkipped[] = $existing->title;
                 } else {
                     $existing->body = $body;

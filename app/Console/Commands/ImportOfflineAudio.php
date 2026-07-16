@@ -4,7 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Media;
 use App\Models\Page;
-use DOMDocument;
+use App\Services\AudioLibrary;
+use App\Services\OfflineSnapshotIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -23,11 +24,13 @@ use Illuminate\Support\Str;
  */
 class ImportOfflineAudio extends Command
 {
-    protected $signature = 'import:offline-audio {archive} {--dry}';
+    protected $signature = 'import:offline-audio {archive} {--dry} {--audio-dir=* : Доп. папки с mp3 в порядке приоритета} {--no-date-match : Не искать mp3 по дате в заголовке}';
 
     protected $description = 'Импорт аудио: привязка mp3 к вики-страницам сеансов и «Приветствию»';
 
-    public function handle(): int
+    private AudioLibrary $library;
+
+    public function handle(OfflineSnapshotIndex $index): int
     {
         $base = rtrim($this->argument('archive'), '/');
         if (! File::isDirectory($base)) {
@@ -37,9 +40,11 @@ class ImportOfflineAudio extends Command
         }
         $dry = (bool) $this->option('dry');
 
-        $files = collect(File::glob($base.'/index.php@title=*'))
-            ->reject(fn ($f) => str_contains($f, '&'))
-            ->reject(fn ($f) => (bool) preg_match('/\.(png|jpe?g|gif|svg|mp3|pdf|css|js|tmp|ico|webp|bmp)$/i', $f));
+        $this->library = (new AudioLibrary($this->audioRoots($base)))->build();
+        $this->info('mp3 в библиотеке (слепок + доп. папки): '.$this->library->count());
+
+        $entries = $index->build($base);
+        $this->info('Статей в слепке: '.count($entries));
 
         $attached = 0;
         $tracks = 0;
@@ -47,22 +52,21 @@ class ImportOfflineAudio extends Command
         $noPage = 0;
         $seenPages = [];
 
-        foreach ($files as $file) {
-            $html = @File::get($file);
-            if (! $html || (preg_match('/"wgNamespaceNumber":(-?\d+)/', $html, $m) && $m[1] !== '0')) {
+        foreach ($entries as $entry) {
+            $html = @File::get($entry['path']);
+            if (! $html) {
                 continue;
             }
 
-            if (! preg_match_all('#(?:\.\./)*files/audio/[^\s"\'<>]+?\.mp3#i', $html, $mm)) {
+            // Ссылка может вести на другой домен архива (OE переписал его в
+            // относительный путь: ../../www.sferarazuma.org/files/audio/x.mp3),
+            // поэтому не привязываемся к началу пути — ищем сегмент files/audio/.
+            if (! preg_match_all('#[^\s"\'<>()]*files/audio/[^\s"\'<>()]+?\.mp3#i', $html, $mm)) {
                 continue;
             }
             $refs = array_values(array_unique($mm[0]));
 
-            $title = $this->titleOf($html);
-            if ($title === null) {
-                continue;
-            }
-
+            $title = $entry['title'];
             $page = $this->pageFor($title);
             if (! $page) {
                 $noPage++;
@@ -74,39 +78,18 @@ class ImportOfflineAudio extends Command
             foreach ($refs as $ref) {
                 $real = realpath($base.'/'.$ref);
                 if ($real === false || ! is_file($real)) {
-                    $missingFile++;
-
-                    continue;
-                }
-
-                $name = basename($real);
-                if ($dry) {
-                    $this->line(sprintf('[%s] ← %s', Str::limit($title, 45), $name));
-                    $tracks++;
-
-                    continue;
-                }
-
-                $dest = 'media/audio/archive/'.$name;
-                if (! Storage::disk('public')->exists($dest)) {
-                    // потоковое копирование — аудио бывает крупным, не грузим целиком в память
-                    $stream = @fopen($real, 'rb');
-                    if ($stream === false) {
+                    // Файл лежит не там, куда указывает ссылка (чужой домен,
+                    // переезд папок) — ищем по имени во всех источниках.
+                    $found = $this->library->byName(basename($ref));
+                    if ($found === null) {
                         $missingFile++;
 
                         continue;
                     }
-                    Storage::disk('public')->writeStream($dest, $stream);
-                    if (is_resource($stream)) {
-                        fclose($stream);
-                    }
+                    $real = $found['path'];
                 }
 
-                $media = Media::firstOrCreate(
-                    ['page_id' => $page->id, 'file_path' => $dest],
-                    ['type' => 'audio', 'title' => $this->trackTitle($title, $name), 'disk' => 'public'],
-                );
-                if ($media->wasRecentlyCreated) {
+                if ($this->attachTrack($page, $title, $real, $dry)) {
                     $tracks++;
                 }
             }
@@ -122,13 +105,98 @@ class ImportOfflineAudio extends Command
         // поэтому берём их из папки files/audio/privetstvie напрямую.
         $tracks += $this->attachGreetings($base, $dry);
 
+        $byDate = $this->option('no-date-match') ? 0 : $this->attachByDate($dry);
+
         $this->newLine();
-        $this->info("Готово. Страниц с аудио: {$attached}, дорожек: {$tracks}.");
+        $this->info("Готово. Страниц с аудио (по ссылкам): {$attached}, дорожек: {$tracks}.");
+        if ($byDate) {
+            $this->info("Добавлено по дате в заголовке: {$byDate} дорожек.");
+        }
         if ($noPage || $missingFile) {
             $this->comment("Без страницы в БД: {$noPage}; отсутствующих файлов: {$missingFile}.");
         }
 
         return self::SUCCESS;
+    }
+
+    /** Папки с mp3 в порядке приоритета: слепок → --audio-dir → config. */
+    private function audioRoots(string $wikiDir): array
+    {
+        $roots = [dirname($wikiDir)];
+        $extra = (array) $this->option('audio-dir');
+        if (! $extra) {
+            $extra = (array) config('archive.audio_dirs', []);
+        }
+
+        return array_values(array_filter(array_merge($roots, $extra), 'is_dir'));
+    }
+
+    /**
+     * Страницы с датой в заголовке, у которых аудио нет: ищем mp3 по дате
+     * во всех источниках. Тело страницы не трогаем — только связь Media.
+     */
+    private function attachByDate(bool $dry): int
+    {
+        $added = 0;
+        $pages = Page::whereIn('source_type', ['archive_wiki', 'archive_xintellect'])
+            ->whereDoesntHave('media', fn ($q) => $q->where('type', 'audio'))
+            ->get();
+
+        foreach ($pages as $page) {
+            $key = AudioLibrary::dateKeyOf($page->title);
+            if ($key === null) {
+                continue;
+            }
+            foreach ($this->library->byDateKey($key) as $file) {
+                if ($this->attachTrack($page, $page->title, $file['path'], $dry)) {
+                    $added++;
+                    $this->line(sprintf('[по дате] %s ← %s (%s)',
+                        Str::limit($page->title, 45), $file['name'], $file['source']));
+                }
+            }
+        }
+
+        return $added;
+    }
+
+    /** Копирует mp3 в storage и заводит Media. Идемпотентно (по page_id+file_path). */
+    private function attachTrack(Page $page, string $title, string $real, bool $dry): bool
+    {
+        $name = basename($real);
+        if ($dry) {
+            $this->line(sprintf('[%s] ← %s', Str::limit($title, 45), $name));
+
+            return true;
+        }
+
+        $dest = 'media/audio/archive/'.$name;
+        // Разные файлы с одинаковым именем в разных папках не должны затирать
+        // друг друга: при коллизии имени с другим размером — суффикс по хэшу пути.
+        if (Storage::disk('public')->exists($dest)
+            && Storage::disk('public')->size($dest) !== filesize($real)) {
+            $dest = 'media/audio/archive/'.pathinfo($name, PATHINFO_FILENAME)
+                .'-'.substr(sha1($real), 0, 8).'.mp3';
+        }
+
+        if (! Storage::disk('public')->exists($dest)) {
+            // потоковое копирование — аудио бывает крупным, не грузим целиком в память
+            $stream = @fopen($real, 'rb');
+            if ($stream === false) {
+                return false;
+            }
+            Storage::disk('public')->writeStream($dest, $stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }
+
+        $media = Media::firstOrCreate(
+            ['page_id' => $page->id, 'file_path' => $dest],
+            ['type' => 'audio', 'title' => $this->trackTitle($title, $name), 'disk' => 'public',
+                'mime' => 'audio/mpeg', 'size' => filesize($real)],
+        );
+
+        return $media->wasRecentlyCreated;
     }
 
     /** Привязывает files/audio/privetstvie/*.mp3 к странице «Приветствие». */
@@ -179,17 +247,6 @@ class ImportOfflineAudio extends Command
         }
 
         return $n;
-    }
-
-    private function titleOf(string $html): ?string
-    {
-        $doc = new DOMDocument;
-        libxml_use_internal_errors(true);
-        $doc->loadHTML('<?xml encoding="UTF-8">'.$html);
-        libxml_clear_errors();
-        $h = $doc->getElementById('firstHeading');
-
-        return $h ? (trim(preg_replace('/\s+/u', ' ', $h->textContent)) ?: null) : null;
     }
 
     /** Ищем импортированную страницу: сначала вики по заголовку, затем «Приветствие». */

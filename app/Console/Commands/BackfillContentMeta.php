@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Page;
 use App\Models\PageRevision;
+use App\Services\ExcerptMaker;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -25,6 +26,11 @@ class BackfillContentMeta extends Command
 
     protected $description = 'Заполнить пустые archived_at (из source_url) и excerpt (из тела); опционально очистить ревизии';
 
+    public function __construct(private ExcerptMaker $excerpts)
+    {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
         $dry = (bool) $this->option('dry');
@@ -40,7 +46,7 @@ class BackfillContentMeta extends Command
                 $changed = true;
             }
 
-            if (blank($page->excerpt) && ($excerpt = $this->makeExcerpt($page->body)) !== '') {
+            if (blank($page->excerpt) && ($excerpt = $this->excerpts->fromBody($page->body)) !== '') {
                 $page->excerpt = $excerpt;
                 $excerpts++;
                 $changed = true;
@@ -82,34 +88,5 @@ class BackfillContentMeta extends Command
         }
 
         return Carbon::createFromDate($year, $month, $day);
-    }
-
-    /** Анонс: первые предложения тела как plain text, до ~200 символов. */
-    private function makeExcerpt(?string $body): string
-    {
-        // short-коды аудио не тянем в текст анонса
-        $text = preg_replace('/\[\[audio:\d+\]\]/', ' ', (string) $body);
-        // блочные теги → пробел, чтобы абзацы/ячейки не слипались
-        $text = preg_replace('#</(p|div|li|td|th|tr|h[1-6]|blockquote)>#i', ' ', $text);
-        $text = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
-
-        if ($text === '') {
-            return '';
-        }
-        if (mb_strlen($text) <= 200) {
-            return $text;
-        }
-
-        $cut = mb_substr($text, 0, 200);
-        $lastEnd = max(mb_strrpos($cut, '. ') ?: 0, mb_strrpos($cut, '! ') ?: 0, mb_strrpos($cut, '? ') ?: 0);
-
-        if ($lastEnd > 80) {
-            return mb_substr($cut, 0, $lastEnd + 1);
-        }
-
-        // предложение длиннее лимита — режем по слову
-        $lastSpace = mb_strrpos($cut, ' ');
-
-        return rtrim(mb_substr($cut, 0, $lastSpace ?: 200), ' ,;:—-').'…';
     }
 }

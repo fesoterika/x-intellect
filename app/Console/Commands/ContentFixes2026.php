@@ -7,6 +7,8 @@ use App\Models\Page;
 use App\Models\Redirect;
 use App\Models\Section;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Правки контента (июль 2026), идемпотентны — можно повторять на проде
@@ -27,14 +29,72 @@ use Illuminate\Console\Command;
  *  5. Абсолютные ссылки на localhost в контенте (страницы, описания
  *     разделов, определения глоссария) → относительные (App\Services\LocalLinks;
  *     новые сохранения чистятся автоматически).
+ *  6. Странице «Картины Учителей Ноосферы» возвращаются сами картины: из
+ *     веб-архива они не тянутся, файлы берутся из офлайн-слепка (--snapshot).
  *
- *   php artisan site:content-fixes-2026 [--dry]
+ *   php artisan site:content-fixes-2026 [--dry] [--snapshot=…/www.x-intellect.org]
  */
 class ContentFixes2026 extends Command
 {
-    protected $signature = 'site:content-fixes-2026 {--dry : Показать изменения без записи}';
+    protected $signature = 'site:content-fixes-2026
+        {--dry : Показать изменения без записи}
+        {--snapshot= : Путь к офлайн-слепку (…/www.x-intellect.org) — для картин Учителей Ноосферы}';
 
     protected $description = 'Правки контента: строки «Аудио Запись» из таблиц вики + ссылки на странице «Техники»';
+
+    protected const KARTINY_SLUG = 'kartiny-ucitelei-noosfery';
+
+    /**
+     * Картины проекта «Картины Учителей Ноосферы» — раскладка снимка вики
+     * (web.archive.org/web/20200926172215):
+     *
+     *   якорь в теле => [before|after, [путь в wiki/images => обтекание]]
+     *
+     * KN_2M.PNG в вики стояла «thumb tright» перед карточкой проекта — отсюда
+     * float, из которого TableImagePairer соберёт пару «картинка + таблица».
+     * Остальные шли рядами миниатюр (их собирает ImageGallery).
+     */
+    protected const KARTINY_GALLERIES = [
+        '<table>' => ['before', ['a/a4/KN_2M.PNG' => 'right']],
+
+        '<div><strong>Структура банка Шамбалы</strong>' => ['before', ['d/df/SH555.jpg' => null]],
+
+        'более высокой ступени развития.</li></ul>' => ['after', [
+            '2/2f/SH22.jpg' => null,
+            '1/10/SH23.jpg' => null,
+            '1/14/SH24.jpg' => null,
+        ]],
+
+        '<strong>Шамбала (12 картин)</strong>' => ['after', [
+            '6/6e/SH1.gif' => null,
+            'a/a2/SH7.gif' => null,
+            '0/0c/SH8.gif' => null,
+            'a/a6/SH9.gif' => null,
+        ]],
+
+        '<strong>Параллельные миры (8 картин)</strong>' => ['after', [
+            '0/0a/PM30.gif' => null,
+            'e/ea/PM31.gif' => null,
+            '6/65/PM32.gif' => null,
+            'a/ab/PM33.gif' => null,
+            'a/af/34.gif' => null,
+            '7/7b/PM63.gif' => null,
+        ]],
+
+        '<strong>Гармония (6 картин)</strong>' => ['after', [
+            '4/4f/G24.gif' => null,
+            'd/d2/G25.gif' => null,
+            '5/55/G49.gif' => null,
+            'e/ef/G50.gif' => null,
+        ]],
+
+        '<strong>Создание пятой расы на Земле (9 картин)</strong>' => ['after', [
+            '6/6e/SH1.gif' => null,
+            '0/00/37.gif' => null,
+            '8/81/36.gif' => null,
+            '4/40/PM62.gif' => null,
+        ]],
+    ];
 
     /** Страницы техник, на которые ссылается вики-страница «Техники» */
     protected const TECHNIQUE_TITLES = [
@@ -55,6 +115,7 @@ class ContentFixes2026 extends Command
         $this->fixRedirects($dry);
         $this->mergeTableOnlyPages($dry);
         $this->relativizeLocalLinks($dry);
+        $this->restoreKartinyImages($dry);
 
         return self::SUCCESS;
     }
@@ -288,6 +349,58 @@ class ContentFixes2026 extends Command
         }
 
         $this->info("Таблицы вики: страниц изменено — {$changed}.");
+        $this->refreshStaleExcerpts($dry);
+    }
+
+    /**
+     * Анонс и meta_description собираются из тела один раз и больше не
+     * пересчитываются. Поэтому после удаления строки «Аудио Запись» она годами
+     * живёт в анонсе — текста в теле уже нет, а в выдаче и в списках он есть.
+     * Пересобираем ровно те анонсы, где остался этот след.
+     */
+    protected function refreshStaleExcerpts(bool $dry): void
+    {
+        $maker = app(\App\Services\ExcerptMaker::class);
+        $refreshed = 0;
+        $published = [];
+
+        $pages = Page::where('excerpt', 'like', '%Аудио Запись%')
+            ->orWhere('excerpt', 'like', '%Аудио запись%')
+            ->orderBy('id')->get();
+
+        foreach ($pages as $page) {
+            if (str_contains((string) $page->body, 'Аудио Запись')) {
+                continue; // строка ещё в теле — анонс верен
+            }
+            // Опубликованное вычитано вручную: анонс мог быть переписан руками
+            if ($page->status === 'published') {
+                $published[] = "[{$page->id}] {$page->title}";
+
+                continue;
+            }
+
+            $fresh = $maker->fromBody($page->body);
+            if ($fresh === '' || $fresh === $page->excerpt) {
+                continue;
+            }
+
+            $seo = $page->seo ?? [];
+            unset($seo['meta_description']); // SeoService пересоберёт из нового анонса
+
+            $refreshed++;
+            $this->line(sprintf('анонс пересобран: [%d] %s', $page->id, $page->title));
+
+            if (! $dry) {
+                $page->excerpt = $fresh;
+                $page->seo = $seo;
+                $page->save();
+            }
+        }
+
+        $this->info("Анонсы после чистки таблиц: обновлено — {$refreshed}.");
+        if ($published) {
+            $this->warn('Опубликованные со следом «Аудио Запись» в анонсе (не тронуты): '.implode('; ', $published));
+        }
     }
 
     /** Список техник на странице «Техники» превращается в ссылки на страницы. */
@@ -344,5 +457,102 @@ class ContentFixes2026 extends Command
         }
 
         $this->info('Страница «Техники»: список заменён на ссылки ('.count($items).').');
+    }
+
+    /**
+     * Картины на странице «Картины Учителей Ноосферы».
+     *
+     * Страница пришла из веб-архива (import:wayback-wiki), а он отдаёт картинки
+     * внешними ссылками — ArchiveHtmlCleaner их отбрасывает, и от галерей
+     * остались одни заголовки («Шамбала (12 картин)» и т.п.). Сами файлы есть
+     * в офлайн-слепке 2015 года по тем же путям MediaWiki, что и в снимке
+     * (/wiki/images/x/xx/Имя) — берём их оттуда и вставляем фигуры по якорям
+     * текста. Тело правится точечно (страница вычитана вручную — перезаливать
+     * её из архива нельзя).
+     */
+    protected function restoreKartinyImages(bool $dry): void
+    {
+        $page = Page::where('slug', self::KARTINY_SLUG)->first();
+        if (! $page) {
+            $this->warn('Страница «Картины Учителей Ноосферы» не найдена — картины пропущены.');
+
+            return;
+        }
+
+        if (str_contains((string) $page->body, 'media/archive/')) {
+            $this->info('Картины Учителей Ноосферы: картины уже на месте.');
+
+            return;
+        }
+
+        $snapshot = $this->option('snapshot');
+        if (! $snapshot || ! is_dir($snapshot)) {
+            $this->comment('Картины Учителей Ноосферы: нужен путь к слепку — '
+                .'php artisan site:content-fixes-2026 --snapshot=/путь/к/www.x-intellect.org');
+
+            return;
+        }
+
+        $body = (string) $page->body;
+        $copied = 0;
+
+        foreach (self::KARTINY_GALLERIES as $anchor => [$where, $files]) {
+            if (substr_count($body, $anchor) !== 1) {
+                $this->warn('Картины: якорь не найден (или неоднозначен) — '.strip_tags($anchor));
+
+                return;
+            }
+
+            $figures = '';
+            foreach ($files as $file => $float) {
+                $src = $this->copyArchiveImage($snapshot, $file, $dry);
+                if ($src === null) {
+                    $this->error('Картины: нет файла в слепке — wiki/images/'.$file);
+
+                    return;
+                }
+                $copied++;
+
+                $classes = 'attachment attachment--preview'.($float ? ' xi-float-'.$float : '');
+                $figures .= '<figure class="'.$classes.'">'
+                    .'<img src="'.e($src).'" alt="'.e(basename($file)).'">'
+                    .'</figure>';
+            }
+
+            $body = str_replace(
+                $anchor,
+                $where === 'before' ? $figures.$anchor : $anchor.$figures,
+                $body,
+            );
+        }
+
+        if (! $dry) {
+            $page->body = $body;
+            $page->save();
+        }
+
+        $this->info("Картины Учителей Ноосферы: вставлено картин — {$copied}.");
+    }
+
+    /**
+     * Файл из слепка → storage/media/archive. Имя — по хэшу исходного пути,
+     * как в ArchiveHtmlCleaner: тот же файл из слепка не задваивается, а
+     * повторный прогон не меняет src в теле.
+     */
+    protected function copyArchiveImage(string $snapshot, string $file, bool $dry): ?string
+    {
+        $path = realpath(rtrim($snapshot, '/').'/wiki/images/'.$file);
+        if ($path === false || ! is_file($path)) {
+            return null;
+        }
+
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $dest = 'media/archive/'.substr(sha1($path), 0, 24).'.'.$ext;
+
+        if (! $dry && ! Storage::disk('public')->exists($dest)) {
+            Storage::disk('public')->put($dest, File::get($path));
+        }
+
+        return '/storage/'.$dest;
     }
 }

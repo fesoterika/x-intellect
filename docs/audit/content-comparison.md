@@ -1,6 +1,6 @@
 # Аудит контента: новый сайт vs архив
 
-Сформировано: 14.07.2026 23:10. Команда: `php artisan audit:archive`.
+Сформировано: 16.07.2026 00:52. Команда: `php artisan audit:archive`.
 
 Исключены из сверки (по требованию): раздел сайта «Библиотека» (library), форум. Страницы `source_type=new` — не сверяются с архивом (созданы для нового сайта).
 
@@ -9,22 +9,7 @@
 | Что | В архиве (содержательное) | Есть на сайте | Отсутствует |
 |---|---|---|---|
 | Основной сайт (страницы WordPress) | 64 | 64 | 0 |
-| Вики (статьи ns-0) | 172 | 172 | 0 |
-
-### Сверка количества с Wayback Machine
-
-| Источник | Заголовков вики |
-|---|---|
-| Офлайн-слепок 2015 (ns-0, содержательные) | 172 |
-| Wayback CDX (2010–2024, чистые title-URL) | 113 |
-| БД: страницы вики (archive_wiki) | 139 |
-| БД: термины глоссария | 79 |
-
-Есть только в Wayback (нет ни в слепке, ни в БД): **1**
-
-| Заголовок | Снимок |
-|---|---|
-| Хроносфера и временной фактор | https://web.archive.org/web/20200926191839/http://www.x-intellect.org/wiki/index.php?title=%D0%A5%D1%80%D0%BE%D0%BD%D0%BE%D1%81%D1%84%D0%B5%D1%80%D0%B0_%D0%B8_%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80 |
+| Вики (статьи ns-0) | 251 | 251 | 0 |
 
 ## Основной сайт
 
@@ -40,22 +25,22 @@
 
 | Архивная страница | На сайте | Статус |
 |---|---|---|
-| День Рождения Александра Глаза | [2012-07-04](http://localhost/about/2012-07-04) | draft |
-| День Рождения Александра Глаза | [2012-07-04](http://localhost/about/2012-07-04) | draft |
-| Ченнелинг: Мнение Сил о сайте X-INTELLECT | [2012-07-08](http://localhost/about/2012-07-08) | draft |
+| День Рождения Александра Глаза | [2012-07-04-2](http://localhost/articles/2012-07-04-2) | published |
+| День Рождения Александра Глаза | [2012-07-04](http://localhost/articles/2012-07-04) | published |
+| Ченнелинг: Мнение Сил о сайте X-INTELLECT | [2012-07-08](http://localhost/articles/2012-07-08) | published |
 | Проект эталонизации физиологических систем | [2013-01-06-models](http://localhost/projects/2013-01-06-models) | published |
-| Безвременно ушел от нас Александр Георгиевич Глаз | [bezvremenno-usel-ot-nas-aleksandr-georgievic-glaz](http://localhost/about/bezvremenno-usel-ot-nas-aleksandr-georgievic-glaz) | draft |
+| Безвременно ушел от нас Александр Георгиевич Глаз | [bezvremenno-usel-ot-nas-aleksandr-georgievic-glaz](http://localhost/articles/bezvremenno-usel-ot-nas-aleksandr-georgievic-glaz) | published |
 | Проект «Целительство» | [297](http://localhost/projects/297) | draft |
-| Исполнилось 40 дней со дня перехода Александра Георгиевича Глаза в иные реальности безграничного Дома Вселенной | [ispolnilos-40-dnei-so-dnia-perexoda-aleksandra-georgievica-glaza-v-inye-realnosti-bezgranicnogo-doma-vselennoi](http://localhost/about/ispolnilos-40-dnei-so-dnia-perexoda-aleksandra-georgievica-glaza-v-inye-realnosti-bezgranicnogo-doma-vselennoi) | draft |
-| СВЕТЛАЯ ПАМЯТЬ АЛЕКСАНДРУ ГЛАЗУ | [svetlaia-pamiat-aleksandru-glazu](http://localhost/about/svetlaia-pamiat-aleksandru-glazu) | draft |
-| Глаз Александр Георгиевич | [alexandrglaz](http://localhost/about/alexandrglaz) | draft |
-| Тема: Камни | [camni-000-09-2012](http://localhost/articles/camni-000-09-2012) | draft |
-| «Взаимодействие и манипуляция энергетическими центрами человека» 2 Кольцо | [vzaimodeistvie-i-manipuliaciia-energeticeskimi-centrami-celoveka-2-kolco](http://localhost/courses/vzaimodeistvie-i-manipuliaciia-energeticeskimi-centrami-celoveka-2-kolco) | draft |
-| Статья: Некоторые методики чистки после воздействия деструктивных сил | [statia-nekotorye-metodiki-cistki-posle-vozdeistviia-destruktivnyx-sil](http://localhost/articles/statia-nekotorye-metodiki-cistki-posle-vozdeistviia-destruktivnyx-sil) | draft |
+| Исполнилось 40 дней со дня перехода Александра Георгиевича Глаза в иные реальности безграничного Дома Вселенной | [ispolnilos-40-dnei-so-dnia-perexoda-aleksandra-georgievica-glaza-v-inye-realnosti-bezgranicnogo-doma-vselennoi](http://localhost/articles/ispolnilos-40-dnei-so-dnia-perexoda-aleksandra-georgievica-glaza-v-inye-realnosti-bezgranicnogo-doma-vselennoi) | published |
+| СВЕТЛАЯ ПАМЯТЬ АЛЕКСАНДРУ ГЛАЗУ | [svetlaia-pamiat-aleksandru-glazu](http://localhost/articles/svetlaia-pamiat-aleksandru-glazu) | published |
+| Глаз Александр Георгиевич | [alexandrglaz](http://localhost/about/alexandrglaz) | published |
+| Тема: Камни | [camni-000-09-2012](http://localhost/articles/camni-000-09-2012) | published |
+| «Взаимодействие и манипуляция энергетическими центрами человека» 2 Кольцо | [vzaimodeistvie-i-manipuliaciia-energeticeskimi-centrami-celoveka-2-kolco](http://localhost/articles/vzaimodeistvie-i-manipuliaciia-energeticeskimi-centrami-celoveka-2-kolco) | published |
+| Статья: Некоторые методики чистки после воздействия деструктивных сил | [statia-nekotorye-metodiki-cistki-posle-vozdeistviia-destruktivnyx-sil](http://localhost/articles/statia-nekotorye-metodiki-cistki-posle-vozdeistviia-destruktivnyx-sil) | published |
 | Дайджест «X-INTELLECT» №4. Декабрь 2012 | [daidzest-x-intellect-4-dekabr-2012](http://localhost/articles/daidzest-x-intellect-4-dekabr-2012) | draft |
 | Дайджест «Х-INTELLECT» (Апрель — 2013) | [daidzest-x-intellect-aprel-2013](http://localhost/articles/daidzest-x-intellect-aprel-2013) | draft |
 | «Дайджест Х-INTELLECT» (декабрь 2012 г.) | [daidzest-x-intellect-dekabr-2012-g](http://localhost/articles/daidzest-x-intellect-dekabr-2012-g) | draft |
-| О схемах воздействия Деструктивных Сил (ДС) на человека | [o-sxemax-vozdeistviia-destruktivnyx-sil-ds-na-celoveka](http://localhost/articles/o-sxemax-vozdeistviia-destruktivnyx-sil-ds-na-celoveka) | draft |
+| О схемах воздействия Деструктивных Сил (ДС) на человека | [o-sxemax-vozdeistviia-destruktivnyx-sil-ds-na-celoveka](http://localhost/articles/o-sxemax-vozdeistviia-destruktivnyx-sil-ds-na-celoveka) | published |
 | «Дайджест Х-INTELLECT» (ноябрь 2012) | [daidzest-x-intellect-noiabr-2012](http://localhost/articles/daidzest-x-intellect-noiabr-2012) | draft |
 | Дайджест «X-INTELLECT». Октябрь 2012 | [daidzest-x-intellect-oktiabr-2012](http://localhost/articles/daidzest-x-intellect-oktiabr-2012) | draft |
 | «Дайджест Х-INTELLECT» (октябрь 2012) | [daidzest-x-intellect-oktiabr-2012-2](http://localhost/articles/daidzest-x-intellect-oktiabr-2012-2) | draft |
@@ -67,19 +52,19 @@
 | Проект «Душа» (продолжение, часть 3) | [dusha-matrix-3](http://localhost/projects/dusha-matrix-3) | draft |
 | Проект «ДУША»: Вопросы и ответы (по информации из предыдущих ченнелингов) | [dusha-prodoljenie](http://localhost/projects/dusha-prodoljenie) | draft |
 | Проект «Душа» (продолжение) | [dusha-sens-syst-2](http://localhost/projects/dusha-sens-syst-2) | draft |
-| Сенсорные системы и системы представления знаний: Монография | [dusha-sens-syst-mon](http://localhost/library/dusha-sens-syst-mon) | draft |
-| Сенсорные системы и система представления знаний: Монография | [dusha-sens-syst](http://localhost/library/dusha-sens-syst) | draft |
+| Сенсорные системы и системы представления знаний: Монография | [dusha-sens-syst-mon](http://localhost/projects/dusha-sens-syst-mon) | published |
+| Сенсорные системы и система представления знаний: Монография | [dusha-sens-syst](http://localhost/articles/dusha-sens-syst) | published |
 | Приветствие от представителей Внеземного Разума | [privetstvie](http://localhost/hello/privetstvie) | published |
-| Статья: Инкарнационная ячейка | [statia-inkarnacionnaia-iaceika](http://localhost/articles/statia-inkarnacionnaia-iaceika) | draft |
-| Статья: Практика на основе «Цветок Лотоса» | [lotos](http://localhost/articles/lotos) | draft |
+| Статья: Инкарнационная ячейка | [statia-inkarnacionnaia-iaceika](http://localhost/articles/statia-inkarnacionnaia-iaceika) | published |
+| Статья: Практика на основе «Цветок Лотоса» | [lotos](http://localhost/articles/lotos) | published |
 | Проект «Мужчина и Женщина» ч.2 | [manandwuman2](http://localhost/projects/manandwuman2) | draft |
-| Проект «Мужчина и Женщина» 2 Кольцо | [mf2k](http://localhost/courses/mf2k) | draft |
+| Проект «Мужчина и Женщина» 2 Кольцо | [mf2k](http://localhost/projects/mf2k) | published |
 | Проект «Мужчина и Женщина» ч.3 | [proekt-muzcina-i-zenshhina-c3](http://localhost/projects/proekt-muzcina-i-zenshhina-c3) | draft |
 | Проект «Ноосфера» (начало: Что такое Ноосфера?) | [noosfera](http://localhost/projects/noosfera) | draft |
 | Проект «Ноосфера-1» Структура Ноосферы | [nsf22](http://localhost/projects/nsf22) | draft |
 | Проект «Ноосфера-2» Инкарнационные ячейки | [proekt-noosfera-2-inkarnacionnye-iaceiki](http://localhost/projects/proekt-noosfera-2-inkarnacionnye-iaceiki) | draft |
-| Основные правила грамматики русского языка | [opgry](http://localhost/rules/opgry) | draft |
-| Дружеская беседа с Силами 2 Кольца по организационным вопросам | [org-2k](http://localhost/courses/org-2k) | draft |
+| Основные правила грамматики русского языка | [opgry](http://localhost/rules/opgry) | published |
+| Дружеская беседа с Силами 2 Кольца по организационным вопросам | [org-2k](http://localhost/articles/org-2k) | published |
 | Проект «Изосфера и параллельные миры — 3″ | [parallel-ny-e-miry-proekt-prodolzhenie](http://localhost/projects/parallel-ny-e-miry-proekt-prodolzhenie) | draft |
 | Проект «Изосфера и параллельные миры»,ч.2 | [proekt-izosfera-i-parallelnye-miryc2](http://localhost/projects/proekt-izosfera-i-parallelnye-miryc2) | draft |
 | Проект «Картины Учителей Ноосферы: Воздух» | [proekt-kartiny-ucitelei-noosfery-vozdux](http://localhost/projects/proekt-kartiny-ucitelei-noosfery-vozdux) | draft |
@@ -95,15 +80,15 @@
 | Проект «Ноосфера -6» Взаимодействие Ноосферы с людьми | [proekt-noosfera-6-vzaimodejstvie-noosfery-s-lyud-mi](http://localhost/projects/proekt-noosfera-6-vzaimodejstvie-noosfery-s-lyud-mi) | draft |
 | Проект «Ноосфера-3» Инкарнационные ячейки | [proekt-noosfera-prodolzhenie-3](http://localhost/projects/proekt-noosfera-prodolzhenie-3) | draft |
 | Проект «Ноосфера -4» Кто такие Учителя | [proekt-noosfera-prodolzhenie-4](http://localhost/projects/proekt-noosfera-prodolzhenie-4) | draft |
-| Проект «Изосфера и параллельные миры» | [proekt-izosfera-i-parallelnye-miry](http://localhost/projects/proekt-izosfera-i-parallelnye-miry) | draft |
+| Проект «Изосфера и параллельные миры» | [proekt-izosfera-i-parallelnye-miry](http://localhost/projects/proekt-izosfera-i-parallelnye-miry) | published |
 | Проект «Биоэкран: Физиология» | [proekt-bioekran-fiziologiia](http://localhost/projects/proekt-bioekran-fiziologiia) | draft |
 | Проект «Мужчина и Женщина», ч.1 | [proekt-muzcina-i-zenshhina-c1](http://localhost/projects/proekt-muzcina-i-zenshhina-c1) | draft |
 | Вопрос — ответ (проект: Целительство) | [questions](http://localhost/projects/questions) | draft |
-| Сегодня Александру Глазу исполнилось бы 53 года…но Творцу было угодно, чтобы душа его устремилась к небесам… | [segodnya-aleksandru-glazu-ispolnilos-by-53-goda-no-tvortsu-by-lo-ugodno-chtoby-dusha-ego-ustremilas-k-nebesam](http://localhost/projects/segodnya-aleksandru-glazu-ispolnilos-by-53-goda-no-tvortsu-by-lo-ugodno-chtoby-dusha-ego-ustremilas-k-nebesam) | draft |
-| Ченнелинг: Талисманы и амулеты | [talisman](http://localhost/articles/talisman) | draft |
-| Статья: Тандемы. Посредники и ведущие. | [tandem-posrednik-vedushiy](http://localhost/articles/tandem-posrednik-vedushiy) | draft |
-| Тема: О «частоте Шумана» и не только о ней | [tema-o-castote-sumana-i-ne-tolko-o-nei](http://localhost/articles/tema-o-castote-sumana-i-ne-tolko-o-nei) | draft |
-| Вопрос — Oтвет: Тема «Внеземные летательные аппараты и мы» | [vopros-otvet-tema-vnezemnye-letatelnye-apparaty-i-my](http://localhost/articles/vopros-otvet-tema-vnezemnye-letatelnye-apparaty-i-my) | draft |
+| Сегодня Александру Глазу исполнилось бы 53 года…но Творцу было угодно, чтобы душа его устремилась к небесам… | [segodnya-aleksandru-glazu-ispolnilos-by-53-goda-no-tvortsu-by-lo-ugodno-chtoby-dusha-ego-ustremilas-k-nebesam](http://localhost/articles/segodnya-aleksandru-glazu-ispolnilos-by-53-goda-no-tvortsu-by-lo-ugodno-chtoby-dusha-ego-ustremilas-k-nebesam) | published |
+| Ченнелинг: Талисманы и амулеты | [talisman](http://localhost/articles/talisman) | published |
+| Статья: Тандемы. Посредники и ведущие. | [tandem-posrednik-vedushiy](http://localhost/articles/tandem-posrednik-vedushiy) | published |
+| Тема: О «частоте Шумана» и не только о ней | [tema-o-castote-sumana-i-ne-tolko-o-nei](http://localhost/articles/tema-o-castote-sumana-i-ne-tolko-o-nei) | published |
+| Вопрос — Oтвет: Тема «Внеземные летательные аппараты и мы» | [vopros-otvet-tema-vnezemnye-letatelnye-apparaty-i-my](http://localhost/articles/vopros-otvet-tema-vnezemnye-letatelnye-apparaty-i-my) | published |
 
 ## Вики
 
@@ -125,10 +110,8 @@
 | Аудиозапись 20130704 | [audiozapis-20130704](http://localhost/wiki/audiozapis-20130704) | страница (draft) |
 | Библиотека | [biblioteka](http://localhost/wiki/biblioteka) | страница (draft) |
 | Биоэкран | [bioekran](http://localhost/wiki/bioekran) | страница (draft) |
-| Ближний Космос (Силы Ближнего Космоса) | [bliznii-kosmos-sily-bliznego-kosmosa](http://localhost/wiki/bliznii-kosmos-sily-bliznego-kosmosa) | страница (draft) |
 | Блок видовых программ мозжечка | [глоссарий](http://localhost/glossary?term=blok-vidovyx-programm-mozzecka) | термин глоссария |
 | Блуждающие импульсы | [глоссарий](http://localhost/glossary?term=bluzdaiushhie-impulsy) | термин глоссария |
-| Верхний конус биоэкрана | [verxnii-konus-bioekrana](http://localhost/wiki/verxnii-konus-bioekrana) | страница (draft) |
 | Внеземные Цивилизации (ВЦ) | [vnezemnye-tsivilizatsii](http://localhost/wiki/vnezemnye-tsivilizatsii) | страница (draft) |
 | Вращающийся диск биоэкрана | [глоссарий](http://localhost/glossary?term=vrashhaiushhiisia-disk-bioekrana) | термин глоссария |
 | Временные (темпоральные) тоннели | [глоссарий](http://localhost/glossary?term=vremennye-temporalnye-tonneli) | термин глоссария |
@@ -136,33 +119,32 @@
 | Временные (темпоральные) ключи | [глоссарий](http://localhost/glossary?term=vremennye-temporalnye-kliuci) | термин глоссария |
 | Временные (темпоральные) оси | [глоссарий](http://localhost/glossary?term=vremennye-temporalnye-osi) | термин глоссария |
 | Временные факторы | [глоссарий](http://localhost/glossary?term=vremennye-faktory) | термин глоссария |
-| Голубые | [golubye](http://localhost/wiki/golubye) | страница (draft) |
+| Голубые | [golubye](http://localhost/wiki/golubye) | страница (published) |
 | Дайджест "X-INTELLECT". Сентябрь 2012 | [daidzest-x-intellect-sentiabr-2012-3](http://localhost/articles/daidzest-x-intellect-sentiabr-2012-3) | страница (published) |
 | Дальний Космос (Силы Дальнего Космоса) | [глоссарий](http://localhost/glossary?term=dalnii-kosmos-sily-dalnego-kosmosa) | термин глоссария |
 | Двойник, энергоинформационный (астральный двойник, оболочечный двойник) | [глоссарий](http://localhost/glossary?term=dvoinik-energoinformacionnyi-astralnyi-dvoinik-obolocecnyi-dvoinik) | термин глоссария |
 | Душа | [dusa](http://localhost/wiki/dusa) | страница (draft) |
 | Жизненное кредо | [глоссарий](http://localhost/glossary?term=ziznennoe-kredo) | термин глоссария |
-| Защита от Деструктивных Сил (ДС) | [zashhita-ot-destruktivnyx-sil-ds](http://localhost/wiki/zashhita-ot-destruktivnyx-sil-ds) | страница (draft) |
-| Зеленые | [zelenye](http://localhost/wiki/zelenye) | страница (draft) |
-| Зеркально отражённые стабилизирующие оси | [глоссарий](http://localhost/glossary?term=zerkalno-otrazennye-stabiliziruiushhie-osi) | термин глоссария |
+| Защита от Деструктивных Сил (ДС) | [zashhita-ot-destruktivnyx-sil-ds](http://localhost/wiki/zashhita-ot-destruktivnyx-sil-ds) | страница (published) |
+| Зеленые | [zelenye](http://localhost/wiki/zelenye) | страница (published) |
+| Зеркально отражённые стабилизирующие оси | [zerkalno-otrazennye-stabiliziruiushhie-osi](http://localhost/wiki/zerkalno-otrazennye-stabiliziruiushhie-osi) | страница (draft) |
 | Импульсы до востребования | [глоссарий](http://localhost/glossary?term=impulsy-do-vostrebovaniia) | термин глоссария |
 | Инкарнационные фильтры | [глоссарий](http://localhost/glossary?term=inkarnacionnye-filtry) | термин глоссария |
 | Инкарнационная информация | [глоссарий](http://localhost/glossary?term=inkarnacionnaia-informaciia) | термин глоссария |
 | Инкарнационный луч | [глоссарий](http://localhost/glossary?term=inkarnacionnyi-luc) | термин глоссария |
 | Инкарнационная ячейка | [глоссарий](http://localhost/glossary?term=inkarnacionnaia-iaceika) | термин глоссария |
 | Инкарнация | [глоссарий](http://localhost/glossary?term=inkarnaciia) | термин глоссария |
-| Инки | [inki](http://localhost/wiki/inki) | страница (draft) |
+| Инки | [inki](http://localhost/wiki/inki) | страница (published) |
 | Информационно-энергетическая структура мозжечка | [глоссарий](http://localhost/glossary?term=informacionno-energeticeskaia-struktura-mozzecka) | термин глоссария |
-| История создания | [istoriia-sozdaniia](http://localhost/wiki/istoriia-sozdaniia) | страница (draft) |
 | Картины Учителей Ноосферы: 2012 | [kartiny-ucitelei-noosfery-2012](http://localhost/wiki/kartiny-ucitelei-noosfery-2012) | страница (draft) |
-| Координаторы | [koordinatory](http://localhost/wiki/koordinatory) | страница (draft) |
+| Координаторы | [koordinatory](http://localhost/wiki/koordinatory) | страница (published) |
 | Космические Силы | [глоссарий](http://localhost/glossary?term=kosmiceskie-sily) | термин глоссария |
 | Красные квант-глюинные пары | [глоссарий](http://localhost/glossary?term=krasnye-kvant-gliuinnye-pary) | термин глоссария |
-| Кредовое кольцо биоэкрана | [kredovoe-kolco-bioekrana](http://localhost/wiki/kredovoe-kolco-bioekrana) | страница (draft) |
+| Кредовое кольцо биоэкрана | [kredovoe-kolco-bioekrana](http://localhost/wiki/kredovoe-kolco-bioekrana) | страница (published) |
 | Кредовое кольцо биоэкрана (кредовое кольцо полевого мозга) | [глоссарий](http://localhost/glossary?term=kredovoe-kolco-bioekrana-kredovoe-kolco-polevogo-mozga) | термин глоссария |
 | Кредовые программы | [глоссарий](http://localhost/glossary?term=kredovye-programmy) | термин глоссария |
 | Курация | [глоссарий](http://localhost/glossary?term=kuraciia) | термин глоссария |
-| Лечение с помощью психо-биоэнергетического воздействия на биоактивные точки | [lecenie-s-pomoshhiu-psixo-bioenergeticeskogo-vozdeistviia-na-bioaktivnye-tocki](http://localhost/wiki/lecenie-s-pomoshhiu-psixo-bioenergeticeskogo-vozdeistviia-na-bioaktivnye-tocki) | страница (draft) |
+| Лечение с помощью психо-биоэнергетического воздействия на биоактивные точки | [lecenie-s-pomoshhiu-psixo-bioenergeticeskogo-vozdeistviia-na-bioaktivnye-tocki](http://localhost/wiki/lecenie-s-pomoshhiu-psixo-bioenergeticeskogo-vozdeistviia-na-bioaktivnye-tocki) | страница (published) |
 | Личная консультация 20130312 | [licnaia-konsultaciia-20130312](http://localhost/wiki/licnaia-konsultaciia-20130312) | страница (draft) |
 | Личная консультация 20100924 | [licnaia-konsultaciia-20100924](http://localhost/wiki/licnaia-konsultaciia-20100924) | страница (draft) |
 | Личная консультация 20100722 | [licnaia-konsultaciia-20100722](http://localhost/wiki/licnaia-konsultaciia-20100722) | страница (draft) |
@@ -171,10 +153,9 @@
 | Личная консультация 20110525 | [licnaia-konsultaciia-20110525](http://localhost/wiki/licnaia-konsultaciia-20110525) | страница (draft) |
 | Личная консультация 20120706 | [licnaia-konsultaciia-20120706](http://localhost/wiki/licnaia-konsultaciia-20120706) | страница (draft) |
 | Личная консультация 20120524 | [licnaia-konsultaciia-20120524](http://localhost/wiki/licnaia-konsultaciia-20120524) | страница (draft) |
-| Личные консультации | [licnye-konsultacii](http://localhost/wiki/licnye-konsultacii) | страница (draft) |
 | Луч 6-й чакры (базового энергоцентра) | [глоссарий](http://localhost/glossary?term=luc-6-i-cakry-bazovogo-energocentra) | термин глоссария |
 | Луч инкарнационый | [глоссарий](http://localhost/glossary?term=luc-inkarnacionyi) | термин глоссария |
-| Меднокожие | [mednokozie](http://localhost/wiki/mednokozie) | страница (draft) |
+| Меднокожие | [mednokozie](http://localhost/wiki/mednokozie) | страница (published) |
 | Меридианное поле | [глоссарий](http://localhost/glossary?term=meridiannoe-pole) | термин глоссария |
 | Меридианы | [глоссарий](http://localhost/glossary?term=meridiany) | термин глоссария |
 | Мерности | [глоссарий](http://localhost/glossary?term=mernosti) | термин глоссария |
@@ -187,14 +168,13 @@
 | Параллельные миры | [глоссарий](http://localhost/glossary?term=parallelnye-miry) | термин глоссария |
 | Первичные излучения, первоизлучения | [глоссарий](http://localhost/glossary?term=pervicnye-izluceniia-pervoizluceniia) | термин глоссария |
 | Перешеек биоэкрана | [глоссарий](http://localhost/glossary?term=pereseek-bioekrana) | термин глоссария |
-| План тренинга: "ЭНЕРГЕТИЧЕСКОЕ ВИДЕНИЕ" | [plan-treninga-energeticeskoe-videnie](http://localhost/wiki/plan-treninga-energeticeskoe-videnie) | страница (draft) |
-| Подготовка Посредников | [podgotovka-posrednikov](http://localhost/wiki/podgotovka-posrednikov) | страница (draft) |
+| План тренинга: "ЭНЕРГЕТИЧЕСКОЕ ВИДЕНИЕ" | [plan-treninga-energeticeskoe-videnie](http://localhost/wiki/plan-treninga-energeticeskoe-videnie) | страница (published) |
+| Подготовка Посредников | [podgotovka-posrednikov](http://localhost/wiki/podgotovka-posrednikov) | страница (published) |
 | Подчерепной энергококон | [глоссарий](http://localhost/glossary?term=podcerepnoi-energokokon) | термин глоссария |
 | Полевая оболочка | [глоссарий](http://localhost/glossary?term=polevaia-obolocka) | термин глоссария |
 | Полевая структура в виде ниспадающего «водопада» | [глоссарий](http://localhost/glossary?term=polevaia-struktura-v-vide-nispadaiushhego-vodopada) | термин глоссария |
 | Правила Википедии | [pravila-vikipedii](http://localhost/wiki/pravila-vikipedii) | страница (draft) |
 | Программа | [глоссарий](http://localhost/glossary?term=programma) | термин глоссария |
-| Программы | [programmy](http://localhost/wiki/programmy) | страница (draft) |
 | Проекты 2005 - 2012 | [proekty-2005-2012](http://localhost/wiki/proekty-2005-2012) | страница (draft) |
 | Проект Биоэкран. Часть 4. | [proekt-bioekran-cast-4](http://localhost/wiki/proekt-bioekran-cast-4) | страница (draft) |
 | Проект Биоэкран. Часть 2. | [proekt-bioekran-cast-2](http://localhost/wiki/proekt-bioekran-cast-2) | страница (draft) |
@@ -208,8 +188,8 @@
 | Проект Картины Учителей Ноосферы: Вода. Часть 1 | [proekt-kartiny-ucitelei-noosfery-voda-cast-1](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-voda-cast-1) | страница (draft) |
 | Проект Картины Учителей Ноосферы: Вода. Часть 2 | [proekt-kartiny-ucitelei-noosfery-voda-cast-2](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-voda-cast-2) | страница (draft) |
 | Проект Картины Учителей Ноосферы: Огонь | [proekt-kartiny-ucitelei-noosfery-ogon-2](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-ogon-2) | страница (draft) |
-| Разведка Дальнего Космоса | [razvedka-dalnego-kosmosa](http://localhost/wiki/razvedka-dalnego-kosmosa) | страница (draft) |
-| Развитие энергоинформационного восприятия | [razvitie-energoinformacionnogo-vospriiatiia](http://localhost/wiki/razvitie-energoinformacionnogo-vospriiatiia) | страница (draft) |
+| Разведка Дальнего Космоса | [razvedka-dalnego-kosmosa](http://localhost/wiki/razvedka-dalnego-kosmosa) | страница (published) |
+| Развитие энергоинформационного восприятия | [razvitie-energoinformacionnogo-vospriiatiia](http://localhost/wiki/razvitie-energoinformacionnogo-vospriiatiia) | страница (published) |
 | Резонирующее кольцо биоэкрана | [глоссарий](http://localhost/glossary?term=rezoniruiushhee-kolco-bioekrana) | термин глоссария |
 | Реинкарнация | [глоссарий](http://localhost/glossary?term=reinkarnaciia) | термин глоссария |
 | Рейшей | [глоссарий](http://localhost/glossary?term=reisei) | термин глоссария |
@@ -231,7 +211,7 @@
 | Сеанс с Силами 20130119 | [seans-s-silami-20130119](http://localhost/wiki/seans-s-silami-20130119) | страница (draft) |
 | Сеанс с Силами 20130126 | [seans-s-silami-20130126](http://localhost/wiki/seans-s-silami-20130126) | страница (draft) |
 | Сеанс с Силами 20130209 | [seans-s-silami-20130209](http://localhost/wiki/seans-s-silami-20130209) | страница (draft) |
-| Сеанс с Силами 20130211 | [seans-s-silami-20130211](http://localhost/wiki/seans-s-silami-20130211) | страница (draft) |
+| Сеанс с Силами 20130211 | [seans-s-silami-20130211](http://localhost/wiki/seans-s-silami-20130211) | страница (published) |
 | Сеанс с Силами 20130223 | [seans-s-silami-20130223](http://localhost/wiki/seans-s-silami-20130223) | страница (draft) |
 | Сеанс с Силами 20130301 | [seans-s-silami-20130301](http://localhost/wiki/seans-s-silami-20130301) | страница (draft) |
 | Сеанс с Силами 20130302 | [seans-s-silami-20130302](http://localhost/wiki/seans-s-silami-20130302) | страница (draft) |
@@ -266,22 +246,20 @@
 | Смерть | [глоссарий](http://localhost/glossary?term=smert) | термин глоссария |
 | Соборная Душа Разума | [глоссарий](http://localhost/glossary?term=sobornaia-dusa-razuma) | термин глоссария |
 | Стабилизирующие оси больших полушарий и биоэкрана | [глоссарий](http://localhost/glossary?term=stabiliziruiushhie-osi-bolsix-polusarii-i-bioekrana) | термин глоссария |
-| Стабилизирующие оси | [stabiliziruiushhie-osi](http://localhost/wiki/stabiliziruiushhie-osi) | страница (draft) |
 | Сторожевые импульсы | [глоссарий](http://localhost/glossary?term=storozevye-impulsy) | термин глоссария |
 | Сторожевые мозжечковые импульсы | [глоссарий](http://localhost/glossary?term=storozevye-mozzeckovye-impulsy) | термин глоссария |
 | Суперструна | [глоссарий](http://localhost/glossary?term=superstruna) | термин глоссария |
 | Темпоральная энергия | [глоссарий](http://localhost/glossary?term=temporalnaia-energiia) | термин глоссария |
 | Тетрады энергетических копий хромосом (лепестков) | [глоссарий](http://localhost/glossary?term=tetrady-energeticeskix-kopii-xromosom-lepestkov) | термин глоссария |
-| Техника астральной сборки оболочечного двойника | [texnika-astralnoi-sborki-obolocecnogo-dvoinika](http://localhost/wiki/texnika-astralnoi-sborki-obolocecnogo-dvoinika) | страница (draft) |
-| Техники | [texniki](http://localhost/wiki/texniki) | страница (draft) |
+| Техника астральной сборки оболочечного двойника | [texnika-astralnoi-sborki-obolocecnogo-dvoinika](http://localhost/wiki/texnika-astralnoi-sborki-obolocecnogo-dvoinika) | страница (published) |
+| Техники | [texniki](http://localhost/wiki/texniki) | страница (published) |
 | Торы биоэкрана | [глоссарий](http://localhost/glossary?term=tory-bioekrana) | термин глоссария |
 | Тор темпоральный | [глоссарий](http://localhost/glossary?term=tor-temporalnyi) | термин глоссария |
 | Точка сборки (ТС) | [глоссарий](http://localhost/glossary?term=tocka-sborki-ts) | термин глоссария |
-| УФО | [ufo](http://localhost/wiki/ufo) | страница (draft) |
 | Установочные линзы таламуса | [глоссарий](http://localhost/glossary?term=ustanovocnye-linzy-talamusa) | термин глоссария |
 | Учителя | [глоссарий](http://localhost/glossary?term=ucitelia) | термин глоссария |
 | Чакры | [глоссарий](http://localhost/glossary?term=cakry) | термин глоссария |
-| Черные | [cernye](http://localhost/wiki/cernye) | страница (draft) |
+| Черные | [cernye](http://localhost/wiki/cernye) | страница (published) |
 | Шамбала | [глоссарий](http://localhost/glossary?term=sambala) | термин глоссария |
 | Эгрегор | [глоссарий](http://localhost/glossary?term=egregor) | термин глоссария |
 | Эмоция | [глоссарий](http://localhost/glossary?term=emociia) | термин глоссария |
@@ -291,22 +269,110 @@
 | Энергетические пятна (энергопятна) | [глоссарий](http://localhost/glossary?term=energeticeskie-piatna-energopiatna) | термин глоссария |
 | Энергоинформационный двойник человека (“двойник над головой”) | [глоссарий](http://localhost/glossary?term=energoinformacionnyi-dvoinik-celoveka-dvoinik-nad-golovoi) | термин глоссария |
 | Ядро инкарнационной ячейки | [глоссарий](http://localhost/glossary?term=iadro-inkarnacionnoi-iaceiki) | термин глоссария |
+| Биологически активные точки | [biologiceski-aktivnye-tocki](http://localhost/wiki/biologiceski-aktivnye-tocki) | страница (published) |
+| Встреча c А. Глазом 20101031 | [vstreca-c-a-glazom-20101031](http://localhost/wiki/vstreca-c-a-glazom-20101031) | страница (draft) |
+| Движение души после смерти | [dvizenie-dusi-posle-smerti](http://localhost/wiki/dvizenie-dusi-posle-smerti) | страница (published) |
+| Карма | [karma](http://localhost/wiki/karma) | страница (draft) |
+| Картины Учителей Ноосферы | [kartiny-ucitelei-noosfery](http://localhost/wiki/kartiny-ucitelei-noosfery) | страница (published) |
+| Осознанные сновидения и ВТО | [osoznannye-snovideniia-i-vto](http://localhost/wiki/osoznannye-snovideniia-i-vto) | страница (draft) |
+| Расы | [rasy](http://localhost/wiki/rasy) | страница (published) |
+| Сеансы 1991 | [seansy-1991](http://localhost/wiki/seansy-1991) | страница (draft) |
+| Сеансы 2007 | [seansy-2007](http://localhost/wiki/seansy-2007) | страница (draft) |
+| Сеансы 2008 | [seansy-2008](http://localhost/wiki/seansy-2008) | страница (draft) |
+| Сеанс с Силами 20111207 | [seans-s-silami-20111207](http://localhost/wiki/seans-s-silami-20111207) | страница (draft) |
+| Сеанс с силами 20090502 | [seans-s-silami-20090502](http://localhost/wiki/seans-s-silami-20090502) | страница (draft) |
+| Сеанс с силами 20090505 | [seans-s-silami-20090505](http://localhost/wiki/seans-s-silami-20090505) | страница (draft) |
+| Сеанс с силами 20090719 | [seans-s-silami-20090719](http://localhost/wiki/seans-s-silami-20090719) | страница (draft) |
+| Сеанс с силами 20090726 | [seans-s-silami-20090726](http://localhost/wiki/seans-s-silami-20090726) | страница (draft) |
+| Сеанс с силами 20091018 | [seans-s-silami-20091018](http://localhost/wiki/seans-s-silami-20091018) | страница (draft) |
+| Сеанс с силами 20100411 | [seans-s-silami-20100411](http://localhost/wiki/seans-s-silami-20100411) | страница (draft) |
+| Сеанс с силами 20100425 | [seans-s-silami-20100425](http://localhost/wiki/seans-s-silami-20100425) | страница (draft) |
+| Сеанс с силами 20100509 | [seans-s-silami-20100509](http://localhost/wiki/seans-s-silami-20100509) | страница (draft) |
+| Сеанс с силами 20100523 | [seans-s-silami-20100523](http://localhost/wiki/seans-s-silami-20100523) | страница (draft) |
+| Сеанс с силами 20100606 | [seans-s-silami-20100606](http://localhost/wiki/seans-s-silami-20100606) | страница (draft) |
+| Сеанс с силами 20100620 | [seans-s-silami-20100620](http://localhost/wiki/seans-s-silami-20100620) | страница (draft) |
+| Сеанс с силами 20100718 | [seans-s-silami-20100718](http://localhost/wiki/seans-s-silami-20100718) | страница (draft) |
+| Сеанс с силами 20100926 | [seans-s-silami-20100926](http://localhost/wiki/seans-s-silami-20100926) | страница (draft) |
+| Сеанс с силами 20101017 | [seans-s-silami-20101017](http://localhost/wiki/seans-s-silami-20101017) | страница (draft) |
+| Сеанс с силами 20101128 | [seans-s-silami-20101128](http://localhost/wiki/seans-s-silami-20101128) | страница (draft) |
+| Сеанс с силами 20101212 | [seans-s-silami-20101212](http://localhost/wiki/seans-s-silami-20101212) | страница (draft) |
+| Сеанс с силами 20101226 | [seans-s-silami-20101226](http://localhost/wiki/seans-s-silami-20101226) | страница (draft) |
+| Сеанс с силами 20110123 | [seans-s-silami-20110123](http://localhost/wiki/seans-s-silami-20110123) | страница (draft) |
+| Сеанс с силами 20110508 | [seans-s-silami-20110508](http://localhost/wiki/seans-s-silami-20110508) | страница (draft) |
+| Сеанс с силами 20120729k | [seans-s-silami-20120729k](http://localhost/wiki/seans-s-silami-20120729k) | страница (draft) |
+| Сеанс с силами 20120730 | [seans-s-silami-20120730](http://localhost/wiki/seans-s-silami-20120730) | страница (draft) |
+| Совместная конференция с силами 20101106 | [sovmestnaia-konferenciia-s-silami-20101106](http://localhost/wiki/sovmestnaia-konferenciia-s-silami-20101106) | страница (draft) |
+| Тяговый аминокислотный аккумулятор | [tiagovyi-aminokislotnyi-akkumuliator](http://localhost/wiki/tiagovyi-aminokislotnyi-akkumuliator) | страница (draft) |
+| Учителя Ноосферы | [ucitelia-noosfery](http://localhost/wiki/ucitelia-noosfery) | страница (draft) |
+| Целительство | [celitelstvo](http://localhost/wiki/celitelstvo) | страница (published) |
+| Встреча с Александром Глазом 20081108 | [vstreca-s-aleksandrom-glazom-20081108](http://localhost/wiki/vstreca-s-aleksandrom-glazom-20081108) | страница (draft) |
+| Встреча с Александром Глазом 20081111 | [vstreca-s-aleksandrom-glazom-20081111](http://localhost/wiki/vstreca-s-aleksandrom-glazom-20081111) | страница (draft) |
+| Встреча с Александром Глазом 20081114 | [vstreca-s-aleksandrom-glazom-20081114](http://localhost/wiki/vstreca-s-aleksandrom-glazom-20081114) | страница (draft) |
+| Картины Ноосферы | [kartiny-noosfery](http://localhost/wiki/kartiny-noosfery) | страница (draft) |
+| Курсы | [kursy](http://localhost/wiki/kursy) | страница (published) |
+| План тренинга: "ТВОРЧЕСКАЯ АКТИВИЗАЦИЯ по выбранной цели" | [plan-treninga-tvorceskaia-aktivizaciia-po-vybrannoi-celi](http://localhost/wiki/plan-treninga-tvorceskaia-aktivizaciia-po-vybrannoi-celi) | страница (draft) |
+| Проекты 2005 - 2011 | [proekty-2005-2011](http://localhost/wiki/proekty-2005-2011) | страница (draft) |
+| Проект Картины Ноосферы: Вода | [proekt-kartiny-noosfery-voda](http://localhost/wiki/proekt-kartiny-noosfery-voda) | страница (draft) |
+| Проект Картины Ноосферы: Огонь | [proekt-kartiny-noosfery-ogon](http://localhost/wiki/proekt-kartiny-noosfery-ogon) | страница (draft) |
+| Проект Картины Ноосферы: Земля | [proekt-kartiny-noosfery-zemlia](http://localhost/wiki/proekt-kartiny-noosfery-zemlia) | страница (draft) |
+| Проект Картины Ноосферы: Воздух | [proekt-kartiny-noosfery-vozdux](http://localhost/wiki/proekt-kartiny-noosfery-vozdux) | страница (draft) |
+| Сеанс с силами 19910108 | [seans-s-silami-19910108](http://localhost/wiki/seans-s-silami-19910108) | страница (draft) |
+| Сеанс с силами 20070131-1 | [seans-s-silami-20070131-1](http://localhost/wiki/seans-s-silami-20070131-1) | страница (draft) |
+| Сеанс с силами 20070131-2 | [seans-s-silami-20070131-2](http://localhost/wiki/seans-s-silami-20070131-2) | страница (draft) |
+| Сеанс с силами 20081026 | [seans-s-silami-20081026](http://localhost/wiki/seans-s-silami-20081026) | страница (draft) |
+| Сеанс с силами 20090925 | [seans-s-silami-20090925](http://localhost/wiki/seans-s-silami-20090925) | страница (draft) |
+| А.Глаз о курсе "Кармическая коррекция" | [aglaz-o-kurse-karmiceskaia-korrekciia](http://localhost/wiki/aglaz-o-kurse-karmiceskaia-korrekciia) | страница (draft) |
+| А.Глаз о курсе "Изучение собственных информационных жизней" | [aglaz-o-kurse-izucenie-sobstvennyx-informacionnyx-ziznei](http://localhost/wiki/aglaz-o-kurse-izucenie-sobstvennyx-informacionnyx-ziznei) | страница (draft) |
+| А.Глаз о курсе "Изучение собственных инкарнационных жизней" | [aglaz-o-kurse-izucenie-sobstvennyx-inkarnacionnyx-ziznei](http://localhost/wiki/aglaz-o-kurse-izucenie-sobstvennyx-inkarnacionnyx-ziznei) | страница (draft) |
+| АСТРАЛЬНЫЕ ПЕРЕМЕЩЕНИЯ ВО ВРЕМЕНИ | [astralnye-peremeshheniia-vo-vremeni-2](http://localhost/wiki/astralnye-peremeshheniia-vo-vremeni-2) | страница (draft) |
+| Белые | [belye](http://localhost/wiki/belye) | страница (draft) |
+| Видение | [videnie](http://localhost/wiki/videnie) | страница (draft) |
+| Вопросы & Ответы | [voprosy-otvety](http://localhost/wiki/voprosy-otvety) | страница (draft) |
+| Второе Информационное Кольцо | [vtoroe-informacionnoe-kolco](http://localhost/wiki/vtoroe-informacionnoe-kolco) | страница (draft) |
+| Двойник, энергоинформационный | [dvoinik-energoinformacionnyi](http://localhost/wiki/dvoinik-energoinformacionnyi) | страница (draft) |
+| Жива | [ziva](http://localhost/wiki/ziva) | страница (draft) |
+| Информационный банк больших полушарий головного мозга | [informacionnyi-bank-bolsix-polusarii-golovnogo-mozga](http://localhost/wiki/informacionnyi-bank-bolsix-polusarii-golovnogo-mozga) | страница (draft) |
+| Космическое Сообщество, или Коалиция | [kosmiceskoe-soobshhestvo-ili-koaliciia](http://localhost/wiki/kosmiceskoe-soobshhestvo-ili-koaliciia) | страница (draft) |
+| Кредовое кольцо полевого мозга | [kredovoe-kolco-polevogo-mozga](http://localhost/wiki/kredovoe-kolco-polevogo-mozga) | страница (draft) |
+| Лекция 20101031 | [lekciia-20101031](http://localhost/wiki/lekciia-20101031) | страница (draft) |
+| Осознанные сновидения. Часть 2. Учителя. | [osoznannye-snovideniia-cast-2-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-2-ucitelia) | страница (draft) |
+| Осознанные сновидения. Часть 3. Дальний Космос. | [osoznannye-snovideniia-cast-3-dalnii-kosmos](http://localhost/wiki/osoznannye-snovideniia-cast-3-dalnii-kosmos) | страница (draft) |
+| Осознанные сновидения. Часть 4. Учителя. | [osoznannye-snovideniia-cast-4-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-4-ucitelia) | страница (draft) |
+| Осознанные сновидения. Часть 1. Учителя. | [osoznannye-snovideniia-cast-1-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-1-ucitelia) | страница (draft) |
+| Осознанные сновидения и внетелесный опыт. Начало темы. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy) | страница (draft) |
+| Осознанные сновидения и внетелесный опыт. Часть 1. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1) | страница (draft) |
+| Первое Информационное Кольцо | [pervoe-informacionnoe-kolco](http://localhost/wiki/pervoe-informacionnoe-kolco) | страница (draft) |
+| План тренинга "АСТРАЛЬНЫЕ ПЕРЕМЕЩЕНИЯ": | [plan-treninga-astralnye-peremeshheniia](http://localhost/wiki/plan-treninga-astralnye-peremeshheniia) | страница (draft) |
+| План тренинга: "КАРМИЧЕСКАЯ КОРРЕКЦИЯ" | [plan-treninga-karmiceskaia-korrekciia](http://localhost/wiki/plan-treninga-karmiceskaia-korrekciia) | страница (draft) |
+| План тренинга: "ПРОГРАММА ДУШИ НА ДАННУЮ ЖИЗНЬ" | [plan-treninga-programma-dusi-na-dannuiu-zizn](http://localhost/wiki/plan-treninga-programma-dusi-na-dannuiu-zizn) | страница (draft) |
+| План тренинга 'ИЗУЧЕНИЕ СОБСТВЕННЫХ ИНКАРНАЦИОННЫХ ЖИЗНЕЙ" | [plan-treninga-izucenie-sobstvennyx-inkarnacionnyx-ziznei](http://localhost/wiki/plan-treninga-izucenie-sobstvennyx-inkarnacionnyx-ziznei) | страница (draft) |
+| План тренинга "ИЗУЧЕНИЕ СОБСТВЕННЫХ ИНКАРНАЦИОННЫХ ЖИЗНЕЙ" | [plan-treninga-izucenie-sobstvennyx-inkarnacionnyx-ziznei-2](http://localhost/wiki/plan-treninga-izucenie-sobstvennyx-inkarnacionnyx-ziznei-2) | страница (draft) |
+| План тренинга "ПСИХО-ЭМОЦИОНАЛЬНАЯ И ЭНЕРГЕТИЧЕСКАЯ КОРРЕКЦИЯ" | [plan-treninga-psixo-emocionalnaia-i-energeticeskaia-korrekciia](http://localhost/wiki/plan-treninga-psixo-emocionalnaia-i-energeticeskaia-korrekciia) | страница (draft) |
+| Проект Биоэкран. Часть 5. | [proekt-bioekran-cast-5](http://localhost/wiki/proekt-bioekran-cast-5) | страница (draft) |
+| Проект Биоэкран. Часть 3. | [proekt-bioekran-cast-3](http://localhost/wiki/proekt-bioekran-cast-3) | страница (draft) |
+| Сеанс с Силами 20130310 | [seans-s-silami-20130310](http://localhost/wiki/seans-s-silami-20130310) | страница (draft) |
+| Сеанс с силами 20070730b | [seans-s-silami-20070730b](http://localhost/wiki/seans-s-silami-20070730b) | страница (draft) |
+| Сеанс с силами 20090607 | [seans-s-silami-20090607](http://localhost/wiki/seans-s-silami-20090607) | страница (draft) |
+| Сеанс с силами 20101031 | [seans-s-silami-20101031](http://localhost/wiki/seans-s-silami-20101031) | страница (draft) |
+| Сеанс с силами 20101106 | [seans-s-silami-20101106](http://localhost/wiki/seans-s-silami-20101106) | страница (draft) |
 
 ## Страницы нового сайта (source_type=new) — не сверяются
 
 | Страница | Раздел | Статус |
 |---|---|---|
 | [История проекта: от «Сферы Разума» до X-Intellect](http://localhost/about/istoriya-proekta) | О центре | published |
-| [Архивы курсов Александра Глаза](http://localhost/courses/arhivy-kursov-aleksandra-glaza) | Курсы | published |
 | [Ф. (@fesoterika)](http://localhost/fesoterika) | О центре | published |
-| [Политика конфиденциальности](http://localhost/rules/politika-konfidencialnosti) | Правила | draft |
-| [Политика использования Cookies](http://localhost/rules/politika-cookies) | Правила | draft |
 | [Правила проекта](http://localhost/rules/pravila-proekta) | Правила | published |
 | [Ресурсы проекта](http://localhost/about/contacts) | О центре | published |
 
 ## Редиректы
 
-Недостающих редиректов со старых адресов: **0**
+Недостающих редиректов со старых адресов: **2**
+
+| Старый путь | Куда должен вести | Материал |
+|---|---|---|
+| `/hello` | /hello/privetstvie | Приветствие от представителей Внеземного Разума (2012) |
+| `/library` | /library/za-okrainoj-mira-bytiya-i-soznaniya | «За окраиной мира, бытия и сознания» - Владимир Зорев |
 
 Редиректов с битой целью (внутренний адрес не существует): **0**
 

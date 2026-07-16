@@ -128,4 +128,81 @@ class RemapArchiveLinksTest extends TestCase
         $this->assertStringNotContainsString('href="../unknown-page', $body);
         $this->assertStringContainsString('Мёртвая ссылка', $body);
     }
+
+    /**
+     * Регрессия: повторный прогон разворачивал собственный результат
+     * (resolve() не узнавал «/wiki/slug» и возвращал '' → ссылка стиралась).
+     * Так молча пропало 353 ссылки — тел с <a> в вики осталось 13 на 131 страницу.
+     */
+    public function test_second_run_keeps_already_migrated_links(): void
+    {
+        $this->makeWikiPage('Карма', 'karma', '<p>Определение кармы.</p>');
+        $enc = str_replace('%', '_25', rawurlencode('Карма'));
+        $src = $this->makeWikiPage('Проекты 2005 - 2012', 'proekty',
+            '<ul><li><strong><a href="index.php@title='.$enc.'">Карма</a></strong></li></ul>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+        $afterFirst = $src->fresh()->body;
+        $this->assertStringContainsString('href="/wiki/karma"', $afterFirst);
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertSame($afterFirst, $src->fresh()->body, 'Повторный прогон изменил тело — команда не идемпотентна');
+    }
+
+    public function test_new_site_links_are_untouched(): void
+    {
+        Section::firstOrCreate(['slug' => 'articles'], ['title' => 'Статьи', 'position' => 2]);
+        $src = $this->makeWikiPage('Стр8', 'str8',
+            '<p><a href="/storage/media/pdf/file.pdf">Скачать</a> '
+            .'<a href="/glossary?term=karma">Карма</a> '
+            .'<a href="/articles/nekaia-statia">Статья</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $body = $src->fresh()->body;
+        $this->assertStringContainsString('href="/storage/media/pdf/file.pdf"', $body);
+        $this->assertStringContainsString('href="/glossary?term=karma"', $body);
+        $this->assertStringContainsString('href="/articles/nekaia-statia"', $body);
+    }
+
+    /**
+     * Offline Explorer обрезал длинные имена файлов и приписал хеш, поэтому
+     * href декодируется в мусор, а текст ссылки остался целым заголовком.
+     */
+    public function test_link_with_corrupted_href_is_resolved_by_its_text(): void
+    {
+        $this->makeWikiPage('Метагалактический домен', 'metagalakticeskii-domen', '<p>Текст.</p>');
+        $src = $this->makeWikiPage('Стр10', 'str10',
+            '<p><a href="index.php@title=Метагалакр97092D453">Метагалактический домен</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('href="/wiki/metagalakticeskii-domen"', $src->fresh()->body);
+    }
+
+    /** Текст не должен перебивать исправный href. */
+    public function test_working_href_wins_over_link_text(): void
+    {
+        $this->makeWikiPage('Расы', 'rasy', '<p>Текст.</p>');
+        $this->makeWikiPage('Карма', 'karma', '<p>Текст.</p>');
+        $enc = str_replace('%', '_25', rawurlencode('Карма'));
+        $src = $this->makeWikiPage('Стр11', 'str11',
+            '<p><a href="index.php@title='.$enc.'">Расы</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('href="/wiki/karma"', $src->fresh()->body);
+    }
+
+    /** Неопознанный путь больше не удаляется молча — ссылка остаётся. */
+    public function test_unrecognised_path_is_left_alone(): void
+    {
+        $src = $this->makeWikiPage('Стр9', 'str9',
+            '<p><a href="/mag/daidzest-2012">Дайджест</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('href="/mag/daidzest-2012"', $src->fresh()->body);
+    }
 }
