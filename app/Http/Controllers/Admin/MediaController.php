@@ -33,13 +33,20 @@ class MediaController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in(['audio', 'pdf', 'image'])],
+            'type' => ['required', Rule::in(array_keys(Media::MIMETYPES))],
             'page_id' => ['nullable', 'exists:pages,id'],
             'position' => ['nullable', 'integer', 'min:0'],
             'duration' => ['nullable', 'integer', 'min:0'],
-            // либо загрузка файла, либо внешний URL (S3-хранилище при нехватке диска)
-            'file' => ['required_without:external_url', 'nullable', 'file', 'max:512000'],
+            // либо загрузка файла, либо внешний URL (S3-хранилище при нехватке диска).
+            // Содержимое обязано соответствовать выбранному типу: без mimetypes сюда
+            // проходил .html/.svg и получал исполняемый URL на /storage (XSS).
+            'file' => [
+                'required_without:external_url', 'nullable', 'file', 'max:512000',
+                Media::mimetypesRule($request->input('type')),
+            ],
             'external_url' => ['required_without:file', 'nullable', 'url', 'max:2048'],
+        ], [
+            'file.mimetypes' => 'Формат файла не подходит для выбранного типа медиа.',
         ]);
 
         if ($request->hasFile('file')) {

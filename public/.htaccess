@@ -23,3 +23,11 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Загруженные медиафайлы (/storage — симлинк на storage/app/public) отдаёт
+# веб-сервер напрямую, минуя PHP: middleware SecurityHeaders до них не достаёт.
+<IfModule mod_headers.c>
+    # Без nosniff браузер угадывает тип по содержимому и может исполнить
+    # загруженный файл как HTML — с домена сайта
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>

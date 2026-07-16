@@ -17,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // собственных маршрутов и иначе дали бы 404
         $middleware->prepend(\App\Http\Middleware\HandleRedirects::class);
 
+        // Защитные заголовки — самым первым в стеке, ПОСЛЕ prepend редиректов
+        // (prepend кладёт в начало, так что этот слой оборачивает предыдущий):
+        // HandleRedirects отвечает, не вызывая $next, и заголовки на его 301/302
+        // из более позднего слоя уже не попали бы
+        $middleware->prepend(\App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
         ]);
