@@ -18,6 +18,26 @@ class SectionController extends Controller
         'old' => 'по дате: сначала старые',
     ];
 
+    /**
+     * Обязательный порядок первых пунктов бокового меню вики (по slug).
+     * Отмеченные галочкой страницы с этими slug идут в этом порядке;
+     * прочие отмеченные — после них. Структурные ссылки «Общий раздел» и
+     * «Глоссарий» выводятся до этого списка (в шаблоне).
+     */
+    public const WIKI_MENU_ORDER = [
+        'proekty-2005-2012',
+        'texniki',
+        'seansy-1991-2008',
+        'seansy-2009-2010',
+        'seansy-2011',
+        'seansy-2012',
+        'seansy-2013',
+        'seansy-2014',
+        'seansy-2015',
+        'seansy-2016',
+        'seansy-2017',
+    ];
+
     public function show(Request $request, Section $section)
     {
         abort_unless($section->is_visible && ($section->isRoot() || $section->parent->is_visible), 404);
@@ -51,23 +71,38 @@ class SectionController extends Controller
 
         $isWiki = $section->rootAncestor()->slug === 'wiki';
 
-        // Меню вики: подразделы корня с их страницами — отдельным
-        // НЕпагинированным запросом (сайдбар не зависит от текущей страницы списка)
-        $menuGroups = null;
+        // Меню вики: только страницы, явно отмеченные галочкой «Выводить в
+        // меню вики» (in_wiki_menu). Ничего больше в сайдбаре не выводится.
+        // Отдельный НЕпагинированный запрос — сайдбар не зависит от текущей
+        // страницы списка.
+        $wikiMenuPages = null;
+        $wikiMenuTop = null;
         if ($isWiki) {
-            $menuGroups = $section->rootAncestor()
-                ->children()
-                ->where('is_visible', true)
-                ->with(['publishedPages' => fn ($q) => $q->where('is_listed', true)
-                    ->select('id', 'section_id', 'title', 'slug', 'page_type', 'position', 'published_at')])
-                ->get();
+            $wikiMenuPages = Page::query()
+                ->where('status', 'published')
+                ->where('in_wiki_menu', true)
+                ->orderBy('position')
+                ->orderByRaw(RussianText::titleOrder('title'))
+                ->get(['id', 'section_id', 'title', 'slug', 'page_type']);
+
+            // Обязательный порядок по slug: перечисленные страницы идут первыми
+            // в заданной последовательности, прочие отмеченные — после них
+            // (стабильная сортировка сохраняет position/алфавит внутри «прочих»).
+            $order = array_flip(self::WIKI_MENU_ORDER);
+            $wikiMenuPages = $wikiMenuPages
+                ->sortBy(fn ($p) => $order[$p->slug] ?? PHP_INT_MAX)
+                ->values();
+
+            // Первый пункт меню — раздел «Общий раздел» (/wiki/obshhii-razdel)
+            $wikiMenuTop = Section::with('parent')->where('slug', 'obshhii-razdel')->first();
         }
 
         return view('site.section', [
             'section' => $section,
             'pages' => $pages,
             'sort' => $sort,
-            'menuGroups' => $menuGroups,
+            'wikiMenuPages' => $wikiMenuPages,
+            'wikiMenuTop' => $wikiMenuTop,
         ]);
     }
 }

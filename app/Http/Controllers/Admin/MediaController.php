@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
+use App\Support\RussianText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -20,11 +21,10 @@ class MediaController extends Controller
             // занято пагинатором (?page=2 ломало бы и фильтр, и пагинацию)
             ->when($request->query('page_id'), fn ($q, $p) => $q->where('page_id', $p))
             ->when($request->query('q'), function ($q, $term) {
-                $like = '%'.mb_strtolower($term).'%';
-
-                $q->where(function ($sub) use ($like) {
-                    $sub->whereRaw('LOWER(title) LIKE ?', [$like])
-                        ->orWhereRaw('LOWER(file_path) LIKE ?', [$like]);
+                // Регистронезависимо и с поддержкой кириллицы (см. RussianText).
+                $q->where(function ($sub) use ($term) {
+                    RussianText::contains($sub, 'title', $term);
+                    RussianText::contains($sub, 'file_path', $term, 'or');
                 });
             })
             ->latest()

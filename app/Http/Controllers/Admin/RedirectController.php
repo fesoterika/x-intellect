@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Redirect;
+use App\Support\RussianText;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,12 +14,11 @@ class RedirectController extends Controller
     {
         $redirects = Redirect::query()
             ->when($request->query('q'), function ($q, $term) {
-                $like = '%'.mb_strtolower($term).'%';
-
-                $q->where(function ($sub) use ($like) {
-                    $sub->whereRaw('LOWER(from_path) LIKE ?', [$like])
-                        ->orWhereRaw('LOWER(to_url) LIKE ?', [$like])
-                        ->orWhereRaw('LOWER(comment) LIKE ?', [$like]);
+                // Регистронезависимо и с поддержкой кириллицы (см. RussianText).
+                $q->where(function ($sub) use ($term) {
+                    RussianText::contains($sub, 'from_path', $term);
+                    RussianText::contains($sub, 'to_url', $term, 'or');
+                    RussianText::contains($sub, 'comment', $term, 'or');
                 });
             })
             ->orderBy('from_path')

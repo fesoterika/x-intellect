@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PageRequest;
 use App\Models\Page;
 use App\Models\Section;
+use App\Support\RussianText;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -17,12 +18,12 @@ class PageController extends Controller
             ->when($request->query('section'), fn ($q, $s) => $q->where('section_id', $s))
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->when($request->query('q'), function ($q, $term) {
-                $like = '%'.mb_strtolower($term).'%';
-
-                $q->where(function ($sub) use ($like) {
-                    $sub->whereRaw('LOWER(title) LIKE ?', [$like])
-                        ->orWhereRaw('LOWER(excerpt) LIKE ?', [$like])
-                        ->orWhereRaw('LOWER(body) LIKE ?', [$like]);
+                // Регистронезависимо и с поддержкой кириллицы (SQLite LOWER()
+                // не сворачивает регистр русских букв — см. RussianText).
+                $q->where(function ($sub) use ($term) {
+                    RussianText::contains($sub, 'title', $term);
+                    RussianText::contains($sub, 'excerpt', $term, 'or');
+                    RussianText::contains($sub, 'body', $term, 'or');
                 });
             })
             ->latest('updated_at')

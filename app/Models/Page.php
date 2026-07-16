@@ -18,7 +18,7 @@ class Page extends Model
 
     protected $fillable = [
         'section_id', 'title', 'slug', 'excerpt', 'body', 'body_rendered',
-        'page_type', 'status', 'is_listed', 'source_type', 'source_url', 'seo',
+        'page_type', 'status', 'is_listed', 'in_wiki_menu', 'source_type', 'source_url', 'seo',
         'position', 'published_at', 'archived_at',
     ];
 
@@ -27,6 +27,7 @@ class Page extends Model
         return [
             'seo' => 'array',
             'is_listed' => 'boolean',
+            'in_wiki_menu' => 'boolean',
             'published_at' => 'datetime',
             'archived_at' => 'date',
         ];

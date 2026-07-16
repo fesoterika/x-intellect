@@ -26,6 +26,7 @@ class PageRequest extends FormRequest
             'page_type' => ['required', Rule::in(['page', 'author'])],
             'status' => ['required', Rule::in(['draft', 'published'])],
             'is_listed' => ['boolean'],
+            'in_wiki_menu' => ['boolean'],
             'source_type' => ['required', Rule::in(array_keys(\App\Models\Page::SOURCE_TYPES))],
             'source_url' => ['nullable', 'url', 'max:2048'],
             'position' => ['nullable', 'integer', 'min:0'],
@@ -45,6 +46,7 @@ class PageRequest extends FormRequest
         $data['seo'] = array_filter($data['seo'] ?? []) ?: null;
         $data['position'] = $data['position'] ?? 0;
         $data['is_listed'] = $this->boolean('is_listed');
+        $data['in_wiki_menu'] = $this->boolean('in_wiki_menu');
 
         return $data;
     }
