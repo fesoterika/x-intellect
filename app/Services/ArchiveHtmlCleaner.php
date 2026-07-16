@@ -43,6 +43,9 @@ class ArchiveHtmlCleaner
     public int $imagesCopied = 0;
     public int $imagesDropped = 0;
 
+    /** Картинки считать, но в storage не писать (для --dry импортёров). */
+    public bool $dryRun = false;
+
     public function clean(?string $html, string $baseDir, bool $keepBlockquote = true): string
     {
         if (blank($html)) {
@@ -303,7 +306,7 @@ class ArchiveHtmlCleaner
         // Имя по хэшу исходного пути — детерминированно: повторный прогон
         // (--refresh) не плодит дубли в storage и не меняет src в теле.
         $dest = 'media/archive/'.substr(sha1($path), 0, 24).'.'.$ext;
-        if (! Storage::disk('public')->exists($dest)) {
+        if (! $this->dryRun && ! Storage::disk('public')->exists($dest)) {
             Storage::disk('public')->put($dest, File::get($path));
         }
         $this->imagesCopied++;

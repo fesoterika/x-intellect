@@ -8,6 +8,7 @@ use App\Models\Redirect;
 use App\Models\Section;
 use App\Services\ArchiveHtmlCleaner;
 use App\Services\MediaWikiArchive;
+use App\Services\OfflineSnapshotIndex;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -16,21 +17,26 @@ use Illuminate\Support\Str;
  * Импорт вики-страниц из Wayback Machine — материалов, которых нет в офлайн-слепке
  * 2015 года (Сеансы 2014–2017, поздние стенограммы и статьи).
  *
- *   php artisan import:wayback-wiki [--from=2013] [--to=2020] [--limit=0] [--dry] [--sleep=1500]
+ *   php artisan import:wayback-wiki [--from=2013] [--to=2020] [--limit=0] [--dry]
+ *                                  [--sleep=1500] [--refresh] [--snapshot=/путь/www.x-intellect.org]
  *
  * Перечисление заголовков — через CDX API веб-архива; скачиваются только те,
  * которых ещё нет в БД (страницы archive_wiki и термины глоссария) — идемпотентно.
  * Все новые страницы — черновики; source_url ведёт на конкретный снимок Wayback.
- * Внешние картинки веб-архива не тянем (ArchiveHtmlCleaner их отбрасывает) —
- * ограничение зафиксировано в отчёте аудита.
+ *
+ * Картинки. В снимках с модификатором id_ MediaWiki отдаёт их корне-относительными
+ * путями (/wiki/images/a/a4/KN_2M.PNG), и те же пути 1:1 лежат в офлайн-слепке
+ * 2015 года. Поэтому качать их из веб-архива не нужно: --snapshot=<корень слепка>
+ * отдаётся чистильщику как baseDir, и картинки берутся из слепка. Без --snapshot
+ * baseDir не существует и картинки отбрасываются (прежнее поведение).
  */
 class ImportWaybackWiki extends Command
 {
-    protected $signature = 'import:wayback-wiki {--from=2013} {--to=2020} {--limit=0} {--dry} {--sleep=1500} {--refresh}';
+    protected $signature = 'import:wayback-wiki {--from=2013} {--to=2020} {--limit=0} {--dry} {--sleep=1500} {--refresh} {--snapshot=}';
 
     protected $description = 'Импорт недостающих вики-страниц из Wayback Machine (CDX)';
 
-    public function handle(ArchiveHtmlCleaner $cleaner, MediaWikiArchive $mw): int
+    public function handle(ArchiveHtmlCleaner $cleaner, MediaWikiArchive $mw, OfflineSnapshotIndex $index): int
     {
         $wikiSectionId = Section::where('slug', 'wiki')->value('id');
         if (! $wikiSectionId) {
@@ -42,6 +48,26 @@ class ImportWaybackWiki extends Command
         $dry = (bool) $this->option('dry');
         $limit = (int) $this->option('limit');
         $sleepMs = max(0, (int) $this->option('sleep'));
+
+        // Корень офлайн-слепка: картинки снимков резолвятся относительно него.
+        // Несуществующий путь = картинок не будет — лучше упасть сразу.
+        $baseDir = '/nonexistent';
+        if ($snapshot = trim((string) $this->option('snapshot'))) {
+            $baseDir = realpath($snapshot) ?: '';
+            if ($baseDir === '' || ! is_dir($baseDir)) {
+                $this->error('Нет каталога слепка: '.$snapshot);
+
+                return self::FAILURE;
+            }
+            if (! is_dir($baseDir.'/wiki/images')) {
+                $this->error('В слепке нет wiki/images: '.$baseDir.' — нужен корень …/www.x-intellect.org.');
+
+                return self::FAILURE;
+            }
+        } else {
+            $this->warn('Без --snapshot картинки из снимков не восстанавливаются.');
+        }
+        $cleaner->dryRun = $dry;
 
         $this->info('Опрашиваю CDX API веб-архива…');
         $candidates = $this->enumerateTitles($mw);
@@ -78,17 +104,12 @@ class ImportWaybackWiki extends Command
         $created = 0;
         $skipped = 0;
         $failed = 0;
+        $withImages = 0;
+        $imagesTotal = 0;
 
         foreach ($todo as $c) {
             if ($limit && $created >= $limit) {
                 break;
-            }
-
-            if ($dry) {
-                $this->line(sprintf('[wayback %s] %s', substr($c['timestamp'], 0, 8), $c['title']));
-                $created++;
-
-                continue;
             }
 
             $html = $this->fetchSnapshot($c['timestamp'], $c['original']);
@@ -115,29 +136,63 @@ class ImportWaybackWiki extends Command
                 continue;
             }
 
-            // Картинки в снимках Wayback — внешние URL, чистильщик их отбрасывает
-            $body = $cleaner->clean($mw->innerHtml($node, $doc), '/nonexistent', keepBlockquote: false);
-            if (Str::length(strip_tags($body)) < 25) {
+            // Картинки берутся из офлайн-слепка по корне-относительному пути
+            // снимка; без --snapshot чистильщик их по-прежнему отбрасывает
+            $before = $cleaner->imagesCopied;
+            $body = $cleaner->clean($mw->innerHtml($node, $doc), $baseDir, keepBlockquote: false);
+            $images = $cleaner->imagesCopied - $before;
+            if (Str::length(strip_tags($body)) < 25 || $index->isStub($body)) {
                 $skipped++;
 
-                continue; // пусто/редирект
+                // Пусто, редирект или «красная ссылка»: страница-заглушка
+                // MediaWiki («В настоящее время на этой странице нет текста»)
+                // длиннее 25 знаков и раньше проходила фильтр — так в базу
+                // попали пустые Программы/УФО/Стабилизирующие оси.
+                continue;
             }
 
             $known[$norm] = true;
+            $imagesTotal += $images;
+            if ($images > 0) {
+                $withImages++;
+            }
+            $note = $images > 0 ? ', картинок: '.$images : '';
 
             if (isset($refreshable[$norm])) {
                 $existing = $refreshable[$norm];
-                // Не затирать страницы, правленные вручную после импорта
-                if ($existing->revisions()->where('note', 'like', 'Отредактирована вручную%')->exists()) {
-                    $this->warn('Пропуск (ручные правки): '.$existing->title);
+                // Опубликованное вычитано вручную и перезаписи не подлежит — даже
+                // если ревизий с пометкой о ручной правке ещё нет (страницу могли
+                // вычитать до того, как появилась пометка, или прямо в редакторе).
+                $protected = $existing->status === 'published'
+                    || $existing->revisions()->where('note', 'like', 'Отредактирована вручную%')->exists();
+                if ($protected) {
+                    $this->warn(sprintf('Пропуск (%s): %s',
+                        $existing->status === 'published' ? 'опубликована' : 'ручные правки', $existing->title));
                     $skipped++;
+                    $imagesTotal -= $images;
+                    if ($images > 0) {
+                        $withImages--;
+                    }
                 } else {
-                    $existing->body = $body;
-                    $existing->source_url = 'https://web.archive.org/web/'.$c['timestamp'].'/'.$c['original'];
-                    $existing->save();
-                    $this->line('~ '.$title.' (/wiki/'.$existing->slug.') обновлена');
+                    if (! $dry) {
+                        $existing->body = $body;
+                        $existing->source_url = 'https://web.archive.org/web/'.$c['timestamp'].'/'.$c['original'];
+                        $existing->save();
+                    }
+                    $this->line('~ '.$title.' (/wiki/'.$existing->slug.') обновлена'.$note);
                     $created++;
                 }
+
+                if ($sleepMs) {
+                    usleep($sleepMs * 1000);
+                }
+
+                continue;
+            }
+
+            if ($dry) {
+                $this->line(sprintf('+ [wayback %s] %s%s', substr($c['timestamp'], 0, 8), $title, $note));
+                $created++;
 
                 if ($sleepMs) {
                     usleep($sleepMs * 1000);
@@ -174,6 +229,8 @@ class ImportWaybackWiki extends Command
 
         $this->newLine();
         $this->info(($dry ? '[dry] ' : '')."Создано: {$created}, пропущено: {$skipped}, не скачалось: {$failed}.");
+        $this->info(($dry ? '[dry] ' : '')."Страниц с картинками: {$withImages}, картинок всего: {$imagesTotal}"
+            .($cleaner->imagesDropped ? ', отброшено: '.$cleaner->imagesDropped : '').'.');
         if (! $dry && $created > 0) {
             $this->comment('Дальше: php artisan remap:archive-links (перелинковка тел из Wayback).');
         }

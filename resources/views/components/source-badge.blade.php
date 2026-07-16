@@ -6,7 +6,7 @@
     $classes = match ($page->source_type) {
         'archive_sferarazuma' => 'badge-sfera',
         'archive_xintellect' => 'badge-xintellect',
-        'archive_wiki' => 'badge-xintellect',
+        'archive_wiki' => 'badge-wiki',
         default => 'badge-new',
     };
 @endphp

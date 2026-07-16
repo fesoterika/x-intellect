@@ -91,6 +91,31 @@ class Page extends Model
             : '/'.$this->slug;
     }
 
+    /**
+     * Адрес до текущего сохранения — по нему PageObserver ставит 301, когда
+     * страница переезжает. Считается из getOriginal(), поэтому вызывать
+     * только внутри saving/saved: после syncOriginal() вернёт новый адрес.
+     */
+    public function urlBeforeSave(): ?string
+    {
+        $slug = $this->getOriginal('slug');
+        if (blank($slug)) {
+            return null;
+        }
+        if ($this->getOriginal('page_type') === 'author') {
+            return '/'.$slug;
+        }
+
+        $sectionId = $this->getOriginal('section_id');
+        if (! $sectionId) {
+            return '/'.$slug;
+        }
+
+        $section = Section::find($sectionId);
+
+        return $section ? '/'.$section->rootAncestor()->slug.'/'.$slug : null;
+    }
+
     public function seoValue(string $key, ?string $default = null): ?string
     {
         return $this->seo[$key] ?? $default;
