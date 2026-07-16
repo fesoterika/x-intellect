@@ -102,6 +102,15 @@
                     </span>
                 </label>
 
+                <label class="flex items-start gap-2 text-sm text-gray-700">
+                    <input type="hidden" name="in_wiki_menu" value="0">
+                    <input type="checkbox" name="in_wiki_menu" value="1" @checked(old('in_wiki_menu', $page->in_wiki_menu ?? false)) class="mt-0.5 rounded border-gray-300">
+                    <span>
+                        Выводить в меню вики
+                        <span class="block text-xs text-gray-400">Боковое меню на страницах раздела «Вики» показывает только страницы с этой галочкой. По умолчанию выключено.</span>
+                    </span>
+                </label>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Анонс (excerpt)</label>
                     <textarea name="excerpt" rows="2" class="w-full rounded-md border-gray-300">{{ old('excerpt', $page->excerpt) }}</textarea>
