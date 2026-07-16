@@ -27,7 +27,7 @@
                 </select>
             </div>
             <div class="flex-1 min-w-40">
-                <label class="block text-xs text-gray-500 mb-1">Поиск по заголовку</label>
+                <label class="block text-xs text-gray-500 mb-1">Поиск по заголовку и содержимому</label>
                 <input type="text" name="q" value="{{ request('q') }}" class="w-full rounded-md border-gray-300 text-sm">
             </div>
             <button class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
