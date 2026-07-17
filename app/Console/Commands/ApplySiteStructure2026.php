@@ -54,6 +54,20 @@ class ApplySiteStructure2026 extends Command
     ];
 
     /**
+     * Подраздел «Памяти А. Глаза» (Статьи, /articles/mag): точные заголовки
+     * страниц-поздравлений и памяти основателя проекта. Заголовок может
+     * повторяться («День Рождения Александра Глаза» — две статьи), поэтому
+     * переносятся ВСЕ совпадения, а не первое.
+     */
+    private array $memorialPages = [
+        'Безвременно ушел от нас Александр Георгиевич Глаз',
+        'Исполнилось 40 дней со дня перехода Александра Георгиевича Глаза в иные реальности безграничного Дома Вселенной',
+        'СВЕТЛАЯ ПАМЯТЬ АЛЕКСАНДРУ ГЛАЗУ',
+        'День Рождения Александра Глаза',
+        'Сегодня Александру Глазу исполнилось бы 53 года…но Творцу было угодно, чтобы душа его устремилась к небесам…',
+    ];
+
+    /**
      * Подразделы раздела «Проекты» (главный сайт, не вики): slug, заголовок,
      * позиция и regex по названию страницы. Порядок правил важен: «Картины
      * Учителей Ноосферы» раньше «Ноосферы», иначе перехват по подстроке.
@@ -87,6 +101,7 @@ class ApplySiteStructure2026 extends Command
 
         // 1. Подразделы
         $digests = $this->ensureChild($articles, 'daidzesty', 'Дайджесты', 1, $dry);
+        $memorial = $this->ensureChild($articles, 'mag', 'Памяти А. Глаза', 2, $dry);
         $children = [];
         foreach ($this->wikiMenu as $slug => $def) {
             $children[$slug] = $this->ensureChild($wiki, $slug, $def['title'], $def['position'], $dry);
@@ -98,6 +113,37 @@ class ApplySiteStructure2026 extends Command
             $moved += $this->movePage($page, $digests, null, $dry);
         }
         $this->info("Дайджестов в подразделе: {$moved}.");
+
+        // 2а. Памяти А. Глаза → подраздел /articles/mag.
+        // Публичный URL страниц не меняется (Page::url() строится от корневого
+        // раздела), поэтому редиректы для самих статей не нужны.
+        $memorialMoved = 0;
+        $memorialMissing = [];
+        foreach ($this->memorialPages as $title) {
+            $pages = Page::where('title', $title)->get();
+            if ($pages->isEmpty()) {
+                $memorialMissing[] = $title;
+
+                continue;
+            }
+            foreach ($pages as $page) {
+                $memorialMoved += $this->movePage($page, $memorial, null, $dry);
+            }
+        }
+        $this->info("Статей в подразделе «Памяти А. Глаза»: {$memorialMoved}.");
+        if ($memorialMissing) {
+            $this->warn('[Памяти А. Глаза] не найдены: '.implode('; ', $memorialMissing));
+        }
+
+        // 2б. Старый редирект /mag → /articles заменяем на актуальный адрес
+        // подраздела (/articles/mag): слаг занят самим разделом.
+        if (! $dry && $memorial->exists) {
+            Redirect::updateOrCreate(
+                ['from_path' => '/mag'],
+                ['to_url' => $memorial->url(), 'status_code' => 301, 'comment' => 'Короткий адрес подраздела «Памяти А. Глаза»'],
+            );
+            $this->line('Редирект /mag → '.$memorial->url().' (301).');
+        }
 
         // 3. Страницы меню вики → подразделы, с позициями
         foreach ($this->wikiMenu as $slug => $def) {
