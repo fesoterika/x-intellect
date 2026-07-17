@@ -13,6 +13,22 @@ use Illuminate\Http\Request;
  */
 class ForumController extends Controller
 {
+    /**
+     * Темы, где участники обсуждали здоровье, болезни и «целительство»:
+     * внизу таких тем выводится приписка-дисклеймер (forum-medical-note),
+     * что мнения авторов — не медицинские рекомендации.
+     */
+    private const MEDICAL_TOPIC_SLUGS = [
+        'vic-infekciia',
+        'voprosy-po-proektu-izosfera-i-parallelnymi-miry',
+        'socialnye-iavleniia-zemli-civilizaciia-zemli',
+        'celitelstvo-praktika',
+        'novogodniaia-konferenciia-2016',
+        'volnovaia-genetika',
+        'etalony-osoboe-mnenie',
+        'obsuzdenie-temy-celovek-zemlia-kosmos',
+    ];
+
     public function index()
     {
         $topics = ForumTopic::query()
@@ -38,6 +54,7 @@ class ForumController extends Controller
         return view('site.forum.topic', [
             'topic' => $topic,
             'posts' => $topic->posts()->paginate(25),
+            'showMedicalNote' => in_array($topic->slug, self::MEDICAL_TOPIC_SLUGS, true),
         ]);
     }
 

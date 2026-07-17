@@ -1591,7 +1591,7 @@ html { scroll-padding-top: 84px; }
     font-size: 14px;
     color: var(--xi-ink-soft);
 }
-.feedback-text strong { color: var(--xi-ink-faint); }
+.feedback-text strong { color: var(--xi-ink-soft); }
 .feedback-text svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--xi-ink-faint); }
 .feedback-actions { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .feedback-btn {
@@ -1725,6 +1725,14 @@ a.xi-download .xi-download__meta {
 }
 .forum-disclaimer svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; color: var(--xi-accent); }
 .forum-disclaimer a { color: var(--xi-accent); white-space: nowrap; }
+
+/* Приписка внизу «медицинских» тем: нарочито неброская — мелкий приглушённый
+   текст над тонкой линией, без фона и акцентов */
+.forum-medical-note {
+    margin: 22px 0 10px; padding-top: 12px;
+    border-top: 1px solid var(--xi-line);
+    color: var(--xi-ink-faint); font-size: 12.5px; line-height: 1.6;
+}
 
 /* --- Поиск по форуму: строка — как в глоссарии, подсказки — карточкой --- */
 .forum-search { margin: 0 0 26px; }

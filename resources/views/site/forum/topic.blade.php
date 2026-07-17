@@ -63,6 +63,10 @@
         @endforeach
     </div>
 
+    @if ($showMedicalNote)
+        @include('site.partials.forum-medical-note')
+    @endif
+
     @if ($posts->hasPages())
         <div class="forum-pagination">{{ $posts->links('site.partials.pagination') }}</div>
     @endif
