@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ForumTopic;
 use App\Models\GlossaryTerm;
 use App\Models\Page;
 use App\Models\Redirect;
@@ -204,5 +205,71 @@ class RemapArchiveLinksTest extends TestCase
         $this->artisan('remap:archive-links')->assertSuccessful();
 
         $this->assertStringContainsString('href="/mag/daidzest-2012"', $src->fresh()->body);
+    }
+
+    /** Старая ссылка phpBB ведёт на тему архива форума (по old_id). */
+    public function test_forum_viewtopic_link_maps_to_archive_topic(): void
+    {
+        ForumTopic::create([
+            'old_id' => 754, 'slug' => 'startoval-novyi-proekt', 'title' => 'Стартовал новый проект!',
+            'forum_old_id' => 56, 'forum_title' => 'Проекты', 'posts_count' => 1,
+        ]);
+        $src = $this->makeWikiPage('Стр10', 'str10',
+            '<p><a href="http://www.x-intellect.org/forum/viewtopic.php?f=56&amp;t=754">Обсуждение</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('href="/forum/startoval-novyi-proekt"', $src->fresh()->body);
+    }
+
+    /** Ссылки на темы, которых нет в архиве форума, мертвы — разворачиваются. */
+    public function test_forum_link_to_missing_topic_is_unwrapped(): void
+    {
+        $src = $this->makeWikiPage('Стр11', 'str11',
+            '<p><a href="http://www.x-intellect.org/forum/viewtopic.php?f=56&amp;t=999">Обсуждение</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $body = $src->fresh()->body;
+        $this->assertStringNotContainsString('viewtopic', $body);
+        $this->assertStringContainsString('Обсуждение', $body);
+    }
+
+    /** Обёртка «клик по миниатюре» мертва (wp-content нет) — картинка остаётся без ссылки. */
+    public function test_dead_wp_content_wrapper_is_unwrapped_keeping_image(): void
+    {
+        $src = $this->makeWikiPage('Стр12', 'str12',
+            '<p><a href="http://www.x-intellect.org/wp-content/uploads/2015/03/PRN2015.jpg">'
+            .'<img src="/storage/media/archive/abc.jpg" alt="Иллюстрация"></a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $body = $src->fresh()->body;
+        $this->assertStringNotContainsString('wp-content', $body);
+        $this->assertStringContainsString('<img src="/storage/media/archive/abc.jpg"', $body);
+    }
+
+    /** У published глубокая чистка выключена: тела вычитаны, их правят только links:restore и content-fixes. */
+    public function test_deep_clean_skips_published_pages(): void
+    {
+        $src = $this->makeWikiPage('Стр13', 'str13',
+            '<p><a href="http://www.x-intellect.org/wp-content/uploads/2015/03/PRN2015.jpg">Полный размер</a></p>');
+        $src->update(['status' => 'published']);
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('wp-content/uploads/2015/03/PRN2015.jpg', $src->fresh()->body);
+    }
+
+    /** Абсолютная ссылка старого домена на живой раздел становится относительной. */
+    public function test_old_host_link_to_live_section_is_relativized(): void
+    {
+        Section::firstOrCreate(['slug' => 'forum'], ['title' => 'Архив форума', 'position' => 9]);
+        $src = $this->makeWikiPage('Стр14', 'str14',
+            '<p><a href="http://www.x-intellect.org/forum/">Форум</a></p>');
+
+        $this->artisan('remap:archive-links')->assertSuccessful();
+
+        $this->assertStringContainsString('href="/forum"', $src->fresh()->body);
     }
 }
