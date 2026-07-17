@@ -7,9 +7,15 @@ import '../css/trix-content.css';
 
 // Метка content-вложения таблицы (синхронизирована с App\Services\TrixTables)
 const TABLE_CONTENT_TYPE = 'application/vnd.xi-table+html';
+// Метка content-вложения HTML-вставки (синхронизирована с App\Services\TrixEmbeds)
+const EMBED_CONTENT_TYPE = 'application/vnd.xi-embed+html';
 
 function isTableAttachment(att) {
     return att && att.getAttribute('contentType') === TABLE_CONTENT_TYPE;
+}
+
+function isEmbedAttachment(att) {
+    return att && att.getAttribute('contentType') === EMBED_CONTENT_TYPE;
 }
 
 // SVG-иконки для кастомных кнопок панели (без текста)
@@ -21,6 +27,7 @@ const ICONS = {
     right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="13" y="4.5" width="8" height="7" rx="1" fill="currentColor" stroke="none"/><line x1="3" y1="6" x2="11" y2="6"/><line x1="3" y1="10" x2="11" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="3" y1="18.5" x2="21" y2="18.5"/></svg>',
     wide: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="9" rx="1" fill="currentColor" stroke="none"/><line x1="3" y1="17" x2="21" y2="17"/><line x1="3" y1="20.5" x2="21" y2="20.5"/></svg>',
     table: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+    code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 8L4 12l4.5 4"/><path d="M15.5 8L20 12l-4.5 4"/><path d="M13.4 5.2l-2.8 13.6"/></svg>',
     pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4.3-1.1L19.6 7.6a2 2 0 0 0 0-2.8l-.4-.4a2 2 0 0 0-2.8 0L5.1 15.7z"/><path d="M13.5 6.5l4 4"/></svg>',
 };
 
@@ -258,8 +265,129 @@ function openTableEditor(attachment) {
     table.querySelector('td, th')?.focus();
 }
 
+// ── HTML-вставки со сторонних ресурсов ───────────────────────────────────
+// Плейлисты, видео и прочее (в основном iframe): живьём в редакторе такую
+// вставку не показать — содержимое вложения Trix проходит через его
+// санитайзер, а тот вырезает iframe/script. Поэтому вставка — тоже
+// content-вложение: в редакторе рисуется карточка с текстом кода, сам код
+// лежит в атрибуте вложения `code` и разворачивается на сервере в
+// <div class="xi-embed"> при сохранении (App\Services\TrixEmbeds).
+
+const EMBED_PREVIEW_LIMIT = 400; // длина кода на карточке (как в TrixEmbeds::card)
+
+// как htmlspecialchars(ENT_QUOTES) на сервере — карточки должны совпадать
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+
+    return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// Близнец TrixEmbeds::card() на сервере — правки нужны в обоих местах
+function embedCard(code) {
+    const preview = code.length > EMBED_PREVIEW_LIMIT ? code.slice(0, EMBED_PREVIEW_LIMIT) + '…' : code;
+
+    return '<div class="xi-embed-card">'
+        + '<div class="xi-embed-card__label">HTML-вставка</div>'
+        + '<pre class="xi-embed-card__code">' + escapeHtml(preview) + '</pre>'
+        + '</div>';
+}
+
+/**
+ * Диалог вставки кода на панели — по образцу штатного диалога ссылки, но без
+ * какой-либо обработки введённого: что вставили, то и попадёт на страницу.
+ * Возвращает функцию открытия диалога для правки готовой вставки.
+ */
+function createEmbedDialog(editorEl, embedBtn) {
+    const toolbar = editorEl.toolbarElement;
+    const dialog = document.createElement('div');
+    dialog.className = 'trix-dialog xi-embed-dialog';
+    dialog.dataset.trixDialog = 'xi-embed'; // = data-trix-action кнопки: показ берёт на себя Trix
+    dialog.innerHTML = `
+        <textarea class="trix-input trix-input--dialog xi-embed-dialog__code" rows="6"
+                  aria-label="HTML-код вставки"
+                  placeholder="&lt;iframe src=&quot;https://…&quot; width=&quot;560&quot; height=&quot;315&quot;&gt;&lt;/iframe&gt;"></textarea>
+        <div class="xi-embed-dialog__actions">
+            <input type="button" class="trix-button trix-button--dialog" value="Вставить" data-x-embed-save data-trix-method="hideDialog">
+            <input type="button" class="trix-button trix-button--dialog" value="Отмена" data-trix-method="hideDialog">
+            <span class="xi-embed-dialog__hint">на страницу пропускаются только &lt;iframe&gt; — остальной код вырежется при сохранении</span>
+        </div>`;
+    toolbar.querySelector('[data-trix-dialogs]')?.appendChild(dialog);
+
+    const input = dialog.querySelector('.xi-embed-dialog__code');
+    const saveBtn = dialog.querySelector('[data-x-embed-save]');
+    let editing = null; // правим готовую вставку, а не создаём новую
+
+    // Без iframe от блока после санитизации ничего не останется (TrixEmbeds) —
+    // не даём вставить пустоту, вместо того чтобы молча её потерять
+    const validate = () => { saveBtn.disabled = !/<iframe[\s>]/i.test(input.value); };
+    input.addEventListener('input', validate);
+
+    const fill = () => {
+        input.value = editing ? (editing.getAttribute('code') || '') : '';
+        validate();
+        input.focus();
+    };
+
+    // Клик по кнопке панели — всегда новая вставка (правка идёт через open)
+    embedBtn.addEventListener('mousedown', () => { editing = null; });
+
+    // Диалог показал Trix (кнопкой) — остаётся заполнить поле
+    editorEl.addEventListener('trix-toolbar-dialog-show', (event) => {
+        if (event.dialogName === 'xi-embed') fill();
+    });
+
+    dialog.querySelector('[data-x-embed-save]').addEventListener('click', () => {
+        // диалог закроется в любом случае: data-trix-method="hideDialog"
+        // отработает следом (и вернёт фокус с выделением в редактор)
+        const code = input.value.trim();
+        const target = editing;
+        if (code === '') {
+            return;
+        }
+
+        if (target) {
+            target.setAttributes({ code, content: embedCard(code) });
+            return;
+        }
+
+        // Вставка — только ПОСЛЕ закрытия диалога (оно идёт следом за этим
+        // обработчиком). Пока диалог открыт, Trix держит выделение
+        // «замороженным» служебным текстовым атрибутом frozen, и новое
+        // вложение унесло бы его с собой в тело — <span style="background-
+        // color: highlight;"> вокруг вставки. Закрытие снимает заморозку и
+        // возвращает курсор на прежнее место.
+        setTimeout(() => {
+            const editor = editorEl.editor;
+            if (!editor.getSelectedRange()) {
+                const end = editor.getDocument().getLength();
+                editor.setSelectedRange([end, end]);
+            }
+            editor.insertAttachment(new window.Trix.Attachment({
+                content: embedCard(code),
+                contentType: EMBED_CONTENT_TYPE,
+                code,
+            }));
+        });
+    });
+
+    return (attachment) => {
+        editing = attachment;
+        // Показать диалог кликом по кнопке нельзя: её mousedown сбросит
+        // editing. Открываем сами — «показан» для Trix означает ровно этот
+        // атрибут, так что «Отмена»/«Вставить» закроют диалог как свой.
+        toolbar.querySelectorAll('[data-trix-dialog][data-trix-active]').forEach((el) => {
+            el.removeAttribute('data-trix-active');
+            el.classList.remove('trix-active');
+        });
+        dialog.setAttribute('data-trix-active', '');
+        dialog.classList.add('trix-active');
+        fill();
+    };
+}
+
 // Кастомные кнопки на панели редактора: заголовки, «♪ Аудио», «🖼 Картинка»,
-// «Таблица», выравнивание картинок. Вызывается на trix-initialize и
+// «HTML-код», «Таблица», выравнивание картинок. Вызывается на trix-initialize и
 // подстраховочно после загрузки: событие может уйти до регистрации
 // слушателя, а панель — наполниться позже события (гонка инициализации
 // чанков сборки), поэтому при пустой панели повторяем через кадр.
@@ -344,6 +472,20 @@ function enhanceEditor(editorEl) {
     });
     mediaGroup.appendChild(imgBtn);
 
+    // Кнопка вставки HTML-кода со стороны (плейлисты, видео — обычно iframe).
+    // Открывает диалог с полем для кода; data-trix-action + одноимённый
+    // data-trix-dialog означают, что показ/скрытие берёт на себя Trix — он же
+    // на время диалога держит позицию курсора (как у штатной кнопки ссылки).
+    const embedBtn = document.createElement('button');
+    embedBtn.type = 'button';
+    embedBtn.className = 'trix-button xi-icon-btn';
+    embedBtn.dataset.trixAction = 'xi-embed';
+    embedBtn.dataset.xEmbed = '1';
+    embedBtn.innerHTML = ICONS.code;
+    embedBtn.title = 'Вставить HTML-код с другого сайта — плеер, видео, плейлист (обычно iframe)';
+    mediaGroup.appendChild(embedBtn);
+    const openEmbedDialog = createEmbedDialog(editorEl, embedBtn);
+
     // Кнопка вставки таблицы (content-вложение + сразу модальный редактор)
     const tableBtn = document.createElement('button');
     tableBtn.type = 'button';
@@ -396,32 +538,36 @@ function enhanceEditor(editorEl) {
         return b;
     });
 
-    // Кнопка «править таблицу» — активна, когда выделено вложение-таблица
-    const editTableBtn = document.createElement('button');
-    editTableBtn.type = 'button';
-    editTableBtn.className = 'trix-button xi-icon-btn';
-    editTableBtn.dataset.xTableEdit = '1';
-    editTableBtn.innerHTML = ICONS.pencil;
-    editTableBtn.title = 'Править таблицу (или двойной клик по ней)';
-    editTableBtn.disabled = true;
-    editTableBtn.addEventListener('mousedown', (e) => e.preventDefault());
-    editTableBtn.addEventListener('click', () => {
-        const att = selectedAttachment(editorEl);
-        if (isTableAttachment(att)) openTableEditor(att);
-    });
-    alignGroup.appendChild(editTableBtn);
+    // Кнопка «править блок» — активна, когда выделена таблица или HTML-вставка
+    const editBlockBtn = document.createElement('button');
+    editBlockBtn.type = 'button';
+    editBlockBtn.className = 'trix-button xi-icon-btn';
+    editBlockBtn.dataset.xBlockEdit = '1';
+    editBlockBtn.innerHTML = ICONS.pencil;
+    editBlockBtn.title = 'Править таблицу или HTML-вставку (или двойной клик по блоку)';
+    editBlockBtn.disabled = true;
+    editBlockBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    editBlockBtn.addEventListener('click', () => editBlock(selectedAttachment(editorEl)));
+    alignGroup.appendChild(editBlockBtn);
     row?.appendChild(alignGroup);
 
-    // Двойной клик по таблице в тексте — тоже открывает редактор
+    function editBlock(att) {
+        if (isTableAttachment(att)) {
+            openTableEditor(att);
+        } else if (isEmbedAttachment(att)) {
+            openEmbedDialog(att);
+        }
+    }
+
+    // Двойной клик по блоку в тексте — тоже открывает правку
     editorEl.addEventListener('dblclick', (e) => {
         const fig = e.target.closest('figure.attachment[data-trix-id]');
         if (!fig) return;
-        const att = editorEl.editor.getDocument().getAttachmentById(Number(fig.getAttribute('data-trix-id')));
-        if (isTableAttachment(att)) openTableEditor(att);
+        editBlock(editorEl.editor.getDocument().getAttachmentById(Number(fig.getAttribute('data-trix-id'))));
     });
 
     // Активность/подсветка кнопок выравнивания при изменении выделения
-    editorEl.addEventListener('trix-selection-change', () => updateAlignButtons(editorEl, alignBtns, editTableBtn));
+    editorEl.addEventListener('trix-selection-change', () => updateAlignButtons(editorEl, alignBtns, editBlockBtn));
 
     enhanceLinkDialog(toolbar);
 
@@ -515,16 +661,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('trix-editor').forEach(enhanceWhenReady);
 });
 
-function updateAlignButtons(editorEl, alignBtns, editTableBtn) {
+function updateAlignButtons(editorEl, alignBtns, editBlockBtn) {
     const att = selectedAttachment(editorEl);
+    // выравнивание — для картинок и HTML-вставок; таблица и так во всю ширину
     const isTable = isTableAttachment(att);
     const cur = att ? (att.getAttribute('alignment') || '') : null;
     alignBtns.forEach((b) => {
-        // выравнивание — только для картинок; таблица и так во всю ширину
         b.disabled = !att || isTable;
         b.classList.toggle('trix-active', att && !isTable && b.dataset.align === cur);
     });
-    if (editTableBtn) editTableBtn.disabled = !isTable;
+    if (editBlockBtn) editBlockBtn.disabled = !isTable && !isEmbedAttachment(att);
 }
 
 // Обработка вложений: загрузка новых файлов + восстановление выравнивания
@@ -532,9 +678,10 @@ function updateAlignButtons(editorEl, alignBtns, editTableBtn) {
 document.addEventListener('trix-attachment-add', (event) => {
     const attachment = event.attachment;
 
-    // Таблицы: контент правится модалкой, выравнивание/загрузка не про них.
-    // Событие прилетает и при setAttributes из модалки — просто выходим.
-    if (isTableAttachment(attachment)) {
+    // Таблицы и HTML-вставки: контент правится своим редактором,
+    // выравнивание/загрузка не про них. Событие прилетает и при setAttributes
+    // из этого редактора — просто выходим.
+    if (isTableAttachment(attachment) || isEmbedAttachment(attachment)) {
         return;
     }
 
