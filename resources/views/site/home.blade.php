@@ -81,6 +81,9 @@
         </div>
     </section>
 
+    {{-- Архив в цифрах - счётчики проделанной работы (только опубликованное) --}}
+    @include('site.partials.home-stats')
+
     {{-- Материалы - карточки контента (открыть страницу) с бейджем эпохи --}}
     @if ($latestPages->isNotEmpty())
         <section style="margin-top: 44px;">
