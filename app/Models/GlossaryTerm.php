@@ -30,6 +30,30 @@ class GlossaryTerm extends Model
     }
 
     /**
+     * Термин с определением — для копирования кнопкой и meta description.
+     * Определения почти всегда открываются самим термином («Торы биоэкрана –
+     * данные структуры…»), и подпись перед таким текстом читалась бы дважды.
+     * Там, где термина в определении нет (напр. «Посредники» — «Ядро команды
+     * сайта…»), он подставляется: иначе копия остаётся без имени.
+     */
+    public function termWithDefinition(): string
+    {
+        $definition = $this->definitionPlain();
+
+        return $this->definitionOpensWithTerm()
+            ? $definition
+            : $this->term.' - '.$definition;
+    }
+
+    /** Уточнения в скобках в определение не переносятся — сверяем термин без них. */
+    private function definitionOpensWithTerm(): bool
+    {
+        $term = trim((string) preg_replace('/\s*\([^)]*\)\s*$/u', '', $this->term));
+
+        return $term !== '' && mb_stripos($this->definitionPlain(), $term) === 0;
+    }
+
+    /**
      * Определение для вывода как HTML. Термины импорта хранят чистый текст —
      * его экранируем и переводим переносы в <br>; новые определения из
      * Trix-редактора уже содержат разметку и отдаются как есть.
