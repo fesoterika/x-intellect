@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\DB;
  */
 class RussianText
 {
+    /**
+     * Русская форма слова при числе: plural(23, 'раздел', 'раздела', 'разделов').
+     * Явные диапазоны trans_choice('[2,4]…|[5,*]…') ошибаются на 21-24, 31-34
+     * и т. д. (21 попадает в [5,*] — «21 разделов»), а встроенные правила
+     * локали ru здесь считают верно только при APP_LOCALE=ru у trans_choice —
+     * хелпер не зависит от локали приложения.
+     */
+    public static function plural(int $count, string $one, string $few, string $many): string
+    {
+        $mod100 = $count % 100;
+        $mod10 = $count % 10;
+
+        if ($mod100 >= 11 && $mod100 <= 14) {
+            return $many;
+        }
+
+        return match (true) {
+            $mod10 === 1 => $one,
+            $mod10 >= 2 && $mod10 <= 4 => $few,
+            default => $many,
+        };
+    }
+
     /** ORDER BY по текстовой колонке с учётом русского алфавита. */
     public static function titleOrder(string $column, string $direction = 'asc'): string
     {

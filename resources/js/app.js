@@ -154,3 +154,42 @@ function showTooltip(target) {
         if (event.target.closest?.('.glossary-term')) tooltip.hidden = true;
     });
 });
+
+/**
+ * Счётчики «Архив в цифрах» на главной: число отсчитывается от нуля, когда
+ * блок попадает во вьюпорт. Значение уже отрендерено сервером — без JS и при
+ * prefers-reduced-motion остаётся статичным (SEO и доступность не страдают).
+ */
+const statValues = document.querySelectorAll('.home-stats .stat-value[data-count]');
+
+if (statValues.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const formatStat = new Intl.NumberFormat('ru-RU');
+
+    const animateStat = (el) => {
+        const target = parseInt(el.dataset.count, 10) || 0;
+        const started = performance.now();
+        const duration = 1100;
+
+        const tick = (now) => {
+            const t = Math.min(1, (now - started) / duration);
+            const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic: быстро в начале, мягко у цели
+
+            el.textContent = formatStat.format(Math.round(target * eased));
+
+            if (t < 1) requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+    };
+
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                statsObserver.unobserve(entry.target);
+                animateStat(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    statValues.forEach((el) => statsObserver.observe(el));
+}
