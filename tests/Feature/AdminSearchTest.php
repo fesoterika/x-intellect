@@ -45,6 +45,66 @@ class AdminSearchTest extends TestCase
             ->assertOk()->assertSee('Сеансы 2013');
     }
 
+    /** Раздел с материалами только в подразделах («Проекты») выглядел пустым. */
+    public function test_section_filter_includes_subsection_pages(): void
+    {
+        $root = Section::create(['title' => 'Статьи', 'slug' => 'articles']);
+        $child = Section::create(['title' => 'Дайджесты', 'slug' => 'daidzesty', 'parent_id' => $root->id]);
+        $other = Section::create(['title' => 'Курсы', 'slug' => 'kursy']);
+
+        Page::create(['section_id' => $root->id, 'title' => 'Статья корня', 'slug' => 'a', 'status' => 'published']);
+        Page::create(['section_id' => $child->id, 'title' => 'Статья дайджеста', 'slug' => 'b', 'status' => 'published']);
+        Page::create(['section_id' => $other->id, 'title' => 'Статья курса', 'slug' => 'c', 'status' => 'published']);
+
+        // Корень: свои материалы + материалы подразделов, чужие — нет
+        $this->actingAs($this->admin())->get(route('admin.pages.index', ['section' => $root->id]))
+            ->assertOk()
+            ->assertSee('Статья корня')
+            ->assertSee('Статья дайджеста')
+            ->assertDontSee('Статья курса');
+    }
+
+    public function test_section_filter_by_subsection_shows_only_it(): void
+    {
+        $root = Section::create(['title' => 'Статьи', 'slug' => 'articles']);
+        $child = Section::create(['title' => 'Дайджесты', 'slug' => 'daidzesty', 'parent_id' => $root->id]);
+
+        Page::create(['section_id' => $root->id, 'title' => 'Статья корня', 'slug' => 'a', 'status' => 'published']);
+        Page::create(['section_id' => $child->id, 'title' => 'Статья дайджеста', 'slug' => 'b', 'status' => 'published']);
+
+        $this->actingAs($this->admin())->get(route('admin.pages.index', ['section' => $child->id]))
+            ->assertOk()
+            ->assertSee('Статья дайджеста')
+            ->assertDontSee('Статья корня');
+    }
+
+    /** Подразделы выбираются в фильтре: раньше в списке были только корни. */
+    public function test_section_filter_lists_subsections(): void
+    {
+        $root = Section::create(['title' => 'Статьи', 'slug' => 'articles']);
+        Section::create(['title' => 'Дайджесты', 'slug' => 'daidzesty', 'parent_id' => $root->id]);
+
+        $this->actingAs($this->admin())->get(route('admin.pages.index'))
+            ->assertOk()
+            ->assertSee('<optgroup label="Статьи">', false)
+            ->assertSee('Дайджесты');
+    }
+
+    /** Фильтр раздела и поиск по слову работают вместе. */
+    public function test_section_filter_combines_with_query(): void
+    {
+        $root = Section::create(['title' => 'Статьи', 'slug' => 'articles']);
+        $child = Section::create(['title' => 'Дайджесты', 'slug' => 'daidzesty', 'parent_id' => $root->id]);
+
+        Page::create(['section_id' => $child->id, 'title' => 'Ноосфера в дайджесте', 'slug' => 'a', 'status' => 'published']);
+        Page::create(['section_id' => $child->id, 'title' => 'Прочее', 'slug' => 'b', 'status' => 'published']);
+
+        $this->actingAs($this->admin())->get(route('admin.pages.index', ['section' => $root->id, 'q' => 'ноосфера']))
+            ->assertOk()
+            ->assertSee('Ноосфера в дайджесте')
+            ->assertDontSee('Прочее');
+    }
+
     public function test_media_search_finds_by_russian_title(): void
     {
         Media::create(['type' => 'audio', 'title' => 'Запись Сеанса', 'file_path' => 'media/audio/x.mp3', 'disk' => 'public']);
