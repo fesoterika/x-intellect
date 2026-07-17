@@ -16,6 +16,7 @@ use App\Services\LinkTargets;
 use App\Services\LocalLinks;
 use App\Services\TableImagePairer;
 use App\Services\TimelineTagger;
+use App\Services\TrixEmbeds;
 use App\Services\TrixTables;
 use Illuminate\Support\Str;
 
@@ -29,6 +30,7 @@ class PageObserver
         protected ImageAligner $imageAligner,
         protected ImageFigures $imageFigures,
         protected TrixTables $tables,
+        protected TrixEmbeds $embeds,
         protected TableImagePairer $pairer,
         protected ImageGallery $gallery,
         protected LinkTargets $linkTargets,
@@ -49,6 +51,10 @@ class PageObserver
         // остальной обработки, чтобы alt картинок и тултипы глоссария
         // увидели содержимое таблиц
         $page->body = $this->tables->extract($page->body);
+        // Вложения-вставки Trix → блок <div class="xi-embed"> с чужим кодом
+        // (см. TrixEmbeds). Порядок обратный сборке в форме: там сначала
+        // сворачиваются вставки, потом таблицы
+        $page->body = $this->embeds->extract($page->body);
         // Вставленные в редакторе ссылки на localhost → относительные
         $page->body = $this->localLinks->relativize($page->body);
         // Проставляем alt изображениям до генерации slug/описания и рендера

@@ -632,6 +632,140 @@ class PublicSiteTest extends TestCase
         $this->assertStringContainsString('<table>', $page->body_rendered);
     }
 
+    public function test_page_html_embeds_survive_trix_editor_roundtrip(): void
+    {
+        $this->seedCore();
+        $admin = User::where('email', 'admin@x-intellect.org')->first();
+
+        $iframe = '<iframe src="https://music.yandex.ru/iframe/playlist/42" width="600" height="450"></iframe>';
+        $page = Page::first();
+        $page->update(['body' => '<p>Плейлист:</p><div class="xi-embed">'.$iframe.'</div><!--/xi-embed-->']);
+
+        // Форма правки: вставка свёрнута в content-вложение Trix — иначе
+        // редактор вырезал бы iframe при разборе HTML
+        $this->actingAs($admin)
+            ->get('/admin/pages/'.$page->slug.'/edit')
+            ->assertOk()
+            ->assertSee('vnd.xi-embed', false)
+            ->assertDontSee('<iframe', false);
+
+        // Сохранение из редактора: figure с JSON → в БД снова блок с кодом
+        $trixBody = app(\App\Services\TrixTables::class)->embed(
+            app(\App\Services\TrixEmbeds::class)->embed($page->fresh()->body),
+        );
+        $this->actingAs($admin)->put('/admin/pages/'.$page->slug, [
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'section_id' => $page->section_id,
+            'page_type' => $page->page_type,
+            'status' => $page->status,
+            'source_type' => $page->source_type,
+            'is_listed' => '1',
+            'body' => $trixBody,
+        ])->assertRedirect();
+
+        $page->refresh();
+        $this->assertStringContainsString($iframe, $page->body);
+        $this->assertStringNotContainsString('data-trix-attachment', $page->body);
+        // и на публичной странице вставка на месте, кодом как есть
+        $this->assertStringContainsString($iframe, $page->body_rendered);
+        $this->get($page->url())->assertOk()->assertSee($iframe, false);
+    }
+
+    /** Вложение-вставка из редактора: JSON фигуры → блок тела. */
+    private function embedFigure(string $code, ?string $alignment = null): string
+    {
+        $attrs = [
+            'content' => '<div class="xi-embed-card"></div>',
+            'contentType' => \App\Services\TrixEmbeds::CONTENT_TYPE,
+            'code' => $code,
+        ];
+        if ($alignment !== null) {
+            $attrs['alignment'] = $alignment;
+        }
+
+        return '<figure data-trix-attachment="'
+            .htmlspecialchars(json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES)
+            .'"></figure>';
+    }
+
+    public function test_trix_embeds_extract_allows_only_iframes(): void
+    {
+        $service = app(\App\Services\TrixEmbeds::class);
+
+        // чужие вложения (картинки) не разворачиваются
+        $img = '<figure data-trix-attachment="{&quot;contentType&quot;:&quot;image/png&quot;,&quot;url&quot;:&quot;/storage/x.png&quot;}"><img src="/storage/x.png"></figure>';
+        $this->assertSame($img, $service->extract($img));
+
+        // белый список: из вставки остаются только iframe с известными
+        // атрибутами, обёртки и скрипты вырезаются
+        $out = $service->extract($this->embedFigure(
+            '<script src="https://vk.com/js/api/openapi.js"></script>'
+            .'<div id="vk_playlist" onclick="play()">'
+            .'<iframe src="https://vk.com/video_ext.php?oid=1" width="640" height="360" onload="hack()" allowfullscreen></iframe>'
+            .'</div>',
+        ));
+        $this->assertSame(
+            '<div class="xi-embed"><iframe src="https://vk.com/video_ext.php?oid=1" width="640" height="360" allowfullscreen></iframe></div><!--/xi-embed-->',
+            $out,
+        );
+
+        // обратно в редактор: код уезжает в атрибут вложения (там он
+        // экранирован — санитайзер Trix до тегов не доберётся), а повторное
+        // сохранение возвращает тот же блок
+        $back = $service->embed($out);
+        $this->assertStringContainsString('vnd.xi-embed', $back);
+        $this->assertStringNotContainsString('<iframe', $back);
+        $this->assertSame($out, $service->extract($back));
+    }
+
+    public function test_trix_embeds_extract_rejects_dangerous_iframes(): void
+    {
+        $service = app(\App\Services\TrixEmbeds::class);
+
+        // код без iframe блока не оставляет
+        $this->assertSame('', $service->extract($this->embedFigure('<script>bad()</script>')));
+        $this->assertSame('', $service->extract($this->embedFigure('  ')));
+
+        // srcdoc и javascript:-src исполнились бы в origin сайта
+        $this->assertSame('', $service->extract($this->embedFigure(
+            '<iframe srcdoc="<script>parent.document.cookie</script>"></iframe>',
+        )));
+        $this->assertSame('', $service->extract($this->embedFigure(
+            '<iframe src="javascript:alert(document.cookie)"></iframe>',
+        )));
+        $this->assertSame('', $service->extract($this->embedFigure(
+            '<iframe src="data:text/html;base64,PHNjcmlwdD4="></iframe>',
+        )));
+
+        // у допущенного iframe srcdoc/on* не остаётся
+        $out = $service->extract($this->embedFigure(
+            '<iframe src="https://rutube.ru/play/embed/7" srcdoc="<script>x()</script>" onerror="hack()"></iframe>',
+        ));
+        $this->assertSame('<div class="xi-embed"><iframe src="https://rutube.ru/play/embed/7"></iframe></div><!--/xi-embed-->', $out);
+    }
+
+    public function test_trix_embeds_keep_alignment_chosen_in_editor(): void
+    {
+        $service = app(\App\Services\TrixEmbeds::class);
+        $iframe = '<iframe src="https://rutube.ru/play/embed/7"></iframe>';
+
+        // выравнивание из Trix → класс блока (те же классы, что у картинок)
+        $out = $service->extract($this->embedFigure($iframe, 'left'));
+        $this->assertSame('<div class="xi-embed xi-float-left">'.$iframe.'</div><!--/xi-embed-->', $out);
+
+        // и обратно в редактор — чтобы кнопка выравнивания снова подсветилась
+        $back = $service->embed($out);
+        $this->assertStringContainsString('&quot;alignment&quot;:&quot;left&quot;', $back);
+        $this->assertSame($out, $service->extract($back));
+
+        // снятое выравнивание класса не оставляет
+        $this->assertSame(
+            '<div class="xi-embed">'.$iframe.'</div><!--/xi-embed-->',
+            $service->extract($this->embedFigure($iframe, '')),
+        );
+    }
+
     public function test_float_image_before_table_renders_as_flex_pair(): void
     {
         $this->seedCore();

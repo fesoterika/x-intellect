@@ -595,11 +595,25 @@ html { scroll-padding-top: 84px; }
 .xi-prose .xi-gallery > figure.attachment { margin: 0; flex: 0 1 auto; max-width: min(200px, 45%); }
 .xi-prose .xi-gallery > figure.attachment img { max-width: 100%; height: auto; }
 
+/* HTML-вставки с других ресурсов (кнопка «</>» в редакторе): плееры,
+   плейлисты, видео. Размеры и пропорции задаёт сам код вставки — мы только
+   вписываем блок в колонку текста. Выравнивание — теми же классами и теми же
+   кнопками редактора, что у картинок (см. TrixEmbeds). */
+.xi-prose .xi-embed { margin: 1.4em 0; max-width: 100%; clear: both; }
+/* Углы скругляем как у картинок (.xi-prose img) — плеер чужого сайта не
+   должен выбиваться из вёрстки прямыми углами */
+.xi-prose .xi-embed iframe { max-width: 100%; border: 0; border-radius: 10px; }
+.xi-prose .xi-embed.xi-float-left { float: left; clear: none; max-width: min(45%, 320px); margin: 4px 22px 10px 0; }
+.xi-prose .xi-embed.xi-float-right { float: right; clear: none; max-width: min(45%, 320px); margin: 4px 0 10px 22px; }
+.xi-prose .xi-embed.xi-align-center { max-width: min(80%, 520px); margin: 1.2em auto; }
+.xi-prose .xi-embed.xi-align-wide { max-width: 100%; }
+
 .xi-prose::after { content: ''; display: block; clear: both; }
 @media (max-width: 560px) {
     /* на узких экранах обтекание мешает чтению — картинка в свой ряд */
     .xi-prose img.xi-float-left, .xi-prose img.xi-float-right,
-    .xi-prose figure.xi-float-left, .xi-prose figure.xi-float-right {
+    .xi-prose figure.xi-float-left, .xi-prose figure.xi-float-right,
+    .xi-prose .xi-embed.xi-float-left, .xi-prose .xi-embed.xi-float-right {
         float: none; display: block; margin: 0 auto 1em; max-width: 100%;
     }
     /* пара «картинка + таблица» на смартфоне — колонкой, картинка сверху */
