@@ -204,6 +204,16 @@ class AudioLibrary
             return self::$durations[$path] = 0.0;
         }
 
+        // WAV (аудио «Сферы Разума» 2006–2008): длительность из заголовка RIFF
+        $riff = (string) fread($fh, 12);
+        if (strlen($riff) === 12 && str_starts_with($riff, 'RIFF') && substr($riff, 8, 4) === 'WAVE') {
+            $minutes = self::wavDuration($fh);
+            fclose($fh);
+
+            return self::$durations[$path] = $minutes;
+        }
+        fseek($fh, 0);
+
         $head = (string) fread($fh, 10);
         $offset = 0;
         if (strlen($head) === 10 && str_starts_with($head, 'ID3')) {
@@ -244,6 +254,46 @@ class AudioLibrary
         fclose($fh);
 
         return self::$durations[$path] = $seconds / 60;
+    }
+
+    /**
+     * Длительность WAV в минутах: размер чанка data / byte rate из fmt.
+     *
+     * Чанки обходятся по заголовкам (id + размер), а не по фиксированному
+     * смещению 44: между fmt и data встречаются LIST/INFO и прочие вставки.
+     * Указатель файла должен стоять сразу после 12-байтового заголовка RIFF.
+     *
+     * @param  resource  $fh
+     */
+    private static function wavDuration($fh): float
+    {
+        $byteRate = 0;
+        $dataSize = 0;
+
+        while (($hdr = fread($fh, 8)) !== false && strlen($hdr) === 8) {
+            $id = substr($hdr, 0, 4);
+            $size = unpack('V', substr($hdr, 4, 4))[1];
+
+            if ($id === 'fmt ') {
+                $fmt = (string) fread($fh, min($size, 16));
+                if (strlen($fmt) >= 12) {
+                    $byteRate = unpack('V', substr($fmt, 8, 4))[1];
+                }
+                // хвост чанка + байт выравнивания (чанки выровнены по 2)
+                fseek($fh, $size - strlen($fmt) + ($size % 2), SEEK_CUR);
+            } else {
+                if ($id === 'data') {
+                    $dataSize = $size;
+                }
+                fseek($fh, $size + ($size % 2), SEEK_CUR);
+            }
+
+            if ($byteRate > 0 && $dataSize > 0) {
+                break;
+            }
+        }
+
+        return $byteRate > 0 ? $dataSize / $byteRate / 60 : 0.0;
     }
 
     /** Первый кадр, за которым идёт цепочка из 12 кадров (отсев ложных синхросигналов). */
