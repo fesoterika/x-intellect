@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Page;
 use App\Services\MediaWikiArchive;
 use App\Services\OfflineSnapshotIndex;
+use App\Services\WordPressArchive;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
@@ -55,7 +56,7 @@ class SyncArchiveDates extends Command
         'июля' => 7, 'августа' => 8, 'сентября' => 9, 'октября' => 10, 'ноября' => 11, 'декабря' => 12,
     ];
 
-    public function handle(MediaWikiArchive $mw): int
+    public function handle(MediaWikiArchive $mw, WordPressArchive $wp): int
     {
         $base = rtrim($this->argument('archive'), '/');
         if (! File::isDirectory($base)) {
@@ -69,6 +70,17 @@ class SyncArchiveDates extends Command
         $postDates = $this->collectPostDates($base);
         $wikiDates = $this->collectWikiDates($base, $mw);
         $this->info('Дат из архивов WordPress: '.count($postDates).', из подвалов вики: '.count($wikiDates).'.');
+
+        // Записи 2014–2017 в слепок не попали, а их точные даты лежат в тех же
+        // помесячных архивах WordPress, только в веб-архиве. Спрашиваем их до
+        // firstWaybackCapture: тот даёт лишь дату ПЕРВОГО СНИМКА, то есть
+        // «не позже», и для «С Новым, 2015 Годом!» выдал бы 2017 год.
+        // Слепок остаётся в приоритете — там те же данные из первых рук.
+        if ($this->option('cdx')) {
+            $fromWayback = $wp->postDates(2012, (int) date('Y'));
+            $postDates += $fromWayback;
+            $this->info('Дат из помесячных архивов веб-архива: '.count($fromWayback).'.');
+        }
 
         $changed = 0;
         $confirmed = 0;
@@ -227,10 +239,14 @@ class SyncArchiveDates extends Command
             : null;
     }
 
-    /** Старый slug страницы из source_url (…x-intellect.org/<slug>/). */
+    /**
+     * Старый slug страницы из source_url (…x-intellect.org/<slug>/).
+     * В снимках Wayback у хоста бывает порт (…x-intellect.org:80/…) — без
+     * него slug не опознавался, и дата страницы уезжала в «не найдено».
+     */
     protected function oldSlug(Page $page): string
     {
-        if (preg_match('~x-intellect\.org/([^/?#]+)/?$~', (string) $page->source_url, $m)) {
+        if (preg_match('~x-intellect\.org(?::\d+)?/([^/?#]+)/?$~', (string) $page->source_url, $m)) {
             return mb_strtolower($m[1]);
         }
 
