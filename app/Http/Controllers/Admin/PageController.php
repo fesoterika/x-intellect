@@ -15,7 +15,13 @@ class PageController extends Controller
     {
         $pages = Page::query()
             ->with('section')
-            ->when($request->query('section'), fn ($q, $s) => $q->where('section_id', $s))
+            // Корневой раздел листит и материалы своих подразделов — как на сайте:
+            // иначе «Проекты», где все страницы лежат в подразделах, выглядят пустыми.
+            // Глубина иерархии — 1, поэтому у подраздела выборка сводится к нему самому.
+            ->when($request->query('section'), fn ($q, $s) => $q->whereIn(
+                'section_id',
+                Section::where('id', $s)->orWhere('parent_id', $s)->pluck('id'),
+            ))
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->when($request->query('q'), function ($q, $term) {
                 // Регистронезависимо и с поддержкой кириллицы (SQLite LOWER()

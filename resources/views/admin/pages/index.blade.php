@@ -14,7 +14,16 @@
                 <select name="section" class="rounded-md border-gray-300 text-sm">
                     <option value="">Все</option>
                     @foreach ($sections as $section)
-                        <option value="{{ $section->id }}" @selected(request('section') == $section->id)>{{ $section->title }}</option>
+                        @if ($section->children->isEmpty())
+                            <option value="{{ $section->id }}" @selected(request('section') == $section->id)>{{ $section->title }}</option>
+                        @else
+                            <optgroup label="{{ $section->title }}">
+                                <option value="{{ $section->id }}" @selected(request('section') == $section->id)>{{ $section->title }} - всё</option>
+                                @foreach ($section->children as $child)
+                                    <option value="{{ $child->id }}" @selected(request('section') == $child->id)>↳ {{ $child->title }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
                     @endforeach
                 </select>
             </div>
