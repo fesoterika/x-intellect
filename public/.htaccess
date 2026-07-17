@@ -31,3 +31,13 @@
     # загруженный файл как HTML — с домена сайта
     Header always set X-Content-Type-Options "nosniff"
 </IfModule>
+
+# Аудио: явные типы, не полагаясь на mime.types хостинга. Из-за nosniff
+# ошибочный Content-Type не «донюхивается» браузером, и плеер молча не играет
+<IfModule mod_mime.c>
+    AddType audio/mpeg .mp3
+    AddType audio/mp4 .m4a
+    AddType audio/wav .wav
+    AddType audio/ogg .ogg .oga
+    AddType audio/flac .flac
+</IfModule>
