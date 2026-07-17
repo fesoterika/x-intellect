@@ -7,6 +7,29 @@
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $section->url() }}">
 @endsection
 
+{{-- Запомненная сортировка (localStorage, как тема) применяется до рендера:
+     если в адресе нет ?sort= и сохранён вариант, отличный от умолчания, —
+     сразу переходим на него. Явный ?sort= в адресе всегда приоритетнее,
+     поэтому зацикливания нет. Без JS работает сортировка по умолчанию. --}}
+@push('head')
+    <script>
+        (function () {
+            try {
+                var params = new URLSearchParams(location.search);
+                if (params.has('sort')) return;
+
+                var saved = localStorage.getItem('xi-sort');
+                var allowed = @json(array_keys(\App\Http\Controllers\Site\SectionController::SORTS));
+                if (!saved || saved === @json(\App\Http\Controllers\Site\SectionController::DEFAULT_SORT)) return;
+                if (allowed.indexOf(saved) === -1) return;
+
+                params.set('sort', saved);
+                location.replace(location.pathname + '?' + params.toString() + location.hash);
+            } catch (e) {}
+        })();
+    </script>
+@endpush
+
 @section('content')
     @include('site.partials.breadcrumbs', ['crumbs' => [
         'Главная' => '/',

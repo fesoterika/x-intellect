@@ -12,11 +12,15 @@ class SectionController extends Controller
 {
     /** Варианты сортировки листинга: значение параметра → подпись в селекторе. */
     public const SORTS = [
-        'abc' => 'по алфавиту: А → Я',
-        'zyx' => 'по алфавиту: Я → А',
         'new' => 'по дате: сначала новые',
         'old' => 'по дате: сначала старые',
+        'abc' => 'по алфавиту: А → Я',
+        'zyx' => 'по алфавиту: Я → А',
     ];
+
+    /** Сортировка по умолчанию. Выбор пользователя запоминается в localStorage
+     *  (ключ xi-sort) и подставляется в ?sort= ранним скриптом — см. site/section. */
+    public const DEFAULT_SORT = 'new';
 
     /**
      * Обязательный порядок первых пунктов бокового меню вики (по slug).
@@ -50,7 +54,7 @@ class SectionController extends Controller
 
         $sort = $request->query('sort');
         if (! array_key_exists($sort ?? '', self::SORTS)) {
-            $sort = 'abc';
+            $sort = self::DEFAULT_SORT;
         }
 
         $query = Page::whereIn('section_id', $sectionIds)

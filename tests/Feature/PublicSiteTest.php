@@ -342,10 +342,35 @@ class PublicSiteTest extends TestCase
             ]);
         }
 
-        $this->get('/articles')->assertOk()->assertSeeInOrder(['арбуз', 'Берёза', 'Яблоко']);
+        // По умолчанию — по дате, сначала новые (SectionController::DEFAULT_SORT)
+        $this->get('/articles')->assertOk()->assertSeeInOrder(['Берёза', 'Яблоко', 'арбуз']);
+        $this->get('/articles?sort=abc')->assertOk()->assertSeeInOrder(['арбуз', 'Берёза', 'Яблоко']);
         $this->get('/articles?sort=zyx')->assertOk()->assertSeeInOrder(['Яблоко', 'Берёза', 'арбуз']);
         $this->get('/articles?sort=new')->assertOk()->assertSeeInOrder(['Берёза', 'Яблоко', 'арбуз']);
         $this->get('/articles?sort=old')->assertOk()->assertSeeInOrder(['арбуз', 'Яблоко', 'Берёза']);
+    }
+
+    public function test_sort_selector_defaults_to_newest_and_is_remembered(): void
+    {
+        $this->seedCore();
+
+        $section = Section::where('slug', 'articles')->firstOrFail();
+        for ($i = 1; $i <= 3; $i++) {
+            Page::create([
+                'section_id' => $section->id,
+                'title' => "Статья {$i}",
+                'body' => '<p>Тело</p>',
+                'status' => 'published',
+                'published_at' => "201{$i}-01-01",
+            ]);
+        }
+
+        $response = $this->get('/articles')->assertOk();
+        // В селекторе выбран вариант по умолчанию — «сначала новые»
+        $response->assertSee('<option value="new" selected>', false);
+        // Выбор запоминается в localStorage и применяется на других листингах
+        $response->assertSee("localStorage.setItem('xi-sort', this.value)", false);
+        $response->assertSee("localStorage.getItem('xi-sort')", false);
     }
 
     public function test_subsection_page_breadcrumbs_include_subsection(): void

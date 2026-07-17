@@ -10,7 +10,10 @@
              С JS селектор отправляет форму сам, без JS есть кнопка «Показать». --}}
         <form class="section-sort" method="GET" action="{{ url($section->url()) }}">
             <label for="section-sort-select">Сортировка:</label>
-            <select id="section-sort-select" name="sort" onchange="this.form.submit()">
+            {{-- Выбор запоминается в localStorage (как тема) и применяется на всех
+                 листингах ранним скриптом в head — см. site/section.blade.php --}}
+            <select id="section-sort-select" name="sort"
+                    onchange="try { localStorage.setItem('xi-sort', this.value); } catch (e) {} this.form.submit()">
                 @foreach (\App\Http\Controllers\Site\SectionController::SORTS as $value => $label)
                     <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
                 @endforeach
