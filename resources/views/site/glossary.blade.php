@@ -10,7 +10,7 @@
 
 @section('meta')
     <meta name="description" content="{{ $active
-        ? Str::limit($active->term.' - '.$active->definitionPlain(), 300)
+        ? Str::limit($active->termWithDefinition(), 300)
         : 'Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.' }}">
 
     {{-- В индекс идут только /glossary и /glossary?term=<slug>; состояние
@@ -104,7 +104,7 @@
                             @foreach ($groups[$letter] as $term)
                                 @php
                                     $termUrl = $base.$term->url();
-                                    $termText = $term->term.' - '.$term->definitionPlain();
+                                    $termText = $term->termWithDefinition();
                                 @endphp
                                 <div class="xi-card glossary-item" id="{{ $term->slug }}"
                                      data-search="{{ mb_strtolower($term->term.' '.$term->definitionPlain()) }}"
