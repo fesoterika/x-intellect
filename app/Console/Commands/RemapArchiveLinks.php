@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ForumTopic;
 use App\Models\GlossaryTerm;
 use App\Models\Page;
 use App\Models\Redirect;
@@ -44,6 +45,15 @@ class RemapArchiveLinks extends Command
     private array $glossMap = [];     // термин (lower) → /glossary?term=slug
     private array $redirectMap = [];  // from_path (lower) → to_url
     private array $newSiteRoots = []; // корневые разделы + фиксированные маршруты
+    private array $forumMap = [];     // old_id темы phpBB → /forum/slug
+
+    /**
+     * Глубокая чистка — форумные ссылки phpBB и мёртвые обёртки картинок
+     * (href на wp-content). Включается ТОЛЬКО для неопубликованных страниц:
+     * опубликованное вычитано вручную, и трогать его тела разрешено ровно
+     * двум командам (links:restore, site:content-fixes-2026) — не этой.
+     */
+    private bool $deepClean = false;
 
     /** Причина разворота последней ссылки — заполняется resolve(). */
     private string $reason = '';
@@ -72,6 +82,7 @@ class RemapArchiveLinks extends Command
                 continue;
             }
 
+            $this->deepClean = $page->status !== 'published';
             [$body, $r, $u] = $this->rewrite($page->body, $page->title);
             if ($r === 0 && $u === 0) {
                 continue;
@@ -112,6 +123,9 @@ class RemapArchiveLinks extends Command
         foreach (GlossaryTerm::all(['term', 'slug']) as $t) {
             $this->glossMap[mb_strtolower($t->term)] = $t->url();
         }
+        foreach (ForumTopic::whereNotNull('old_id')->get(['old_id', 'slug']) as $t) {
+            $this->forumMap[(int) $t->old_id] = '/forum/'.$t->slug;
+        }
 
         // Корни адресного пространства нового сайта. Разделы берём из БД —
         // структура меняется (site:structure-2026), хардкод разошёлся бы с ней.
@@ -121,9 +135,9 @@ class RemapArchiveLinks extends Command
         );
 
         $this->line(sprintf(
-            'Карта: главный %d, вики %d, глоссарий %d, редиректы %d, корневые разделы %d.',
+            'Карта: главный %d, вики %d, глоссарий %d, редиректы %d, корневые разделы %d, темы форума %d.',
             count($this->slugMap), count($this->wikiMap), count($this->glossMap),
-            count($this->redirectMap), count($this->newSiteRoots),
+            count($this->redirectMap), count($this->newSiteRoots), count($this->forumMap),
         ));
     }
 
@@ -210,6 +224,7 @@ class RemapArchiveLinks extends Command
 
         // Снимки Wayback Machine (тела, скачанные из веб-архива): разворачиваем
         // обёртку /web/<ts>/<url>; ссылки на старый x-intellect.org — внутренние.
+        $hadOldHost = false;
         if (preg_match('#^(?:(?:https?:)?//web\.archive\.org)?/web/[0-9a-z_*]+/(.+)$#i', $path, $m)) {
             $inner = preg_match('#^(?:https?:)?//#', $m[1]) ? $m[1] : 'http://'.$m[1];
             $parts = parse_url($inner);
@@ -218,16 +233,57 @@ class RemapArchiveLinks extends Command
                 return null; // чужой сайт в веб-архиве — оставляем как есть
             }
             $path = ($parts['path'] ?? '/').(isset($parts['query']) ? '?'.$parts['query'] : '');
+            $hadOldHost = true;
         } elseif (preg_match('#^(?:https?:)?//(?:www\.)?x-intellect\.org(/.*)?$#i', $path, $m)) {
             // Абсолютные ссылки на старый сайт — внутренние
             $path = $m[1] ?? '/';
+            $hadOldHost = true;
         } elseif (preg_match('#^(https?:)?//#i', $path) || str_starts_with($path, 'mailto:')) {
             return null; // внешние — не трогаем
         }
 
-        // Ссылка уже ведёт на новый сайт — не трогаем. Ключевая проверка:
-        // без неё повторный прогон разворачивал собственный результат.
+        // Форум phpBB: viewtopic по old_id темы (сохранён импортёром форума),
+        // viewforum — на корень архива. Проверка стоит ДО isNewSitePath:
+        // старые адреса начинаются с /forum/, и та пропустила бы их как живые.
+        if ($this->deepClean && preg_match('#/forum/+(viewtopic|viewforum)\.php#i', $path, $fm)) {
+            if (mb_strtolower($fm[1]) === 'viewtopic'
+                && preg_match('#[?&](?:amp;)?t=(\d+)#i', $path, $tm)
+                && isset($this->forumMap[(int) $tm[1]])) {
+                return $this->forumMap[(int) $tm[1]];
+            }
+            if (mb_strtolower($fm[1]) === 'viewforum') {
+                return '/forum';
+            }
+            // тема не в архиве (создана после слепка) — ссылка мертва
+            $this->reason = 'форум: темы нет в архиве';
+
+            return '';
+        }
+
+        // Мёртвые обёртки WordPress: href на файл wp-content (клик по миниатюре
+        // открывал полный размер — файла на новом сайте нет) и preview-ссылки
+        // ?page_id=. Текст/картинка внутри ссылки сохраняются.
+        if ($this->deepClean
+            && (str_contains($path, 'wp-content/') || str_contains($path, '?page_id='))) {
+            $this->reason = str_contains($path, 'wp-content/')
+                ? 'обёртка картинки: файла wp-content нет на новом сайте'
+                : 'preview-ссылка WordPress (?page_id=)';
+
+            return '';
+        }
+
+        // Путь живой на новом сайте. Относительную ссылку не трогаем (ключевая
+        // проверка: без неё повторный прогон разворачивал собственный
+        // результат). Ссылку с мёртвым доменом переписываем на относительную —
+        // старые тела ссылались на живые разделы абсолютно
+        // (http://www.x-intellect.org/forum/) — но только чистый путь без
+        // .php/query: /forum/viewtopic.php у published сюда доходит, и локальный
+        // /forum/viewtopic.php был бы 404 вместо честной архивной ссылки.
         if ($this->isNewSitePath($path)) {
+            if ($hadOldHost && ! str_contains($path, '.php') && ! str_contains($path, '?')) {
+                return ($path === '/' ? '/' : rtrim($path, '/')).$frag;
+            }
+
             return null;
         }
 
