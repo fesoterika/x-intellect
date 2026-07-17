@@ -86,6 +86,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Дата архивной редакции</label>
                         <input type="date" name="archived_at" value="{{ old('archived_at', $page->archived_at?->format('Y-m-d')) }}" class="w-full rounded-md border-gray-300">
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Дата материала</label>
+                        <input type="datetime-local" name="published_at" value="{{ old('published_at', $page->published_at?->format('Y-m-d\TH:i')) }}" class="w-full rounded-md border-gray-300">
+                        <span class="block text-xs text-gray-400 mt-1">
+                            По ней идёт сортировка «по дате» в разделах. У архивных материалов - дата добавления на старом сайте.
+                            Если очистить, при публикации проставится текущая дата.
+                        </span>
+                    </div>
                 </div>
 
                 <div>

@@ -31,6 +31,7 @@ class PageRequest extends FormRequest
             'source_url' => ['nullable', 'url', 'max:2048'],
             'position' => ['nullable', 'integer', 'min:0'],
             'archived_at' => ['nullable', 'date'],
+            'published_at' => ['nullable', 'date'],
             'seo.meta_title' => ['nullable', 'string', 'max:255'],
             'seo.meta_description' => ['nullable', 'string', 'max:500'],
             'seo.og_image' => ['nullable', 'string', 'max:2048'],
