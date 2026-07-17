@@ -101,15 +101,18 @@ trix-editor.trix-content .attachment__metadata { display: none !important; }
 
 /* Живой предпросмотр выравнивания — ЧИСТЫЙ CSS по data-trix-attachment
    (JSON с alignment пишет сам Trix при каждом рендере фигуры; классы из JS
-   нельзя — мутации DOM воюют с внутренним MutationObserver Trix) */
-trix-editor.trix-content figure[data-trix-attachment*='"alignment":"left"'] {
+   нельзя — мутации DOM воюют с внутренним MutationObserver Trix).
+   Класс .attachment в селекторе нужен для веса: иначе правила блочных
+   вложений ниже (они с тем же весом, но идут позже) перебивают max-width, и
+   выровненная HTML-вставка тянулась бы во всю ширину вопреки выбору. */
+trix-editor.trix-content figure.attachment[data-trix-attachment*='"alignment":"left"'] {
     float: left; max-width: min(45%, 260px); margin: 4px 18px 10px 0; text-align: left;
 }
-trix-editor.trix-content figure[data-trix-attachment*='"alignment":"right"'] {
+trix-editor.trix-content figure.attachment[data-trix-attachment*='"alignment":"right"'] {
     float: right; max-width: min(45%, 260px); margin: 4px 0 10px 18px; text-align: right;
 }
-trix-editor.trix-content figure[data-trix-attachment*='"alignment":"center"'] { max-width: min(80%, 420px); margin: 1em auto; }
-trix-editor.trix-content figure[data-trix-attachment*='"alignment":"wide"'] { max-width: 100%; margin: 1em 0; }
+trix-editor.trix-content figure.attachment[data-trix-attachment*='"alignment":"center"'] { max-width: min(80%, 420px); margin: 1em auto; }
+trix-editor.trix-content figure.attachment[data-trix-attachment*='"alignment":"wide"'] { max-width: 100%; margin: 1em 0; }
 /* Контейнер чистит флоты, чтобы текст корректно обтекал */
 trix-editor.trix-content::after { content: ''; display: block; clear: both; }
 
@@ -186,18 +189,31 @@ trix-editor.trix-content figure.attachment--content:hover table { outline: 2px s
 }
 .xi-table-modal__actions .xi-table-modal__save:hover { background: #5a3fc0; }
 /* Таблица — всегда отдельный блок во всю ширину (Trix группирует соседние
-   вложения в attachment-gallery с flex-раскладкой — для таблиц отменяем) */
+   вложения в attachment-gallery с flex-раскладкой — для таблиц отменяем).
+   HTML-вставка ведёт себя так же, пока ей не задали выравнивание */
 trix-editor.trix-content figure.attachment--content,
 .attachment-gallery > figure.attachment--content { width: 100% !important; flex-basis: 100% !important; padding: 0 !important; }
+/* Выровненная вставка — по ширине выравнивания (правила выше), а не во всю */
+trix-editor.trix-content figure.attachment--content[data-trix-attachment*='"alignment":"left"'],
+trix-editor.trix-content figure.attachment--content[data-trix-attachment*='"alignment":"right"'],
+trix-editor.trix-content figure.attachment--content[data-trix-attachment*='"alignment":"center"'] {
+    width: auto !important; flex-basis: auto !important;
+}
 /* Подсказка о правке таблицы: печать прямо в редакторе запрещена
-   (contenteditable=false — Trix не отслеживает такие правки) */
+   (contenteditable=false — Trix не отслеживает такие правки). Метка типа
+   вложения — в JSON атрибута data-trix-attachment (его пишет сам Trix) */
 trix-editor.trix-content figure.attachment--content { position: relative; }
 trix-editor.trix-content figure.attachment--content:hover::after {
-    content: '\270E  двойной клик — править таблицу';
     position: absolute; top: -12px; right: 8px;
     background: #6a4cd6; color: #fff;
     font-size: 12px; line-height: 1; padding: 5px 9px; border-radius: 6px;
     pointer-events: none; white-space: nowrap;
+}
+trix-editor.trix-content figure[data-trix-attachment*='xi-table+html']:hover::after {
+    content: '\270E  двойной клик — править таблицу';
+}
+trix-editor.trix-content figure[data-trix-attachment*='xi-embed+html']:hover::after {
+    content: '\270E  двойной клик — править код';
 }
 /* Пара «картинка с обтеканием + таблица» в редакторе: таблице сразу за
    плавающей картинкой (между фигурами Trix держит 1-2 курсор-спана) BFC
@@ -212,6 +228,36 @@ trix-editor.trix-content figure[data-trix-attachment*='"alignment":"right"'] + s
     width: auto !important;
     overflow: hidden;
 }
+
+/* --- HTML-вставки (content-вложения TrixEmbeds) внутри редактора --- */
+/* Живой iframe в редакторе не показать (санитайзер Trix его вырежет) —
+   вместо вставки карточка с самим кодом; правка — двойным кликом */
+trix-editor.trix-content .xi-embed-card {
+    border: 1px dashed #b9b0e6;
+    border-radius: 8px;
+    background: #f7f5ff;
+    padding: 10px 12px;
+}
+trix-editor.trix-content figure.attachment--content:hover .xi-embed-card { border-color: #6a4cd6; }
+trix-editor.trix-content .xi-embed-card__label {
+    font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+    color: #6a4cd6; margin-bottom: 6px;
+}
+trix-editor.trix-content .xi-embed-card__code {
+    margin: 0; padding: 0; background: none;
+    font-size: 12.5px; line-height: 1.45; color: #4b4570;
+    white-space: pre-wrap; word-break: break-word;
+}
+
+/* Диалог вставки HTML-кода (кнопка «</>») — по образцу диалога ссылки */
+trix-toolbar .xi-embed-dialog { max-width: 640px; }
+.xi-embed-dialog__code {
+    display: block; width: 100%; box-sizing: border-box; resize: vertical;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px; line-height: 1.5; margin: 0;
+}
+.xi-embed-dialog__actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.xi-embed-dialog__hint { color: #8b87a3; }
 
 /* Чекбокс «открывать в новом окне» в диалоге ссылки */
 .trix-dialog .xi-link-blank {

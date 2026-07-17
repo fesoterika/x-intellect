@@ -120,10 +120,19 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст страницы</label>
                     {{-- Trix-редактор: клиентский JS-виджет без React/Vue-рантайма.
                          Кнопка «♪ Аудио» вставляет short-код [[audio:ID]].
-                         Таблицы тела оборачиваются в content-вложения Trix
-                         (TrixTables::embed), иначе Trix их вырезает; при
-                         сохранении PageObserver разворачивает обратно --}}
-                    <input id="body" type="hidden" name="body" value="{{ old('body', app(\App\Services\TrixTables::class)->embed($page->body)) }}">
+                         Таблицы и HTML-вставки тела оборачиваются в
+                         content-вложения Trix (TrixTables/TrixEmbeds::embed),
+                         иначе Trix их вырезает; при сохранении PageObserver
+                         разворачивает обратно --}}
+                    @php
+                        // Вставки сворачиваются первыми: их код уезжает в атрибут
+                        // фигуры уже экранированным, и <table> внутри чужого кода
+                        // не попадёт под разбор таблиц
+                        $xiBody = old('body', app(\App\Services\TrixTables::class)->embed(
+                            app(\App\Services\TrixEmbeds::class)->embed($page->body),
+                        ));
+                    @endphp
+                    <input id="body" type="hidden" name="body" value="{{ $xiBody }}">
                     @php
                         // Карта выравнивания картинок для JS: Trix при разборе стирает
                         // класс xi-float-* у <img>, поэтому отдаём соответствие src→выравнивание
@@ -147,6 +156,9 @@
                         ID - из раздела «Медиа»@if($page->exists && $page->media->isNotEmpty()): прикреплённые файлы перечислены ниже@endif.
                         Картинки, аудио и PDF (до 170 МБ) можно загружать прямо в редактор - кнопкой, скрепкой или перетаскиванием;
                         аудио при этом вставится short-кодом, файл попадёт в «Медиа».
+                        Кнопка <code>&lt;/&gt;</code> вставляет код с другого сайта (плеер, видео, плейлист): на страницу пропускаются
+                        только теги <code>&lt;iframe&gt;</code>, остальное вырезается при сохранении. В редакторе вставка показана
+                        карточкой с кодом (двойной клик - правка) и выравнивается теми же кнопками, что картинки.
                     </p>
                 </div>
             </div>
