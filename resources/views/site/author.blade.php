@@ -61,5 +61,7 @@
                 </a>
             </div>
         </div>
+
+        @include('site.partials.feedback')
     </article>
 @endsection

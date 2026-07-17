@@ -93,6 +93,11 @@
             'title' => $page->title,
         ])
 
+        {{-- Плашка обратной связи «Нашли ошибку?» --}}
+        @include('site.partials.feedback', [
+            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
+        ])
+
         @if ($page->revisions->isNotEmpty())
             <details class="xi-card" style="margin-top: 22px;">
                 <summary style="cursor: pointer; color: var(--xi-ink-soft); font-weight: 600;">

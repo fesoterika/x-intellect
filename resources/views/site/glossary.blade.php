@@ -159,6 +159,8 @@
             </p>
         </div>
     @endif
+
+    @include('site.partials.feedback', ['url' => $base.($active ? $active->url() : '/glossary')])
 @endsection
 
 @push('scripts')
