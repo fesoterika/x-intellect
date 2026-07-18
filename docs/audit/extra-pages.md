@@ -1,6 +1,6 @@
 # Лишние и системные страницы — для ручной проверки
 
-Сформировано: 16.07.2026 00:52. Ничего из перечисленного не удалялось.
+Сформировано: 18.07.2026 13:57. Ничего из перечисленного не удалялось.
 
 ## Страницы БД без соответствия в слепке 2015 (кроме Wayback-импорта)
 
@@ -15,11 +15,36 @@
 | [Курс 6: Творческая активизация по выбранной цели](http://localhost/courses/tvorceskaia-aktivizaciia-po-vybrannoi-celi) | Курсы | archive_xintellect | http://localhost/admin/pages/tvorceskaia-aktivizaciia-po-vybrannoi-celi/edit |
 | [Курс 7 (дополнительный): Энергетическое видение](http://localhost/courses/energeticeskoe-videnie) | Курсы | archive_xintellect | http://localhost/admin/pages/energeticeskoe-videnie/edit |
 | [Отзывы о курсах](http://localhost/courses/otzyvy-o-kursax) | Курсы | archive_xintellect | http://localhost/admin/pages/otzyvy-o-kursax/edit |
-| [Ближний Космос (Силы Ближнего Космоса)](http://localhost/wiki/bliznii-kosmos-sily-bliznego-kosmosa) | Вики | archive_wiki | http://localhost/admin/pages/bliznii-kosmos-sily-bliznego-kosmosa/edit |
-| [Верхний конус биоэкрана](http://localhost/wiki/verxnii-konus-bioekrana) | Вики | archive_wiki | http://localhost/admin/pages/verxnii-konus-bioekrana/edit |
-| [Программы](http://localhost/wiki/programmy) | Вики | archive_wiki | http://localhost/admin/pages/programmy/edit |
-| [Стабилизирующие оси](http://localhost/wiki/stabiliziruiushhie-osi) | Вики | archive_wiki | http://localhost/admin/pages/stabiliziruiushhie-osi/edit |
-| [УФО](http://localhost/wiki/ufo) | Вики | archive_wiki | http://localhost/admin/pages/ufo/edit |
+| [Сеанс с силами 20090119](http://localhost/wiki/seans-s-silami-20090119) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20090119/edit |
+| [Сеанс с силами 20090510](http://localhost/wiki/seans-s-silami-20090510) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20090510/edit |
+| [Сеанс с силами 20090606](http://localhost/wiki/seans-s-silami-20090606) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20090606/edit |
+| [Сеанс с силами 20101205](http://localhost/wiki/seans-s-silami-20101205) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20101205/edit |
+| [Сеанс с силами 20111125](http://localhost/wiki/seans-s-silami-20111125) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20111125/edit |
+| [Сеанс с силами 20111213](http://localhost/wiki/seans-s-silami-20111213) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20111213/edit |
+| [Сеанс с Силами 20151229](http://localhost/wiki/seans-s-silami-20151229) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20151229/edit |
+| [Сеанс с Силами 20151227](http://localhost/wiki/seans-s-silami-20151227) | Сеансы | archive_wiki | http://localhost/admin/pages/seans-s-silami-20151227/edit |
+| [Ченнелинг 19931224](http://localhost/wiki/cenneling-19931224) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19931224/edit |
+| [Ченнелинг 19931226](http://localhost/wiki/cenneling-19931226) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19931226/edit |
+| [Ченнелинг 19940104](http://localhost/wiki/cenneling-19940104) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940104/edit |
+| [Ченнелинг 19940107](http://localhost/wiki/cenneling-19940107) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940107/edit |
+| [Ченнелинг 19940110](http://localhost/wiki/cenneling-19940110) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940110/edit |
+| [Ченнелинг 19940122](http://localhost/wiki/cenneling-19940122) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940122/edit |
+| [Ченнелинг 19940125](http://localhost/wiki/cenneling-19940125) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940125/edit |
+| [Ченнелинг 19940128](http://localhost/wiki/cenneling-19940128) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940128/edit |
+| [Ченнелинг 19940131](http://localhost/wiki/cenneling-19940131) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940131/edit |
+| [Ченнелинг 19940203](http://localhost/wiki/cenneling-19940203) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940203/edit |
+| [Ченнелинг 19940227](http://localhost/wiki/cenneling-19940227) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-19940227/edit |
+| [Ченнелинг 20070718](http://localhost/wiki/cenneling-20070718) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-20070718/edit |
+| [Ченнелинг 20070902a](http://localhost/wiki/cenneling-20070902a) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/cenneling-20070902a/edit |
+| [Сфера Разума. Глава 1 (начало) (20081115)](http://localhost/wiki/sfera-razuma-glava-1-nacalo-20081115) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-glava-1-nacalo-20081115/edit |
+| [Сфера Разума. Глава 2 (первая встреча) (20081118)](http://localhost/wiki/sfera-razuma-glava-2-pervaia-vstreca-20081118) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-glava-2-pervaia-vstreca-20081118/edit |
+| [Сфера Разума. Глава 2 (конец) (20081120)](http://localhost/wiki/sfera-razuma-glava-2-konec-20081120) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-glava-2-konec-20081120/edit |
+| [Секреты работы стади-групп (20081121)](http://localhost/wiki/sekrety-raboty-stadi-grupp-20081121) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sekrety-raboty-stadi-grupp-20081121/edit |
+| [Сфера Разума. Глава 3 (20081126)](http://localhost/wiki/sfera-razuma-glava-3-20081126) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-glava-3-20081126/edit |
+| [Сфера разума. Мозжечок (раздел 4.1-4.3) (20081202)](http://localhost/wiki/sfera-razuma-mozzecok-razdel-41-43-20081202) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-mozzecok-razdel-41-43-20081202/edit |
+| [Сфера разума. Энергетика мозжечка (раздел 4.4-4.6) (20081208)](http://localhost/wiki/sfera-razuma-energetika-mozzecka-razdel-44-46-20081208) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/sfera-razuma-energetika-mozzecka-razdel-44-46-20081208/edit |
+| [Вопросы обработки информации (20090514)](http://localhost/wiki/voprosy-obrabotki-informacii-20090514) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/voprosy-obrabotki-informacii-20090514/edit |
+| [Тренинги развития экстрасенсорных способностей (20090730)](http://localhost/wiki/treningi-razvitiia-ekstrasensornyx-sposobnostei-20090730) | Сеансы | archive_sferarazuma | http://localhost/admin/pages/treningi-razvitiia-ekstrasensornyx-sposobnostei-20090730/edit |
 
 ## Дубли по заголовку
 
