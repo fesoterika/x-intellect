@@ -15,6 +15,13 @@
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
+            @if (\App\Models\Setting::maintenanceEnabled())
+                <div class="bg-amber-500 text-white text-sm text-center px-4 py-2">
+                    Включён режим технических работ - посетители видят заглушку.
+                    Управление - на вкладке <a class="underline font-semibold" href="{{ route('admin.dashboard') }}">«Обзор»</a>.
+                </div>
+            @endif
+
             @isset($header)
                 <header class="bg-white shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

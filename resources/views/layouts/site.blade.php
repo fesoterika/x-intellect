@@ -33,6 +33,14 @@
 <body class="site-body">
     <div class="starfield" aria-hidden="true"></div>
 
+    {{-- Напоминание редактору: посетители сейчас видят заглушку техработ --}}
+    @if (auth()->user()?->isEditor() && \App\Models\Setting::maintenanceEnabled())
+        <div class="xi-maint-banner">
+            Включён режим технических работ - посетители видят заглушку, вы просматриваете сайт как редактор.
+            <a href="{{ route('admin.dashboard') }}">Управление</a>
+        </div>
+    @endif
+
     <header class="site-header" x-data="{ menuOpen: false }" @keydown.escape.window="menuOpen = false">
         <div class="site-header-inner">
             <a class="site-logo" href="{{ route('home') }}">
