@@ -86,19 +86,21 @@
                 </button>
             </div>
 
-            {{-- Алфавитный указатель --}}
-            <nav class="glossary-alphabet" aria-label="Алфавитный указатель">
+            {{-- Алфавитный указатель (при поиске выдача плоская — прячем) --}}
+            <nav class="glossary-alphabet" aria-label="Алфавитный указатель" x-show="!searching()">
                 @foreach ($letters as $letter)
-                    <a href="#g-{{ $letter }}"
-                       data-letter-search="{{ mb_strtolower($groups[$letter]->pluck('term')->implode(' ').' '.$groups[$letter]->map->definitionPlain()->implode(' ')) }}"
-                       x-show="letterVisible($el)">{{ $letter }}</a>
+                    <a href="#g-{{ $letter }}">{{ $letter }}</a>
                 @endforeach
             </nav>
 
+            {{-- Выдача поиска: сюда layout() переносит карточки плоским списком,
+                 совпадения в названии термина — выше совпадений в определении --}}
+            <div class="glossary-list" x-ref="results" x-show="searching()" x-cloak></div>
+
             {{-- Группы терминов по буквам --}}
-            <div class="glossary-groups">
+            <div class="glossary-groups" x-show="!searching()">
                 @foreach ($letters as $letter)
-                    <section class="glossary-group" id="g-{{ $letter }}" x-show="groupVisible($el)">
+                    <section class="glossary-group" id="g-{{ $letter }}">
                         <h2 class="glossary-letter" aria-hidden="true">{{ $letter }}</h2>
                         <div class="glossary-list">
                             @foreach ($groups[$letter] as $term)
@@ -107,6 +109,7 @@
                                     $termText = $term->termWithDefinition();
                                 @endphp
                                 <div class="xi-card glossary-item" id="{{ $term->slug }}"
+                                     data-term="{{ mb_strtolower($term->term) }}"
                                      data-search="{{ mb_strtolower($term->term.' '.$term->definitionPlain()) }}"
                                      :class="{ 'is-active': active === @js($term->slug) }"
                                      x-show="cardVisible($el)">
@@ -171,8 +174,15 @@
             active: initial.term || '',
             copied: { slug: '', kind: '', msg: '' },
             copyTimer: null,
+            home: [],
 
             init() {
+                // Родная позиция каждой карточки — чтобы вернуть алфавитный
+                // порядок по буквам после очистки поиска (layout() ниже)
+                this.home = [...this.$root.querySelectorAll('[data-search]')]
+                    .map((el) => ({ el, parent: el.parentElement }));
+                if (this.searching()) this.$nextTick(() => this.layout());
+
                 // Пришли по /glossary?term=… (в т.ч. по 301 со старой вики) —
                 // подсветить и подвести к карточке. Ждём window.load: до
                 // догрузки шрифтов и картинок высоты плывут и карточка
@@ -188,6 +198,7 @@
                 this.$watch('q', () => {
                     if (this.active) this.active = '';
                     this.syncUrl(true);
+                    this.layout();
                 });
 
                 // «Назад»/«Вперёд» — восстановить состояние из адреса
@@ -248,16 +259,28 @@
             },
 
             norm(s) { return (s || '').toLowerCase().trim(); },
+            searching() { return this.norm(this.q) !== ''; },
+
+            /** Выдача поиска ранжируется: совпадения в названии термина —
+                выше совпадений только в определении. Карточки физически
+                переносятся в плоский контейнер results (сортировка стабильная,
+                внутри групп сохраняется алфавит); при очистке поиска
+                возвращаются в свои буквенные группы. */
+            layout() {
+                if (!this.searching()) {
+                    this.home.forEach(({ el, parent }) => parent.appendChild(el));
+                    return;
+                }
+                const q = this.norm(this.q);
+                const rank = (el) => ((el.dataset.term || '').includes(q) ? 0 : 1);
+                this.home.map(({ el }) => el)
+                    .sort((a, b) => rank(a) - rank(b))
+                    .forEach((el) => this.$refs.results.appendChild(el));
+            },
+
             cardVisible(el) {
                 const q = this.norm(this.q);
                 return q === '' || (el.dataset.search || '').includes(q);
-            },
-            groupVisible(el) {
-                return [...el.querySelectorAll('[data-search]')].some((c) => this.cardVisible(c));
-            },
-            letterVisible(el) {
-                const q = this.norm(this.q);
-                return q === '' || (el.dataset.letterSearch || '').includes(q);
             },
             anyVisible() {
                 return [...this.$root.querySelectorAll('[data-search]')].some((c) => this.cardVisible(c));

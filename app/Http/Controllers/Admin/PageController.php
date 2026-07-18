@@ -31,6 +31,9 @@ class PageController extends Controller
                     RussianText::contains($sub, 'excerpt', $term, 'or');
                     RussianText::contains($sub, 'body', $term, 'or');
                 });
+
+                // Совпадения в заголовке — выше совпадений только в тексте
+                RussianText::containsFirstOrder($q, 'title', $term);
             })
             ->latest('updated_at')
             ->paginate(25)
