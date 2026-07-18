@@ -26,6 +26,9 @@ class MediaController extends Controller
                     RussianText::contains($sub, 'title', $term);
                     RussianText::contains($sub, 'file_path', $term, 'or');
                 });
+
+                // Совпадения в названии — выше совпадений только по пути файла
+                RussianText::containsFirstOrder($q, 'title', $term);
             })
             ->latest()
             ->paginate(30)
