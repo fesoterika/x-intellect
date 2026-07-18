@@ -1691,6 +1691,56 @@ html { scroll-padding-top: 84px; }
 .xi-404__hint { margin-top: 30px; font-size: 14px; color: var(--xi-ink-faint); }
 .xi-404__hint a { color: var(--xi-accent); }
 
+/* ── Заглушка технических работ (errors/503) ──────────────────────────── */
+.xi-maint {
+    max-width: 560px; margin: auto; padding: 48px 22px;
+    text-align: center; position: relative; z-index: 1;
+}
+.xi-maint__logo svg {
+    display: block; margin: 0 auto;
+    width: 88px; height: 88px; border-radius: 20px;
+    box-shadow: 0 10px 40px var(--xi-glass-shadow);
+    animation: xi-maint-float 6s ease-in-out infinite;
+}
+@keyframes xi-maint-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .xi-maint__logo svg { animation: none; }
+}
+.xi-maint__badge {
+    display: inline-block; margin: 26px 0 10px; padding: 6px 16px;
+    border: 1px solid var(--xi-line); border-radius: 999px;
+    background: var(--xi-accent-soft); color: var(--xi-accent);
+    font-size: 12.5px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+}
+.xi-maint .title-rule { margin-left: auto; margin-right: auto; }
+.xi-maint__text { color: var(--xi-ink-soft); font-size: 16.5px; margin: 14px 0; }
+.xi-maint__tg {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 10px; padding: 12px 24px; border-radius: 999px;
+    background: var(--xi-accent); color: #fff !important; border-bottom: none !important;
+    font-weight: 600; font-size: 15.5px; text-decoration: none;
+    box-shadow: 0 6px 22px var(--xi-accent-soft);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.xi-maint__tg:hover { background: var(--xi-accent-deep); transform: translateY(-1px); }
+.xi-maint__tg svg { width: 20px; height: 20px; }
+.xi-maint__hint { margin-top: 34px; font-size: 14px; color: var(--xi-ink-faint); }
+.xi-maint__hint a { color: var(--xi-accent); }
+.xi-maint__copy { margin-top: 6px; font-size: 12.5px; color: var(--xi-ink-faint); opacity: 0.8; }
+
+/* Плашка редактору на публичной части: режим техработ включён,
+   посетители видят заглушку, а редактор - обычный сайт */
+.xi-maint-banner {
+    position: relative; z-index: 20;
+    padding: 9px 18px; text-align: center; font-size: 14px;
+    background: #b7791f; color: #fffaf0;
+}
+.xi-maint-banner a { color: #fffaf0; font-weight: 700; }
+
 /* ── Кнопка скачивания файла-вложения (рендерит AttachmentDownloads) ──── */
 .xi-prose a.xi-download,
 a.xi-download {

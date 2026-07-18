@@ -47,6 +47,9 @@ Route::prefix('admin')
         // Загрузка файлов из Trix-редактора (картинки, аудио, PDF)
         Route::post('editor/upload', [Admin\EditorUploadController::class, 'store'])->name('editor.upload');
 
+        // Тумблер режима технических работ (блок на вкладке «Обзор»)
+        Route::post('maintenance', Admin\MaintenanceController::class)->name('maintenance.toggle');
+
         // Редиректы и меню — только администратор
         Route::middleware('can:admin')->group(function () {
             Route::resource('redirects', Admin\RedirectController::class)->only(['index', 'store', 'update', 'destroy']);

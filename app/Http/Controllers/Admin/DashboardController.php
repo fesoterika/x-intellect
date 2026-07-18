@@ -8,12 +8,14 @@ use App\Models\Media;
 use App\Models\Page;
 use App\Models\Redirect;
 use App\Models\Section;
+use App\Models\Setting;
 
 class DashboardController extends Controller
 {
     public function __invoke()
     {
         return view('admin.dashboard', [
+            'maintenance' => Setting::maintenanceEnabled(),
             'stats' => [
                 'Разделы' => Section::count(),
                 'Страницы' => Page::count(),
