@@ -40,7 +40,9 @@ class SeoService
         $seo['meta_title'] ??= $page->title.' — X-Intellect';
         $seo['meta_description'] ??= $this->metaDescription($page);
         $seo['schema_type'] ??= $page->page_type === 'author' ? 'Person' : 'Article';
-        $seo['canonical'] ??= rtrim(config('app.url'), '/').$page->url();
+        // canonical не запекаем: сохранённый APP_URL протухает при смене
+        // окружения (dev-база отдала бы localhost на проде). Шаблоны строят
+        // его от текущего APP_URL на лету; в поле живёт только ручное значение.
 
         $page->seo = $seo;
     }

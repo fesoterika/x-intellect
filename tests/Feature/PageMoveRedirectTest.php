@@ -120,14 +120,29 @@ class PageMoveRedirectTest extends TestCase
         $this->get('/articles/material')->assertOk();
     }
 
-    public function test_auto_canonical_follows_the_page(): void
+    /** Canonical не запекается в seo — шаблон строит его от текущего адреса. */
+    public function test_canonical_is_not_stored_and_follows_the_page(): void
     {
         $page = $this->makePage();
-        $this->assertSame(config('app.url').'/articles/material', $page->seoValue('canonical'));
+        $this->assertNull($page->seoValue('canonical'));
 
         $page->update(['section_id' => $this->projects->id]);
 
-        $this->assertSame(config('app.url').'/projects/material', $page->fresh()->seoValue('canonical'));
+        $this->assertNull($page->fresh()->seoValue('canonical'));
+        $this->get('/projects/material')
+            ->assertOk()
+            ->assertSee('<link rel="canonical" href="'.config('app.url').'/projects/material">', false);
+    }
+
+    /** Наследие автозаполнения (или seo:canonical --fix): запечённый под старый адрес canonical снимается. */
+    public function test_stored_auto_pattern_canonical_is_cleared_on_move(): void
+    {
+        $page = $this->makePage();
+        $page->forceFill(['seo' => ['canonical' => config('app.url').'/articles/material']])->saveQuietly();
+
+        $page->update(['section_id' => $this->projects->id]);
+
+        $this->assertNull($page->fresh()->seoValue('canonical'));
     }
 
     public function test_manual_canonical_is_left_alone(): void
