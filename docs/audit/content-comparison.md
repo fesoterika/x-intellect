@@ -1,6 +1,6 @@
 # Аудит контента: новый сайт vs архив
 
-Сформировано: 16.07.2026 00:52. Команда: `php artisan audit:archive`.
+Сформировано: 18.07.2026 13:57. Команда: `php artisan audit:archive`.
 
 Исключены из сверки (по требованию): раздел сайта «Библиотека» (library), форум. Страницы `source_type=new` — не сверяются с архивом (созданы для нового сайта).
 
@@ -9,7 +9,26 @@
 | Что | В архиве (содержательное) | Есть на сайте | Отсутствует |
 |---|---|---|---|
 | Основной сайт (страницы WordPress) | 64 | 64 | 0 |
-| Вики (статьи ns-0) | 251 | 251 | 0 |
+| Вики (статьи ns-0) | 251 | 248 | 3 |
+
+### Сверка количества с Wayback Machine
+
+| Источник | Заголовков вики |
+|---|---|
+| Офлайн-слепок 2015 (ns-0, содержательные) | 251 |
+| Wayback CDX (2010–2024, чистые title-URL) | 109 |
+| БД: страницы вики (archive_wiki) | 204 |
+| БД: термины глоссария | 87 |
+
+Есть только в Wayback (нет ни в слепке, ни в БД): **5**
+
+| Заголовок | Снимок |
+|---|---|
+| Сеансы 1997 - 2008 | https://web.archive.org/web/20120621052434/http://www.x-intellect.org:80/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_1997_-_2008 |
+| Сеансы 2009 | https://web.archive.org/web/20120621052805/http://www.x-intellect.org:80/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_2009 |
+| Сеансы 2010 | https://web.archive.org/web/20120621052810/http://www.x-intellect.org:80/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_2010 |
+| Сеанс с Силами 20140203 | https://web.archive.org/web/20230601013631/http://www.x-intellect.org/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81_%D1%81_%D0%A1%D0%B8%D0%BB%D0%B0%D0%BC%D0%B8_20140203 |
+| Хроносфера и временной фактор | https://web.archive.org/web/20200926191839/http://www.x-intellect.org/wiki/index.php?title=%D0%A5%D1%80%D0%BE%D0%BD%D0%BE%D1%81%D1%84%D0%B5%D1%80%D0%B0_%D0%B8_%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80 |
 
 ## Основной сайт
 
@@ -50,7 +69,7 @@
 | Проект «ДУША». Люди и животные (Приложение, часть 4) | [dusha-animals-4](http://localhost/projects/dusha-animals-4) | draft |
 | Проект «Душа» (продолжение, часть 2) | [dusha-karma-2](http://localhost/projects/dusha-karma-2) | draft |
 | Проект «Душа» (продолжение, часть 3) | [dusha-matrix-3](http://localhost/projects/dusha-matrix-3) | draft |
-| Проект «ДУША»: Вопросы и ответы (по информации из предыдущих ченнелингов) | [dusha-prodoljenie](http://localhost/projects/dusha-prodoljenie) | draft |
+| Проект «ДУША»: Вопросы и ответы (по информации из предыдущих ченнелингов) | [dusha-prodoljenie](http://localhost/projects/dusha-prodoljenie) | published |
 | Проект «Душа» (продолжение) | [dusha-sens-syst-2](http://localhost/projects/dusha-sens-syst-2) | draft |
 | Сенсорные системы и системы представления знаний: Монография | [dusha-sens-syst-mon](http://localhost/projects/dusha-sens-syst-mon) | published |
 | Сенсорные системы и система представления знаний: Монография | [dusha-sens-syst](http://localhost/articles/dusha-sens-syst) | published |
@@ -94,7 +113,11 @@
 
 ### Отсутствующие (нет ни страницы, ни термина)
 
-Нет — все статьи ns-0 слепка представлены на сайте (страницей или термином глоссария).
+| Заголовок | Старый адрес |
+|---|---|
+| Сеансы 1991 | http://www.x-intellect.org/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_1991 |
+| Сеансы 2007 | http://www.x-intellect.org/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_2007 |
+| Сеансы 2008 | http://www.x-intellect.org/wiki/index.php?title=%D0%A1%D0%B5%D0%B0%D0%BD%D1%81%D1%8B_2008 |
 
 ### Подозрительно короткие
 
@@ -107,12 +130,12 @@
 | Активация и гармонизация чакр | [aktivaciia-i-garmonizaciia-cakr](http://localhost/wiki/aktivaciia-i-garmonizaciia-cakr) | страница (draft) |
 | Акупунктурные точки | [глоссарий](http://localhost/glossary?term=akupunkturnye-tocki) | термин глоссария |
 | Арсенал памяти больших полушарий | [глоссарий](http://localhost/glossary?term=arsenal-pamiati-bolsix-polusarii) | термин глоссария |
-| Аудиозапись 20130704 | [audiozapis-20130704](http://localhost/wiki/audiozapis-20130704) | страница (draft) |
+| Аудиозапись 20130704 | [audiozapis-20130704](http://localhost/wiki/audiozapis-20130704) | страница (published) |
 | Библиотека | [biblioteka](http://localhost/wiki/biblioteka) | страница (draft) |
 | Биоэкран | [bioekran](http://localhost/wiki/bioekran) | страница (draft) |
 | Блок видовых программ мозжечка | [глоссарий](http://localhost/glossary?term=blok-vidovyx-programm-mozzecka) | термин глоссария |
 | Блуждающие импульсы | [глоссарий](http://localhost/glossary?term=bluzdaiushhie-impulsy) | термин глоссария |
-| Внеземные Цивилизации (ВЦ) | [vnezemnye-tsivilizatsii](http://localhost/wiki/vnezemnye-tsivilizatsii) | страница (draft) |
+| Внеземные Цивилизации (ВЦ) | [vnezemnye-tsivilizatsii](http://localhost/wiki/vnezemnye-tsivilizatsii) | страница (published) |
 | Вращающийся диск биоэкрана | [глоссарий](http://localhost/glossary?term=vrashhaiushhiisia-disk-bioekrana) | термин глоссария |
 | Временные (темпоральные) тоннели | [глоссарий](http://localhost/glossary?term=vremennye-temporalnye-tonneli) | термин глоссария |
 | Временные (темпоральные) факторы | [глоссарий](http://localhost/glossary?term=vremennye-temporalnye-faktory) | термин глоссария |
@@ -175,14 +198,14 @@
 | Полевая структура в виде ниспадающего «водопада» | [глоссарий](http://localhost/glossary?term=polevaia-struktura-v-vide-nispadaiushhego-vodopada) | термин глоссария |
 | Правила Википедии | [pravila-vikipedii](http://localhost/wiki/pravila-vikipedii) | страница (draft) |
 | Программа | [глоссарий](http://localhost/glossary?term=programma) | термин глоссария |
-| Проекты 2005 - 2012 | [proekty-2005-2012](http://localhost/wiki/proekty-2005-2012) | страница (draft) |
+| Проекты 2005 - 2012 | [proekty-2005-2012](http://localhost/wiki/proekty-2005-2012) | страница (published) |
 | Проект Биоэкран. Часть 4. | [proekt-bioekran-cast-4](http://localhost/wiki/proekt-bioekran-cast-4) | страница (draft) |
 | Проект Биоэкран. Часть 2. | [proekt-bioekran-cast-2](http://localhost/wiki/proekt-bioekran-cast-2) | страница (draft) |
 | Проект Биоэкран. Часть 1. | [proekt-bioekran-cast-1](http://localhost/wiki/proekt-bioekran-cast-1) | страница (draft) |
-| Проект Душа. Часть 2. | [proekt-dusa-cast-2](http://localhost/wiki/proekt-dusa-cast-2) | страница (draft) |
+| Проект Душа. Часть 2. | [proekt-dusa-cast-2](http://localhost/wiki/proekt-dusa-cast-2) | страница (published) |
 | Проект Душа. Часть 3. | [proekt-dusa-cast-3](http://localhost/wiki/proekt-dusa-cast-3) | страница (draft) |
 | Проект Душа. Часть 5. | [proekt-dusa-cast-5](http://localhost/wiki/proekt-dusa-cast-5) | страница (draft) |
-| Проект Душа. Часть 1. | [proekt-dusa-cast-1](http://localhost/wiki/proekt-dusa-cast-1) | страница (draft) |
+| Проект Душа. Часть 1. | [proekt-dusa-cast-1](http://localhost/wiki/proekt-dusa-cast-1) | страница (published) |
 | Проект Картины Учителей Ноосферы: Воздух | [proekt-kartiny-ucitelei-noosfery-vozdux-2](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-vozdux-2) | страница (draft) |
 | Проект Картины Учителей Ноосферы: Земля | [proekt-kartiny-ucitelei-noosfery-zemlia-2](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-zemlia-2) | страница (draft) |
 | Проект Картины Учителей Ноосферы: Вода. Часть 1 | [proekt-kartiny-ucitelei-noosfery-voda-cast-1](http://localhost/wiki/proekt-kartiny-ucitelei-noosfery-voda-cast-1) | страница (draft) |
@@ -194,22 +217,22 @@
 | Реинкарнация | [глоссарий](http://localhost/glossary?term=reinkarnaciia) | термин глоссария |
 | Рейшей | [глоссарий](http://localhost/glossary?term=reisei) | термин глоссария |
 | Ромбовидная линза | [глоссарий](http://localhost/glossary?term=rombovidnaia-linza) | термин глоссария |
-| Светлая Память Александр Глаз | [svetlaia-pamiat-aleksandr-glaz](http://localhost/wiki/svetlaia-pamiat-aleksandr-glaz) | страница (draft) |
-| Сеансы 1991 - 2008 | [seansy-1991-2008](http://localhost/wiki/seansy-1991-2008) | страница (draft) |
-| Сеансы 2009 - 2010 | [seansy-2009-2010](http://localhost/wiki/seansy-2009-2010) | страница (draft) |
-| Сеансы 2011 | [seansy-2011](http://localhost/wiki/seansy-2011) | страница (draft) |
-| Сеансы 2012 | [seansy-2012](http://localhost/wiki/seansy-2012) | страница (draft) |
-| Сеансы 2013 | [seansy-2013](http://localhost/wiki/seansy-2013) | страница (draft) |
-| Сеанс с Силами 20120907 | [seans-s-silami-20120907](http://localhost/wiki/seans-s-silami-20120907) | страница (draft) |
-| Сеанс с Силами 20121129 | [seans-s-silami-20121129](http://localhost/wiki/seans-s-silami-20121129) | страница (draft) |
+| Светлая Память Александр Глаз | [svetlaia-pamiat-aleksandr-glaz](http://localhost/wiki/svetlaia-pamiat-aleksandr-glaz) | страница (published) |
+| Сеансы 1991 - 2008 | [seansy-1991-2008](http://localhost/wiki/seansy-1991-2008) | страница (published) |
+| Сеансы 2009 - 2010 | [seansy-2009-2010](http://localhost/wiki/seansy-2009-2010) | страница (published) |
+| Сеансы 2011 | [seansy-2011](http://localhost/wiki/seansy-2011) | страница (published) |
+| Сеансы 2012 | [seansy-2012](http://localhost/wiki/seansy-2012) | страница (published) |
+| Сеансы 2013 | [seansy-2013](http://localhost/wiki/seansy-2013) | страница (published) |
+| Сеанс с Силами 20120907 | [seans-s-silami-20120907](http://localhost/wiki/seans-s-silami-20120907) | страница (published) |
+| Сеанс с Силами 20121129 | [seans-s-silami-20121129](http://localhost/wiki/seans-s-silami-20121129) | страница (published) |
 | Сеанс с Силами 20121201 | [seans-s-silami-20121201](http://localhost/wiki/seans-s-silami-20121201) | страница (draft) |
 | Сеанс с Силами 20121217 | [seans-s-silami-20121217](http://localhost/wiki/seans-s-silami-20121217) | страница (draft) |
-| Сеанс с Силами 20130103 | [seans-s-silami-20130103](http://localhost/wiki/seans-s-silami-20130103) | страница (draft) |
+| Сеанс с Силами 20130103 | [seans-s-silami-20130103](http://localhost/wiki/seans-s-silami-20130103) | страница (published) |
 | Сеанс с Силами 20130105 | [seans-s-silami-20130105](http://localhost/wiki/seans-s-silami-20130105) | страница (draft) |
 | Сеанс с Силами 20130113 | [seans-s-silami-20130113](http://localhost/wiki/seans-s-silami-20130113) | страница (draft) |
 | Сеанс с Силами 20130118 | [seans-s-silami-20130118](http://localhost/wiki/seans-s-silami-20130118) | страница (draft) |
 | Сеанс с Силами 20130119 | [seans-s-silami-20130119](http://localhost/wiki/seans-s-silami-20130119) | страница (draft) |
-| Сеанс с Силами 20130126 | [seans-s-silami-20130126](http://localhost/wiki/seans-s-silami-20130126) | страница (draft) |
+| Сеанс с Силами 20130126 | [seans-s-silami-20130126](http://localhost/wiki/seans-s-silami-20130126) | страница (published) |
 | Сеанс с Силами 20130209 | [seans-s-silami-20130209](http://localhost/wiki/seans-s-silami-20130209) | страница (draft) |
 | Сеанс с Силами 20130211 | [seans-s-silami-20130211](http://localhost/wiki/seans-s-silami-20130211) | страница (published) |
 | Сеанс с Силами 20130223 | [seans-s-silami-20130223](http://localhost/wiki/seans-s-silami-20130223) | страница (draft) |
@@ -218,9 +241,9 @@
 | Сеанс с Силами 20130303 | [seans-s-silami-20130303](http://localhost/wiki/seans-s-silami-20130303) | страница (draft) |
 | Сеанс с Силами 20130311 | [seans-s-silami-20130311](http://localhost/wiki/seans-s-silami-20130311) | страница (draft) |
 | Сеанс с Силами 20130404 | [seans-s-silami-20130404](http://localhost/wiki/seans-s-silami-20130404) | страница (draft) |
-| Сеанс с Силами 20130414 | [seans-s-silami-20130414](http://localhost/wiki/seans-s-silami-20130414) | страница (draft) |
+| Сеанс с Силами 20130414 | [seans-s-silami-20130414](http://localhost/wiki/seans-s-silami-20130414) | страница (published) |
 | Сеанс с Силами 20130428 | [seans-s-silami-20130428](http://localhost/wiki/seans-s-silami-20130428) | страница (draft) |
-| Сеанс с Силами 20130505 | [seans-s-silami-20130505](http://localhost/wiki/seans-s-silami-20130505) | страница (draft) |
+| Сеанс с Силами 20130505 | [seans-s-silami-20130505](http://localhost/wiki/seans-s-silami-20130505) | страница (published) |
 | Сеанс с Силами 20130511 | [seans-s-silami-20130511](http://localhost/wiki/seans-s-silami-20130511) | страница (draft) |
 | Сеанс с Силами 20130512 | [seans-s-silami-20130512](http://localhost/wiki/seans-s-silami-20130512) | страница (draft) |
 | Сеанс с Силами 20130513 | [seans-s-silami-20130513](http://localhost/wiki/seans-s-silami-20130513) | страница (draft) |
@@ -274,12 +297,12 @@
 | Движение души после смерти | [dvizenie-dusi-posle-smerti](http://localhost/wiki/dvizenie-dusi-posle-smerti) | страница (published) |
 | Карма | [karma](http://localhost/wiki/karma) | страница (draft) |
 | Картины Учителей Ноосферы | [kartiny-ucitelei-noosfery](http://localhost/wiki/kartiny-ucitelei-noosfery) | страница (published) |
-| Осознанные сновидения и ВТО | [osoznannye-snovideniia-i-vto](http://localhost/wiki/osoznannye-snovideniia-i-vto) | страница (draft) |
+| Осознанные сновидения и ВТО | [osoznannye-snovideniia-i-vto](http://localhost/wiki/osoznannye-snovideniia-i-vto) | страница (published) |
 | Расы | [rasy](http://localhost/wiki/rasy) | страница (published) |
-| Сеансы 1991 | [seansy-1991](http://localhost/wiki/seansy-1991) | страница (draft) |
-| Сеансы 2007 | [seansy-2007](http://localhost/wiki/seansy-2007) | страница (draft) |
-| Сеансы 2008 | [seansy-2008](http://localhost/wiki/seansy-2008) | страница (draft) |
-| Сеанс с Силами 20111207 | [seans-s-silami-20111207](http://localhost/wiki/seans-s-silami-20111207) | страница (draft) |
+| Сеансы 1991 | — | ОТСУТСТВУЕТ |
+| Сеансы 2007 | — | ОТСУТСТВУЕТ |
+| Сеансы 2008 | — | ОТСУТСТВУЕТ |
+| Сеанс с Силами 20111207 | [seans-s-silami-20111207](http://localhost/wiki/seans-s-silami-20111207) | страница (published) |
 | Сеанс с силами 20090502 | [seans-s-silami-20090502](http://localhost/wiki/seans-s-silami-20090502) | страница (draft) |
 | Сеанс с силами 20090505 | [seans-s-silami-20090505](http://localhost/wiki/seans-s-silami-20090505) | страница (draft) |
 | Сеанс с силами 20090719 | [seans-s-silami-20090719](http://localhost/wiki/seans-s-silami-20090719) | страница (draft) |
@@ -316,7 +339,7 @@
 | Проект Картины Ноосферы: Огонь | [proekt-kartiny-noosfery-ogon](http://localhost/wiki/proekt-kartiny-noosfery-ogon) | страница (draft) |
 | Проект Картины Ноосферы: Земля | [proekt-kartiny-noosfery-zemlia](http://localhost/wiki/proekt-kartiny-noosfery-zemlia) | страница (draft) |
 | Проект Картины Ноосферы: Воздух | [proekt-kartiny-noosfery-vozdux](http://localhost/wiki/proekt-kartiny-noosfery-vozdux) | страница (draft) |
-| Сеанс с силами 19910108 | [seans-s-silami-19910108](http://localhost/wiki/seans-s-silami-19910108) | страница (draft) |
+| Сеанс с силами 19910108 | [seans-s-silami-19910108](http://localhost/wiki/seans-s-silami-19910108) | страница (published) |
 | Сеанс с силами 20070131-1 | [seans-s-silami-20070131-1](http://localhost/wiki/seans-s-silami-20070131-1) | страница (draft) |
 | Сеанс с силами 20070131-2 | [seans-s-silami-20070131-2](http://localhost/wiki/seans-s-silami-20070131-2) | страница (draft) |
 | Сеанс с силами 20081026 | [seans-s-silami-20081026](http://localhost/wiki/seans-s-silami-20081026) | страница (draft) |
@@ -335,12 +358,12 @@
 | Космическое Сообщество, или Коалиция | [kosmiceskoe-soobshhestvo-ili-koaliciia](http://localhost/wiki/kosmiceskoe-soobshhestvo-ili-koaliciia) | страница (draft) |
 | Кредовое кольцо полевого мозга | [kredovoe-kolco-polevogo-mozga](http://localhost/wiki/kredovoe-kolco-polevogo-mozga) | страница (draft) |
 | Лекция 20101031 | [lekciia-20101031](http://localhost/wiki/lekciia-20101031) | страница (draft) |
-| Осознанные сновидения. Часть 2. Учителя. | [osoznannye-snovideniia-cast-2-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-2-ucitelia) | страница (draft) |
-| Осознанные сновидения. Часть 3. Дальний Космос. | [osoznannye-snovideniia-cast-3-dalnii-kosmos](http://localhost/wiki/osoznannye-snovideniia-cast-3-dalnii-kosmos) | страница (draft) |
-| Осознанные сновидения. Часть 4. Учителя. | [osoznannye-snovideniia-cast-4-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-4-ucitelia) | страница (draft) |
-| Осознанные сновидения. Часть 1. Учителя. | [osoznannye-snovideniia-cast-1-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-1-ucitelia) | страница (draft) |
-| Осознанные сновидения и внетелесный опыт. Начало темы. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy) | страница (draft) |
-| Осознанные сновидения и внетелесный опыт. Часть 1. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1) | страница (draft) |
+| Осознанные сновидения. Часть 2. Учителя. | [osoznannye-snovideniia-cast-2-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-2-ucitelia) | страница (published) |
+| Осознанные сновидения. Часть 3. Дальний Космос. | [osoznannye-snovideniia-cast-3-dalnii-kosmos](http://localhost/wiki/osoznannye-snovideniia-cast-3-dalnii-kosmos) | страница (published) |
+| Осознанные сновидения. Часть 4. Учителя. | [osoznannye-snovideniia-cast-4-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-4-ucitelia) | страница (published) |
+| Осознанные сновидения. Часть 1. Учителя. | [osoznannye-snovideniia-cast-1-ucitelia](http://localhost/wiki/osoznannye-snovideniia-cast-1-ucitelia) | страница (published) |
+| Осознанные сновидения и внетелесный опыт. Начало темы. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-nacalo-temy) | страница (published) |
+| Осознанные сновидения и внетелесный опыт. Часть 1. | [osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1](http://localhost/wiki/osoznannye-snovideniia-i-vnetelesnyi-opyt-cast-1) | страница (published) |
 | Первое Информационное Кольцо | [pervoe-informacionnoe-kolco](http://localhost/wiki/pervoe-informacionnoe-kolco) | страница (draft) |
 | План тренинга "АСТРАЛЬНЫЕ ПЕРЕМЕЩЕНИЯ": | [plan-treninga-astralnye-peremeshheniia](http://localhost/wiki/plan-treninga-astralnye-peremeshheniia) | страница (draft) |
 | План тренинга: "КАРМИЧЕСКАЯ КОРРЕКЦИЯ" | [plan-treninga-karmiceskaia-korrekciia](http://localhost/wiki/plan-treninga-karmiceskaia-korrekciia) | страница (draft) |
@@ -351,7 +374,7 @@
 | Проект Биоэкран. Часть 5. | [proekt-bioekran-cast-5](http://localhost/wiki/proekt-bioekran-cast-5) | страница (draft) |
 | Проект Биоэкран. Часть 3. | [proekt-bioekran-cast-3](http://localhost/wiki/proekt-bioekran-cast-3) | страница (draft) |
 | Сеанс с Силами 20130310 | [seans-s-silami-20130310](http://localhost/wiki/seans-s-silami-20130310) | страница (draft) |
-| Сеанс с силами 20070730b | [seans-s-silami-20070730b](http://localhost/wiki/seans-s-silami-20070730b) | страница (draft) |
+| Сеанс с силами 20070730b | [seans-s-silami-20070730b](http://localhost/wiki/seans-s-silami-20070730b) | страница (published) |
 | Сеанс с силами 20090607 | [seans-s-silami-20090607](http://localhost/wiki/seans-s-silami-20090607) | страница (draft) |
 | Сеанс с силами 20101031 | [seans-s-silami-20101031](http://localhost/wiki/seans-s-silami-20101031) | страница (draft) |
 | Сеанс с силами 20101106 | [seans-s-silami-20101106](http://localhost/wiki/seans-s-silami-20101106) | страница (draft) |
@@ -364,15 +387,11 @@
 | [Ф. (@fesoterika)](http://localhost/fesoterika) | О центре | published |
 | [Правила проекта](http://localhost/rules/pravila-proekta) | Правила | published |
 | [Ресурсы проекта](http://localhost/about/contacts) | О центре | published |
+| [Памяти Владимира Николаевича Зорева (1959-2025)](http://localhost/articles/pamiati-vladimira-nikolaevica-zoreva-1959-2025) | Статьи | published |
 
 ## Редиректы
 
-Недостающих редиректов со старых адресов: **2**
-
-| Старый путь | Куда должен вести | Материал |
-|---|---|---|
-| `/hello` | /hello/privetstvie | Приветствие от представителей Внеземного Разума (2012) |
-| `/library` | /library/za-okrainoj-mira-bytiya-i-soznaniya | «За окраиной мира, бытия и сознания» - Владимир Зорев |
+Недостающих редиректов со старых адресов: **13** (создано --fix-redirects: 13)
 
 Редиректов с битой целью (внутренний адрес не существует): **0**
 
