@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Media;
 use App\Models\MenuItem;
 use App\Models\Page;
+use App\Observers\MediaObserver;
 use App\Observers\PageObserver;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Page::observe(PageObserver::class);
+        Media::observe(MediaObserver::class);
 
         // Отдельные права администратора (редиректы, меню, пользователи)
         Gate::define('admin', fn ($user) => $user->isAdmin());
