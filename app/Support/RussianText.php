@@ -67,6 +67,19 @@ class RussianText
     }
 
     /**
+     * Сортировка «сначала строки, где колонка содержит подстроку» —
+     * для выдачи поиска: совпадения в заголовке выше совпадений в теле.
+     * Регистронезависимо, включая кириллицу (как contains()).
+     */
+    public static function containsFirstOrder($query, string $column, string $term): void
+    {
+        $needle = '%'.addcslashes(mb_strtolower($term, 'UTF-8'), '%_\\').'%';
+        $escape = self::isSqlite() ? " ESCAPE '\\'" : '';
+
+        $query->orderByRaw('CASE WHEN '.self::lowerFn()."({$column}) LIKE ?".$escape.' THEN 0 ELSE 1 END', [$needle]);
+    }
+
+    /**
      * Условие «колонка равна значению» без учёта регистра.
      *
      * `whereRaw('LOWER(title) = ?', [mb_strtolower($t)])` для русских заголовков
