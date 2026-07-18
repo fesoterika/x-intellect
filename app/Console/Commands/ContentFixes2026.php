@@ -36,6 +36,9 @@ use Illuminate\Support\Facades\Storage;
  *     сеансов веб-архив не снимал (CDX пуст), поэтому ссылки ведут на
  *     сохранившиеся записи основного сайта («Ноосфера-7/9»), плюс 301
  *     со старых wiki-адресов.
+ *  8. seo.canonical, запечённый прежним автозаполнением от dev-адреса
+ *     (http://localhost/…), убирается — шаблоны строят canonical от текущего
+ *     APP_URL на лету, остальные seo-ключи и тело не трогаются.
  *
  *   php artisan site:content-fixes-2026 [--dry] [--snapshot=…/www.x-intellect.org]
  */
@@ -146,8 +149,35 @@ class ContentFixes2026 extends Command
         $this->relativizeLocalLinks($dry);
         $this->restoreKartinyImages($dry);
         $this->addSessions2013WaybackItems($dry);
+        $this->clearLocalhostCanonicals($dry);
 
         return self::SUCCESS;
+    }
+
+    /**
+     * seo.canonical с dev-адресом (http://localhost/…) — след прежнего
+     * автозаполнения SeoService: на проде каждый такой canonical указывал бы
+     * на localhost. Ключ убираем, шаблоны строят canonical от APP_URL на лету;
+     * остальные seo-ключи не трогаются. Метаданные published править можно —
+     * тело не меняется, сохранение тихое (без ревизий и повторного рендера).
+     */
+    protected function clearLocalhostCanonicals(bool $dry): void
+    {
+        $cleared = 0;
+
+        foreach (Page::where('seo->canonical', 'like', 'http://localhost%')->orderBy('id')->get() as $page) {
+            $seo = $page->seo;
+            $this->line("canonical с localhost убран: [{$page->id}] {$page->title} ({$seo['canonical']})");
+            unset($seo['canonical']);
+            $cleared++;
+
+            if (! $dry) {
+                $page->seo = $seo;
+                $page->saveQuietly();
+            }
+        }
+
+        $this->info("Canonical с localhost: очищено — {$cleared}.");
     }
 
     /**

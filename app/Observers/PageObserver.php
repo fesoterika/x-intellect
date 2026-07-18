@@ -163,9 +163,9 @@ class PageObserver
     }
 
     /**
-     * Canonical, выставленный автоматически для прежнего адреса, обязан
-     * переехать со страницей — иначе он спорит с собственным 301. Значение,
-     * заданное руками, не трогаем.
+     * Canonical, запечённый под прежний адрес (наследие автозаполнения или
+     * seo:canonical --fix), обязан исчезнуть при переезде — иначе он спорит
+     * с собственным 301. Значение, заданное руками, не трогаем.
      */
     private function refreshCanonicalOnMove(Page $page): void
     {
@@ -180,7 +180,7 @@ class PageObserver
         }
 
         if ($seo['canonical'] === rtrim(config('app.url'), '/').$oldUrl) {
-            $seo['canonical'] = null; // SeoService::fillDefaults подставит новый
+            unset($seo['canonical']); // шаблоны построят canonical от нового адреса
             $page->seo = $seo;
         }
     }
