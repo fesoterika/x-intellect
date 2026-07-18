@@ -23,8 +23,18 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <!-- Тесты на MySQL — так же, как прод (совместимость 5.7). Нужен
+             запущенный локальный сервер: brew services start mysql@8.0.
+             Оговорка: RefreshDatabase оборачивает тест в транзакцию, а InnoDB
+             FULLTEXT не видит незакоммиченные строки — совпадения в тестах
+             поиска находит LIKE-часть запроса (FULLTEXT-ветка выполняется,
+             но добор проверяется только на живых данных). -->
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_HOST" value="127.0.0.1"/>
+        <env name="DB_PORT" value="3306"/>
+        <env name="DB_DATABASE" value="x_intellect_test"/>
+        <env name="DB_USERNAME" value="x_intellect"/>
+        <env name="DB_PASSWORD" value="xi-local-dev"/>
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

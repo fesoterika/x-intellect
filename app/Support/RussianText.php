@@ -58,7 +58,12 @@ class RussianText
     {
         $needle = '%'.addcslashes(mb_strtolower($term, 'UTF-8'), '%_\\').'%';
 
-        $query->whereRaw(self::lowerFn()."({$column}) LIKE ? ESCAPE '\\'", [$needle], $boolean);
+        // В MySQL «\» — escape-символ LIKE по умолчанию, а литерал '\'
+        // в SQL-строке экранировал бы кавычку (синтаксическая ошибка).
+        // В SQLite escape-символа по умолчанию нет — задаём явно.
+        $escape = self::isSqlite() ? " ESCAPE '\\'" : '';
+
+        $query->whereRaw(self::lowerFn()."({$column}) LIKE ?".$escape, [$needle], $boolean);
     }
 
     /**
