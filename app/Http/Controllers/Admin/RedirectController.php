@@ -20,6 +20,9 @@ class RedirectController extends Controller
                     RussianText::contains($sub, 'to_url', $term, 'or');
                     RussianText::contains($sub, 'comment', $term, 'or');
                 });
+
+                // Совпадения в исходном пути — выше совпадений в цели/комментарии
+                RussianText::containsFirstOrder($q, 'from_path', $term);
             })
             ->orderBy('from_path')
             ->paginate(50)
