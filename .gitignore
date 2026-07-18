@@ -30,3 +30,6 @@ Thumbs.db
 /public/sitemap.xml
 /public/sitemap-media.xml
 /public/sitemap-index.xml
+
+# Локальные настройки Claude Code (launch.json, worktrees)
+/.claude/

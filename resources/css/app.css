@@ -203,19 +203,25 @@ html { scroll-padding-top: 84px; }
 }
 
 /* --- Шапка (sticky — фиксируется сверху при прокрутке) --- */
+/* ВАЖНО: на самом sticky-элементе НЕ должно быть backdrop-filter,
+   will-change, transform и т.п. — эти свойства ломают в Chromium проверку
+   видимости каретки, и при каждом вводе символа в поиск браузер плавно
+   скроллил страницу к «потоковой» позиции инпута (к верху документа).
+   Блюр поэтому живёт на ::before, а не на шапке. */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 20;
     border-bottom: 1px solid var(--xi-line);
     background: var(--xi-header-bg);
+}
+.site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    /* Стабилизируем композиторный слой: без этого связка sticky + backdrop-filter
-       на дисплеях с DPR>1 подрагивает по субпикселю при каждой перерисовке
-       (ввод в поиске), из-за чего шапка «дёргается» вверх. will-change выносит
-       её в отдельный слой с фиксированным привязками — блюр и sticky сохраняются. */
-    will-change: transform;
 }
 
 .site-header-inner {
