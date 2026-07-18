@@ -193,3 +193,27 @@ if (statValues.length && !window.matchMedia('(prefers-reduced-motion: reduce)').
 
     statValues.forEach((el) => statsObserver.observe(el));
 }
+
+/* Chromium-баг: ввод в инпут внутри position:sticky (поиск в шапке) заставляет
+   браузер «показать каретку», но её позиция считается по потоковым координатам
+   шапки — страница скроллит вверх на десятки пикселей при каждом начале ввода.
+   CSS-обходы (contain, отказ от backdrop-filter на самой шапке) снижают, но не
+   убирают прыжок, поэтому паразитный скролл откатывается точечно: запоминаем
+   позицию перед вводом и возвращаем её, если сразу после ввода она «уехала». */
+document.querySelectorAll('.site-search input').forEach((input) => {
+    let savedY = 0;
+    let until = 0;
+
+    input.addEventListener('beforeinput', () => {
+        savedY = window.scrollY;
+        until = performance.now() + 250;
+    });
+
+    // Окно держится всё время браузерной smooth-анимации: разовый откат не
+    // помогает — анимация продолжает вести к своей цели кадр за кадром.
+    window.addEventListener('scroll', () => {
+        if (performance.now() < until && Math.abs(window.scrollY - savedY) > 1) {
+            window.scrollTo({ top: savedY, behavior: 'instant' });
+        }
+    }, { passive: true });
+});
