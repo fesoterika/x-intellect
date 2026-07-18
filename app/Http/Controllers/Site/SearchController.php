@@ -28,17 +28,21 @@ class SearchController extends Controller
                 ->where(fn ($q) => $q->where('is_listed', true)->orWhere('source_type', '!=', 'new'))
                 ->with('section');
 
-            // MySQL FULLTEXT на проде, LIKE-фолбэк на локальном SQLite (Этап 1 плана):
-            // LIKE в SQLite не сворачивает регистр кириллицы — App\Support\RussianText
-            // регистрирует на соединении функцию xi_lower() = mb_strtolower
-            if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {
-                $builder->whereFullText(['title', 'body'], $query);
-            } else {
-                $builder->where(function ($q) use ($query) {
-                    RussianText::contains($q, 'title', $query);
-                    RussianText::contains($q, 'body', $query, 'or');
-                });
-            }
+            // Подстрочный LIKE — общая часть для обеих БД: находит словоформы
+            // («сеанс» → «сеансы») и короткие слова, которые InnoDB FULLTEXT
+            // не индексирует (короче 3 символов). Регистронезависимость
+            // кириллицы: на MySQL — collation utf8mb4, на SQLite — xi_lower()
+            // из App\Support\RussianText. На MySQL FULLTEXT добирает совпадения
+            // по словам целиком (морфология без подстрок) — вместе дают
+            // одинаковую полноту локально и на проде.
+            $builder->where(function ($q) use ($query) {
+                RussianText::contains($q, 'title', $query);
+                RussianText::contains($q, 'body', $query, 'or');
+
+                if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {
+                    $q->orWhereFullText(['title', 'body'], $query);
+                }
+            });
 
             // Номерная пагинация: результатов может быть много, а строку
             // поиска сохраняем в ссылках через withQueryString()
