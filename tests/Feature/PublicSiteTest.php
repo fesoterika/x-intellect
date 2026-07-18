@@ -242,6 +242,28 @@ class PublicSiteTest extends TestCase
             ->assertSee('Страницы');
     }
 
+    public function test_search_ranks_title_matches_before_body_matches(): void
+    {
+        $this->seedCore();
+        $section = Section::where('slug', 'articles')->firstOrFail();
+
+        // Совпадение только в теле — новее, но должно идти после совпадения в заголовке
+        Page::create([
+            'section_id' => $section->id, 'title' => 'Прочая страница', 'slug' => 'telo-match',
+            'body' => '<p>В тексте упоминается эталонизация процесса.</p>',
+            'status' => 'published', 'published_at' => '2015-01-01',
+        ]);
+        Page::create([
+            'section_id' => $section->id, 'title' => 'Эталонизация человека', 'slug' => 'title-match',
+            'body' => '<p>Тело без ключевого слова в начале.</p>',
+            'status' => 'published', 'published_at' => '2013-01-01',
+        ]);
+
+        $this->get('/search?'.http_build_query(['q' => 'эталонизация']))
+            ->assertOk()
+            ->assertSeeInOrder(['Эталонизация человека', 'Прочая страница']);
+    }
+
     public function test_search_is_case_insensitive(): void
     {
         $this->seedCore();

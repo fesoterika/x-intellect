@@ -44,6 +44,11 @@ class SearchController extends Controller
                 }
             });
 
+            // Сначала совпадения по заголовку, затем по содержимому;
+            // внутри групп — новые раньше (стабильный порядок для пагинации)
+            RussianText::containsFirstOrder($builder, 'title', $query);
+            $builder->orderByDesc('published_at')->orderByDesc('id');
+
             // Номерная пагинация: результатов может быть много, а строку
             // поиска сохраняем в ссылках через withQueryString()
             $results = $builder->paginate(20)->withQueryString();
