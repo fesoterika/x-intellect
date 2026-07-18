@@ -31,6 +31,11 @@ use Illuminate\Support\Facades\Storage;
  *     новые сохранения чистятся автоматически).
  *  6. Странице «Картины Учителей Ноосферы» возвращаются сами картины: из
  *     веб-архива они не тянутся, файлы берутся из офлайн-слепка (--snapshot).
+ *  7. Указатель «Сеансы 2013» получает пункты из снимка Wayback 07.12.2021,
+ *     которых не было в источниках прежних импортов; стенограммы этих
+ *     сеансов веб-архив не снимал (CDX пуст), поэтому ссылки ведут на
+ *     сохранившиеся записи основного сайта («Ноосфера-7/9»), плюс 301
+ *     со старых wiki-адресов.
  *
  *   php artisan site:content-fixes-2026 [--dry] [--snapshot=…/www.x-intellect.org]
  */
@@ -96,6 +101,30 @@ class ContentFixes2026 extends Command
         ]],
     ];
 
+    /**
+     * Пункты указателя «Сеансы 2013» из снимка Wayback 07.12.2021:
+     * дата => [slug целевой страницы, старый wiki-заголовок (для 301),
+     * текст пункта как в снимке]. Ведущий/замыкающий пробел текста в теле
+     * становится &nbsp; — так оформлены соседние мемориальные пункты.
+     */
+    protected const SESSIONS_2013_ITEMS = [
+        '20130721' => [
+            'proekt-noosfera-7-kto-takie-uchitelya',
+            'Сеанс с Силами 20130721',
+            'Сеанс с Силами 20130721 - "Ноосфера-7" (Кто такие Учителя?Взаимодействие Ноосферы с людьми)" Учителя, часть 1 и 2',
+        ],
+        '20131110' => [
+            'proekt-noosfera-9-vzaimodejstvie-noosfery-s-lyud-mi',
+            'Сеанс с Силами 20131110',
+            'Сеанс с Силами 20131110 - "Ноосфера-9" (Взаимодействие Ноосферы с людьми)" Голубые',
+        ],
+        '20131125' => [
+            'audiozapis-20131125',
+            'Аудиозапись 20131125',
+            ' - ДОРОГА В НЕБО ! "Памяти Александра Глаза" ',
+        ],
+    ];
+
     /** Страницы техник, на которые ссылается вики-страница «Техники» */
     protected const TECHNIQUE_TITLES = [
         'Техника астральной сборки оболочечного двойника',
@@ -116,8 +145,72 @@ class ContentFixes2026 extends Command
         $this->mergeTableOnlyPages($dry);
         $this->relativizeLocalLinks($dry);
         $this->restoreKartinyImages($dry);
+        $this->addSessions2013WaybackItems($dry);
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Пункты «Сеансы 2013» из снимка Wayback 07.12.2021 (см. SESSIONS_2013_ITEMS).
+     * Правка точечная: вставка перед последним </ul>, существующее тело не
+     * трогается; пункт с датой, уже встречающейся в теле, пропускается.
+     */
+    protected function addSessions2013WaybackItems(bool $dry): void
+    {
+        $page = Page::where('slug', 'seansy-2013')->first();
+        if (! $page) {
+            $this->warn('Сеансы 2013: страница не найдена — пункты не добавлены.');
+
+            return;
+        }
+
+        $mw = app(\App\Services\MediaWikiArchive::class);
+        $added = 0;
+        $lis = [];
+
+        foreach (self::SESSIONS_2013_ITEMS as $date => [$slug, $oldTitle, $text]) {
+            $target = Page::where('slug', $slug)->first();
+            if (! $target) {
+                $this->warn("Сеансы 2013: нет целевой страницы «{$slug}» — пункт {$date} пропущен.");
+
+                continue;
+            }
+
+            // 301 со старого wiki-адреса; существующий редирект не трогаем
+            foreach ($mw->oldWikiPaths($oldTitle) as $path) {
+                if (! $dry) {
+                    Redirect::firstOrCreate(
+                        ['from_path' => $path],
+                        ['to_url' => $target->url(), 'status_code' => 301, 'comment' => 'Пункт «Сеансы 2013» из Wayback 07.12.2021'],
+                    );
+                }
+            }
+
+            if (str_contains((string) $page->body, (string) $date)) {
+                continue;
+            }
+
+            $label = trim($text) === $text
+                ? e($text)
+                : '&nbsp;'.e(trim($text)).'&nbsp;';
+            $lis[] = '<li><a href="'.e($target->url()).'"><strong>'.$label.'</strong></a></li>';
+            $this->line("Сеансы 2013: + {$date} → {$target->url()}");
+            $added++;
+        }
+
+        if ($lis) {
+            $chunk = implode('', $lis);
+            $pos = mb_strrpos($page->body, '</ul>');
+            $body = $pos === false
+                ? $page->body.'<ul>'.$chunk.'</ul>'
+                : mb_substr($page->body, 0, $pos).$chunk.mb_substr($page->body, $pos);
+            if (! $dry) {
+                $page->body = $body;
+                $page->save();
+            }
+        }
+
+        $this->info("Сеансы 2013: пунктов добавлено — {$added}.");
     }
 
     /** Ссылки на localhost в существующем контенте → относительные. */
