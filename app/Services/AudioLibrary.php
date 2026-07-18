@@ -212,6 +212,14 @@ class AudioLibrary
 
             return self::$durations[$path] = $minutes;
         }
+        // M4A/AAC (перекодированные записи «Сферы Разума» и новые загрузки):
+        // длительность из атома mvhd контейнера MP4
+        if (strlen($riff) === 12 && substr($riff, 4, 4) === 'ftyp') {
+            $minutes = self::mp4Duration($fh);
+            fclose($fh);
+
+            return self::$durations[$path] = $minutes;
+        }
         fseek($fh, 0);
 
         $head = (string) fread($fh, 10);
@@ -254,6 +262,84 @@ class AudioLibrary
         fclose($fh);
 
         return self::$durations[$path] = $seconds / 60;
+    }
+
+    /**
+     * Длительность MP4/M4A в минутах: duration/timescale из атома mvhd.
+     *
+     * Атомы обходятся по заголовкам (размер + тип) от начала файла: mdat
+     * может занимать сотни мегабайт, поэтому его перепрыгиваем fseek, а не
+     * ищем сигнатуру сканом. mvhd — всегда прямой ребёнок moov.
+     *
+     * @param  resource  $fh
+     */
+    private static function mp4Duration($fh): float
+    {
+        fseek($fh, 0, SEEK_END);
+        $end = ftell($fh);
+
+        $pos = 0;
+        while ($pos + 8 <= $end) {
+            fseek($fh, $pos);
+            $hdr = (string) fread($fh, 16);
+            if (strlen($hdr) < 8) {
+                break;
+            }
+            $size = unpack('N', substr($hdr, 0, 4))[1];
+            $head = 8;
+            if ($size === 1 && strlen($hdr) === 16) {
+                // largesize: 64-битный размер сразу после типа
+                $size = unpack('J', substr($hdr, 8, 8))[1];
+                $head = 16;
+            } elseif ($size === 0) {
+                $size = $end - $pos; // «до конца файла»
+            }
+            if ($size < $head) {
+                break;
+            }
+
+            if (substr($hdr, 4, 4) === 'moov') {
+                $inner = $pos + $head;
+                $innerEnd = min($pos + $size, $end);
+                while ($inner + 8 <= $innerEnd) {
+                    fseek($fh, $inner);
+                    $h2 = (string) fread($fh, 8);
+                    if (strlen($h2) < 8) {
+                        break;
+                    }
+                    $s2 = unpack('N', substr($h2, 0, 4))[1];
+                    if ($s2 < 8) {
+                        break;
+                    }
+                    if (substr($h2, 4, 4) === 'mvhd') {
+                        $body = (string) fread($fh, 32);
+                        if (strlen($body) < 20) {
+                            break;
+                        }
+                        if (ord($body[0]) === 1) {
+                            // v1: creation/modification по 8 байт, duration 64-битный
+                            if (strlen($body) < 32) {
+                                break;
+                            }
+                            $timescale = unpack('N', substr($body, 20, 4))[1];
+                            $duration = unpack('J', substr($body, 24, 8))[1];
+                        } else {
+                            $timescale = unpack('N', substr($body, 12, 4))[1];
+                            $duration = unpack('N', substr($body, 16, 4))[1];
+                        }
+
+                        return $timescale > 0 ? $duration / $timescale / 60 : 0.0;
+                    }
+                    $inner += $s2;
+                }
+
+                return 0.0;
+            }
+
+            $pos += $size;
+        }
+
+        return 0.0;
     }
 
     /**
