@@ -129,4 +129,30 @@ class Page extends Model
     {
         return $this->seo[$key] ?? $default;
     }
+
+    /**
+     * Обложка плеера для системного UI ОС (Media Session API — экран
+     * блокировки/шторка на iOS и Android при прослушивании): og-картинка
+     * страницы, иначе первая картинка в тексте, иначе стандартная
+     * OG-заглушка сайта. Всегда абсолютный URL — MediaMetadata.artwork
+     * относительных путей не принимает.
+     */
+    public function coverImageUrl(): string
+    {
+        $base = rtrim(config('app.url'), '/');
+
+        if ($og = $this->seoValue('og_image')) {
+            return $og;
+        }
+
+        if ($this->body_rendered && preg_match('/<img[^>]+src="([^"]+)"/', $this->body_rendered, $m)) {
+            $src = $m[1];
+
+            return str_starts_with($src, 'http://') || str_starts_with($src, 'https://')
+                ? $src
+                : $base.$src;
+        }
+
+        return $base.'/images/x-intellect_logo.webp';
+    }
 }

@@ -25,6 +25,7 @@ class PageRenderer
             return view('site.partials.audio-player', [
                 'tracks' => collect([$media]),
                 'playerId' => 'audio-'.$media->id,
+                'page' => $page,
             ])->render();
         }, $html);
     }
