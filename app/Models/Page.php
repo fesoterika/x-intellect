@@ -139,20 +139,20 @@ class Page extends Model
      */
     public function coverImageUrl(): string
     {
-        $base = rtrim(config('app.url'), '/');
+        $absolute = function (string $url): string {
+            return str_starts_with($url, 'http://') || str_starts_with($url, 'https://')
+                ? $url
+                : rtrim(config('app.url'), '/').'/'.ltrim($url, '/');
+        };
 
         if ($og = $this->seoValue('og_image')) {
-            return $og;
+            return $absolute($og);
         }
 
         if ($this->body_rendered && preg_match('/<img[^>]+src="([^"]+)"/', $this->body_rendered, $m)) {
-            $src = $m[1];
-
-            return str_starts_with($src, 'http://') || str_starts_with($src, 'https://')
-                ? $src
-                : $base.$src;
+            return $absolute($m[1]);
         }
 
-        return $base.'/images/x-intellect_logo.webp';
+        return $absolute('/images/x-intellect_logo.webp');
     }
 }
