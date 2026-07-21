@@ -43,14 +43,15 @@ class HomeController extends Controller
                         ->where('is_listed', true)
                         ->count();
                 }),
-            // «Свежее» — по дате добавления на НОВЫЙ сайт (created_at):
-            // published_at хранит дату добавления материала на старом сайте
-            // (content:sync-dates) и для блока новинок не подходит
+            // «Свежее» — по «Дате материала» (published_at), как в листингах
+            // разделов (SectionController, сортировка «new»). created_at —
+            // тай-брейкер для материалов с одинаковой датой
             'latestPages' => Page::published()
                 ->listed()
                 ->where('page_type', 'page')
                 // page-card: audio-бейдж и url() через section.parent — без N+1
                 ->with(['audio', 'section.parent'])
+                ->orderByDesc('published_at')
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get(),
