@@ -5,3 +5,7 @@
 !media/**
 media/audio/**
 media/files/**
+
+# Мусор macOS: правило !media/** выше перебивает глобальное .DS_Store,
+# поэтому исключаем его отдельно
+media/**/.DS_Store
