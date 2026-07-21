@@ -1364,6 +1364,8 @@ html { scroll-padding-top: 84px; }
 
 /* --- Список страниц раздела --- */
 .page-card {
+    /* Цвет эпохи — общий для полосы сверху и черты над «Читать» */
+    --xi-epoch: var(--xi-accent-deep);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1386,15 +1388,15 @@ html { scroll-padding-top: 84px; }
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--xi-accent-deep);
+    background: var(--xi-epoch);
     opacity: 0.55;
     transition: opacity .2s;
 }
-.page-card.epoch-archive_sferarazuma::before { background: #d69e2e; }
-.page-card.epoch-new::before { background: #2ea05a; }
+.page-card.epoch-archive_sferarazuma { --xi-epoch: #d69e2e; }
+.page-card.epoch-new { --xi-epoch: #2ea05a; }
 /* Вики: тот же тон 60°, что и #fafad2 у бейджа, но насыщенный — сам #fafad2
    полоской в 2px не читается. */
-.page-card.epoch-archive_wiki::before { background: #a3a32c; }
+.page-card.epoch-archive_wiki { --xi-epoch: #a3a32c; }
 .page-card:hover::before { opacity: 1; }
 
 .page-card:hover {
@@ -1402,16 +1404,42 @@ html { scroll-padding-top: 84px; }
     transform: translateY(-2px);
     box-shadow: 0 12px 28px -14px rgba(90, 63, 214, 0.3);
 }
-.page-card h3 { font-family: var(--xi-font-serif); margin: 0 0 6px; font-size: 17.5px; line-height: 1.35; }
-.page-card p { margin: 8px 0 0; font-size: 14px; color: var(--xi-ink-soft); }
-.page-card .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--xi-ink-faint); flex-wrap: wrap; }
+.page-card h3 { font-family: var(--xi-font-serif); margin: 12px 0 0; font-size: 17.5px; line-height: 1.35; }
+.page-card p { margin: 8px 0 14px; font-size: 14px; color: var(--xi-ink-soft); }
 
-/* «Читать» — прижат к низу карточки (грид выравнивает высоты),
-   стрелка сдвигается при наведении */
-.page-card-more {
+/* Шапка карточки: бейдж эпохи, год архива у правого края, за ним булавка.
+   Год и булавка уходят вправо через margin-left на втором элементе строки —
+   каким бы он ни оказался (год есть не у всех материалов). */
+.page-card-top { display: flex; align-items: center; gap: 10px; }
+.page-card-top > :nth-child(2) { margin-left: auto; }
+.page-card-year { font-size: 12px; color: var(--xi-ink-faint); white-space: nowrap; }
+
+/* Низ карточки прижат к её основанию (грид выравнивает высоты):
+   слева счётчик аудио, справа «Читать» со сдвигающейся стрелкой */
+.page-card-foot {
+    position: relative;
     margin-top: auto;
     padding-top: 12px;
-    border-top: 1px solid var(--xi-line);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--xi-ink-faint);
+}
+/* Черта над низом карточки: начинается цветом эпохи (как полоса сверху
+   и бейдж) и растворяется вправо */
+.page-card-foot::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--xi-epoch), var(--xi-line) 55%, transparent);
+    opacity: 0.7;
+}
+.page-card-more {
+    margin-left: auto;
     font-size: 12.5px;
     font-weight: 600;
     color: var(--xi-accent);
@@ -1419,15 +1447,16 @@ html { scroll-padding-top: 84px; }
     align-items: center;
     gap: 6px;
 }
-/* Закреплённый материал: булавка в верхнем углу карточки. Полоса эпохи
+.page-card-more .arr { transition: transform .2s; }
+.page-card:hover .page-card-more .arr { transform: translateX(4px); }
+
+/* Закреплённый материал: булавка в шапке, следом за годом. Полоса эпохи
    у таких карточек всегда в полную силу — закрепление заметно и в потоке. */
 .page-card.is-pinned::before { opacity: 1; }
 .page-card-pin {
-    position: absolute;
-    top: 11px;
-    right: 12px;
-    width: 26px;
-    height: 26px;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
     display: grid;
     place-items: center;
     border-radius: 50%;
@@ -1436,15 +1465,8 @@ html { scroll-padding-top: 84px; }
     border: 1px solid var(--xi-line);
     transition: transform .2s, border-color .2s;
 }
-.page-card-pin svg { width: 14px; height: 14px; }
+.page-card-pin svg { width: 13px; height: 13px; }
 .page-card:hover .page-card-pin { transform: rotate(-12deg); border-color: var(--xi-accent-deep); }
-/* Бейджи в шапке карточки не заезжают под булавку */
-.page-card.is-pinned .meta { padding-right: 26px; }
-
-/* Зазор между текстом и «Читать» (auto прижимает блок к низу карточки) */
-.page-card > :nth-last-child(2) { margin-bottom: 14px; }
-.page-card-more .arr { transition: transform .2s; }
-.page-card:hover .page-card-more .arr { transform: translateX(4px); }
 
 /* Сетка карточек раздела + кнопка «Показать ещё» */
 .section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
