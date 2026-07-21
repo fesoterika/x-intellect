@@ -27,21 +27,25 @@
 # Загруженные медиафайлы (/storage — симлинк на storage/app/public) отдаёт
 # веб-сервер напрямую, минуя PHP: middleware SecurityHeaders до них не достаёт.
 <IfModule mod_headers.c>
-    # Без nosniff браузер угадывает тип по содержимому и может исполнить
-    # загруженный файл как HTML — с домена сайта
-    Header always set X-Content-Type-Options "nosniff"
-
     # Ассеты Vite (/build/assets) несут хеш содержимого в имени файла —
     # при изменении меняется и имя, поэтому кешировать можно навсегда
     <FilesMatch "-[A-Za-z0-9_-]{8,}\.(css|js|woff2?)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set X-Content-Type-Options "nosniff"
     </FilesMatch>
 
     # Медиа контента: имена архивных файлов содержательно-адресные (sha1),
     # загрузки из редактора получают новое случайное имя при перезаливке —
     # месяц кеша безопасен и снимает повторные скачивания со старых телефонов
+    #
+    # nosniff здесь, а не глобально: без него браузер угадывает тип по
+    # содержимому и может исполнить загруженный файл как HTML — с домена
+    # сайта. Ответы PHP тот же заголовок получают от middleware
+    # SecurityHeaders, до статики он не достаёт — глобальная директива
+    # дублировала бы его в каждом динамическом ответе
     <FilesMatch "\.(jpe?g|png|gif|webp|svg|ico|mp3|m4a|ogg|oga|wav|flac|pdf)$">
         Header set Cache-Control "public, max-age=2592000"
+        Header set X-Content-Type-Options "nosniff"
     </FilesMatch>
 </IfModule>
 
