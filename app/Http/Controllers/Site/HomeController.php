@@ -49,7 +49,8 @@ class HomeController extends Controller
             'latestPages' => Page::published()
                 ->listed()
                 ->where('page_type', 'page')
-                ->with('section')
+                // page-card: audio-бейдж и url() через section.parent — без N+1
+                ->with(['audio', 'section.parent'])
                 ->orderByDesc('created_at')
                 ->limit(6)
                 ->get(),
