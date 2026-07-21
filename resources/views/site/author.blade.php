@@ -9,22 +9,21 @@
 @section('content')
     {{-- Персональная страница автора/хранителя проекта - отдельный шаблон
          вне общей иерархии разделов (Этап 1 плана) --}}
-    <article style="max-width: 760px; margin: 0 auto;">
+    <article style="max-width: 880px; margin: 0 auto;">
         @include('site.partials.breadcrumbs', ['crumbs' => [
             'Главная' => '/',
             'Об авторе' => null,
         ]])
 
         <div class="xi-card" style="padding: 36px 34px;">
-            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
-                <img src="/images/f_color.webp" alt="Портрет автора - Ф. (@fesoterika)" width="76" height="76"
-                     style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 1px solid var(--xi-accent-deep); background: var(--xi-accent-soft);">
+            <div class="author-head">
+                <img src="/images/f_color.webp" alt="Портрет автора - Ф. (@fesoterika)" width="76" height="76">
                 <div>
                     <div class="title-with-edit" style="margin: 0;">
                         <h1 class="page-title" style="margin: 0;">{{ $page->title }}</h1>
                         <x-edit-link :href="route('admin.pages.edit', $page)" label="Редактировать страницу" />
                     </div>
-                    <p style="margin: 4px 0 0; color: var(--xi-ink-faint);">Хранитель архива и разработчик сайта</p>
+                    <p style="margin: 4px 0 0; color: var(--xi-ink-faint);">Разработчик нового сайта</p>
                 </div>
             </div>
 
