@@ -73,6 +73,18 @@ class PlayerCoverImageTest extends TestCase
         $this->assertSame('https://example.org/cover.jpg', $page->coverImageUrl());
     }
 
+    public function test_relative_og_image_is_absolutized(): void
+    {
+        $page = $this->makePage('s-otnositelnym-og', [
+            'seo' => ['og_image' => '/storage/media/archive/cover.png'],
+        ]);
+
+        $this->assertSame(
+            rtrim(config('app.url'), '/').'/storage/media/archive/cover.png',
+            $page->coverImageUrl(),
+        );
+    }
+
     public function test_audio_player_passes_cover_and_page_title_to_alpine(): void
     {
         $page = $this->makePage('s-audio', [
