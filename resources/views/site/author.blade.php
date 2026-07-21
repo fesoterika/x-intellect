@@ -61,7 +61,8 @@
             </div>
         </div>
 
-        @include('site.partials.feedback')
+        {{-- Плашку «Нашли ошибку?» здесь не показываем: страница об авторе -
+             исключение, контакты для связи уже есть выше --}}
     </article>
 
     @include('site.partials.scroll-top')
