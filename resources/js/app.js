@@ -1,6 +1,9 @@
 import Alpine from 'alpinejs';
+import initStarfield from './starfield';
 
 window.Alpine = Alpine;
+
+initStarfield();
 
 /**
  * Аудиоплеер для вики-страниц (Этап 4 плана): Alpine.js-компонент без

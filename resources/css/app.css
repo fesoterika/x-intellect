@@ -163,8 +163,13 @@ html { scroll-padding-top: 84px; }
 }
 
 /* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
-   читались как звёзды) + два замощённых слоя мягких
-   звёзд (SVG-тайл) с деликатным мерцанием и лёгким параллаксом. */
+   читались как звёзды) + звёзды.
+
+   Звёзды рисует canvas (resources/js/starfield.js): у каждой своя фаза
+   мерцания, поэтому нет ни общего мигания, ни повторов тайла; там же
+   созвездие-знак проекта. Замощённые слои ниже остаются запасным
+   вариантом для страниц без JS (заглушка техработ) — при живом canvas
+   их убирает класс is-canvas. */
 .starfield {
     position: fixed;
     inset: 0;
@@ -203,6 +208,16 @@ html { scroll-padding-top: 84px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .starfield::before, .starfield::after { animation: none; }
+}
+
+/* Canvas взял звёзды на себя — запасные слои больше не нужны */
+.starfield.is-canvas::before,
+.starfield.is-canvas::after { content: none; }
+.starfield canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .site-wrap {
