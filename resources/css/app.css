@@ -1603,6 +1603,18 @@ html { scroll-padding-top: 84px; }
     .xi-to-top svg { width: 18px; height: 18px; }
 }
 
+/* --- Шапка страницы автора --- */
+.author-head { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+
+.author-head img {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--xi-accent-deep);
+    background: var(--xi-accent-soft);
+}
+
 /* --- Кнопки-ссылки страницы автора --- */
 .author-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 
@@ -1624,6 +1636,17 @@ html { scroll-padding-top: 84px; }
 .author-links .btn-solid:hover { background: var(--xi-accent); }
 .author-links .btn-outline { border: 1px solid var(--xi-line); color: var(--xi-ink-soft); }
 .author-links .btn-outline:hover { border-color: var(--xi-accent); color: var(--xi-ink); }
+
+@media (max-width: 560px) {
+    /* Портрет по центру страницы, текст под ним */
+    .author-head { flex-direction: column; align-items: center; text-align: center; gap: 14px; }
+    .author-head .title-with-edit { justify-content: center; }
+
+    /* На узких экранах ужимаем паддинг, чтобы последняя пара кнопок
+       («Кто я?» + «Поддержать») влезала в одну строку */
+    .author-links { gap: 8px; }
+    .author-links a { padding: 11px 12px; gap: 6px; }
+}
 
 /* --- Футер --- */
 .site-footer {
