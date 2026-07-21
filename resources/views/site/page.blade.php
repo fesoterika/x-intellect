@@ -83,7 +83,7 @@
         @if ($hasAudioSection)
             <section id="audio" style="margin-top: 22px;">
                 <h2 class="section-title">Аудиозаписи</h2>
-                @include('site.partials.audio-player', ['tracks' => $playlist, 'playerId' => 'page-playlist'])
+                @include('site.partials.audio-player', ['tracks' => $playlist, 'playerId' => 'page-playlist', 'page' => $page])
             </section>
         @endif
 

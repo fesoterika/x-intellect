@@ -8,8 +8,10 @@ window.Alpine = Alpine;
  * плейлист (записи курса подряд), сохранение позиции в localStorage —
  * важно для многочасовых записей курсов А. Глаза.
  */
-Alpine.data('audioPlayer', (tracks) => ({
+Alpine.data('audioPlayer', (tracks, cover, pageTitle) => ({
     tracks,
+    cover,
+    pageTitle,
     current: 0,
     playing: false,
     progress: 0,
@@ -29,6 +31,8 @@ Alpine.data('audioPlayer', (tracks) => ({
             if (Math.floor(audio.currentTime) % 5 === 0 && audio.currentTime > 0) {
                 localStorage.setItem(this.posKey(), String(Math.floor(audio.currentTime)));
             }
+
+            if (this.playing) this.updateMediaSessionPosition();
         });
 
         audio.addEventListener('loadedmetadata', () => {
@@ -51,12 +55,75 @@ Alpine.data('audioPlayer', (tracks) => ({
 
         // Флаг playing синхронизируется с реальными событиями <audio> —
         // иначе он расходится с фактом (отклонённый play(), смена src, ended)
-        audio.addEventListener('play', () => { this.playing = true; });
+        audio.addEventListener('play', () => {
+            this.playing = true;
+            // Обложка/название на экране блокировки iOS и Android: session -
+            // общесистемная штука, поэтому берём её на себя только когда
+            // реально заиграл ИМЕННО этот плеер (страница может держать
+            // несколько плееров разом, у шорткодов [[audio:ID]] в том числе)
+            this.updateMediaSessionMetadata();
+            this.registerMediaSessionActions();
+        });
         audio.addEventListener('pause', () => { this.playing = false; });
 
         if (this.tracks.length) {
             audio.src = this.tracks[0].url;
         }
+    },
+
+    /** MediaMetadata для экрана блокировки/шторки iOS и Android. */
+    updateMediaSessionMetadata() {
+        if (! ('mediaSession' in navigator)) return;
+
+        const track = this.tracks[this.current];
+        if (! track) return;
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: this.pageTitle || 'X-Intellect.org',
+            album: 'X-Intellect.org — архив',
+            artwork: this.cover ? [{ src: this.cover }] : [],
+        });
+    },
+
+    /** Прогресс-бар на системном плеере (позиция/длительность для скраба). */
+    updateMediaSessionPosition() {
+        if (! ('mediaSession' in navigator) || typeof navigator.mediaSession.setPositionState !== 'function') return;
+
+        const audio = this.$refs.audio;
+        if (! isFinite(audio.duration) || audio.duration <= 0) return;
+
+        try {
+            navigator.mediaSession.setPositionState({
+                duration: audio.duration,
+                playbackRate: audio.playbackRate || 1,
+                position: Math.min(audio.currentTime, audio.duration),
+            });
+        } catch {
+            // setPositionState требует актуальную metadata — гонка при смене
+            // трека не критична, следующий timeupdate подтянет состояние
+        }
+    },
+
+    /** Кнопки play/pause/перемотка/след.-пред. трек на заблокированном экране. */
+    registerMediaSessionActions() {
+        if (! ('mediaSession' in navigator)) return;
+
+        const audio = this.$refs.audio;
+        navigator.mediaSession.setActionHandler('play', () => audio.play());
+        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+        navigator.mediaSession.setActionHandler('seekbackward', () => this.skip(-15));
+        navigator.mediaSession.setActionHandler('seekforward', () => this.skip(15));
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+            if (details.seekTime !== undefined) audio.currentTime = details.seekTime;
+        });
+
+        navigator.mediaSession.setActionHandler('previoustrack', this.current > 0
+            ? () => this.select(this.current - 1, true)
+            : null);
+        navigator.mediaSession.setActionHandler('nexttrack', this.current < this.tracks.length - 1
+            ? () => this.select(this.current + 1, true)
+            : null);
     },
 
     posKey() {

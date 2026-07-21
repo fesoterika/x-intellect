@@ -8,10 +8,15 @@
         'url' => $m->url(),
         'duration' => $m->durationLabel(),
     ])->values();
+
+    // Обложка для системного плеера ОС (Media Session API — экран блокировки/
+    // шторка на iOS и Android): og-картинка страницы, иначе первая картинка
+    // в тексте, иначе стандартная OG-заглушка (Page::coverImageUrl()).
+    $cover = $page->coverImageUrl();
 @endphp
 
 <div class="audio-player"
-     x-data="audioPlayer({{ Js::from($trackData) }})"
+     x-data="audioPlayer({{ Js::from($trackData) }}, {{ Js::from($cover) }}, {{ Js::from($page->title) }})"
      id="{{ $playerId ?? 'player' }}">
     <audio x-ref="audio" preload="metadata"></audio>
 
