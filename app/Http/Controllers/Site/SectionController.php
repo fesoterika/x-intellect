@@ -62,6 +62,10 @@ class SectionController extends Controller
             ->where('is_listed', true)
             ->with('media');
 
+        // Закреплённые — первыми, но выбранную сортировку не ломают:
+        // внутри закреплённых и внутри остальных порядок один и тот же.
+        $query->orderByDesc('is_pinned');
+
         // Даты — published_at (дата добавления материала на старом сайте,
         // см. content:sync-dates); алфавит — с учётом русской коллации
         match ($sort) {

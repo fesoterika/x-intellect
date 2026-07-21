@@ -93,7 +93,8 @@ html { scroll-padding-top: 84px; }
     --xi-accent-soft: rgba(106, 76, 214, 0.12);
     --xi-radius: 16px;
 
-    --xi-header-bg: rgba(255, 255, 255, 0.9);
+    /* Полупрозрачная шапка: сквозь неё читаются свечения фона (блюр на ::before) */
+    --xi-header-bg: rgba(255, 255, 255, 0.8);
     --xi-panel-bg: rgba(255, 255, 255, 0.98);
 
     /* Стекло (глассморфизм) — плитки разделов */
@@ -149,6 +150,18 @@ html { scroll-padding-top: 84px; }
     flex-direction: column;
 }
 
+/* Светлая тема: фиолетово-голубые свечения-«аура» в верхней части фона.
+   Позиции заданы в px от верха (а не в % высоты страницы), иначе пятна
+   растягиваются на высоту всего документа и почти не видны под шапкой. */
+:root:not([data-theme="dark"]) .site-body {
+    background:
+        radial-gradient(900px 520px at 18% -90px, rgba(106, 76, 214, 0.20) 0%, transparent 62%),
+        radial-gradient(820px 500px at 78% -70px, rgba(56, 132, 235, 0.18) 0%, transparent 64%),
+        radial-gradient(560px 380px at 48% 60px, rgba(150, 120, 235, 0.12) 0%, transparent 66%),
+        radial-gradient(800px 400px at 10% 110%, rgba(95, 76, 121, 0.10) 0%, transparent 55%),
+        var(--xi-bg);
+}
+
 /* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
    читались как звёзды) + два замощённых слоя мягких
    звёзд (SVG-тайл) с деликатным мерцанием и лёгким параллаксом. */
@@ -174,19 +187,19 @@ html { scroll-padding-top: 84px; }
 /* Дальний слой — мельче (плотнее), медленное мерцание */
 .starfield::before {
     background-size: 260px 260px;
-    opacity: 0.7;
+    opacity: 0.6;
     animation: xi-twinkle 6s ease-in-out infinite alternate;
 }
 /* Ближний слой — крупнее и ярче, смещён, другой ритм (ощущение глубины) */
 .starfield::after {
     background-size: 400px 400px;
     background-position: 130px 70px;
-    opacity: 0.9;
+    opacity: 0.75;
     animation: xi-twinkle 9s ease-in-out infinite alternate-reverse;
 }
 @keyframes xi-twinkle {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
+    from { opacity: 0.42; }
+    to { opacity: 0.86; }
 }
 @media (prefers-reduced-motion: reduce) {
     .starfield::before, .starfield::after { animation: none; }
@@ -593,10 +606,6 @@ html { scroll-padding-top: 84px; }
 .xi-prose figure.attachment img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
 .xi-prose figure.attachment figcaption { font-size: 13.5px; color: var(--xi-ink-faint); text-align: center; margin-top: 6px; }
 .xi-prose figure.attachment figcaption:empty { display: none; }
-/* Служебные имя/размер файла Trix — не подпись; прячем, если редактор не заполнил caption */
-.xi-prose figure.attachment figcaption .attachment__name,
-.xi-prose figure.attachment figcaption .attachment__size { display: none; }
-.xi-prose figure.attachment figcaption:not(:has(:not(.attachment__name):not(.attachment__size))) { display: none; }
 .xi-prose a:has(> img) { cursor: zoom-in; }
 .xi-prose figure.xi-float-left { float: left; max-width: min(45%, 320px); margin: 4px 22px 10px 0; text-align: left; }
 .xi-prose figure.xi-float-right { float: right; max-width: min(45%, 320px); margin: 4px 0 10px 22px; text-align: right; }
@@ -972,7 +981,7 @@ html { scroll-padding-top: 84px; }
     background: var(--xi-accent-soft);
     border-radius: 999px;
     padding: 3px 10px;
-    margin-top: 4px;
+    margin-top: auto;
 }
 :root[data-theme="dark"] .section-tile-count { color: var(--xi-accent); }
 
@@ -1004,7 +1013,7 @@ html { scroll-padding-top: 84px; }
         background-clip: text;
     }
 }
-.home-stats .stat-label { font-size: 12.5px; color: var(--xi-ink-faint); }
+.home-stats .stat-label { font-size: 12.5px; color: var(--xi-ink-soft); }
 
 .stats-strip {
     display: grid;
@@ -1410,6 +1419,28 @@ html { scroll-padding-top: 84px; }
     align-items: center;
     gap: 6px;
 }
+/* Закреплённый материал: булавка в верхнем углу карточки. Полоса эпохи
+   у таких карточек всегда в полную силу — закрепление заметно и в потоке. */
+.page-card.is-pinned::before { opacity: 1; }
+.page-card-pin {
+    position: absolute;
+    top: 11px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--xi-accent);
+    background: var(--xi-accent-soft);
+    border: 1px solid var(--xi-line);
+    transition: transform .2s, border-color .2s;
+}
+.page-card-pin svg { width: 14px; height: 14px; }
+.page-card:hover .page-card-pin { transform: rotate(-12deg); border-color: var(--xi-accent-deep); }
+/* Бейджи в шапке карточки не заезжают под булавку */
+.page-card.is-pinned .meta { padding-right: 26px; }
+
 /* Зазор между текстом и «Читать» (auto прижимает блок к низу карточки) */
 .page-card > :nth-last-child(2) { margin-bottom: 14px; }
 .page-card-more .arr { transition: transform .2s; }
@@ -1503,6 +1534,74 @@ html { scroll-padding-top: 84px; }
 }
 .xi-page.is-dots { border-color: transparent; background: transparent; color: var(--xi-ink-faint); }
 .xi-page.is-disabled { opacity: 0.4; cursor: default; }
+
+/* --- Кнопка «наверх» (правый нижний угол; см. site.partials.scroll-top) ---
+   Стекло той же выделки, что и плитки разделов, чтобы кнопка читалась
+   поверх любого фона и не спорила с палитрой. */
+.xi-to-top {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    /* На смартфонах с «шторкой»/жестовой полосой отступ считается от
+       безопасной зоны, иначе кнопка липнет к системным элементам */
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--xi-accent);
+    background: var(--xi-glass-bg);
+    border: 1px solid var(--xi-glass-line);
+    box-shadow: 0 8px 24px var(--xi-glass-shadow);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+
+    /* Базовое состояние - скрыта: класс is-shown вешает Alpine после прокрутки.
+       visibility (а не display) убирает кнопку и из порядка обхода Tab. */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity .2s, visibility .2s, transform .2s,
+                background .15s, border-color .15s, box-shadow .15s;
+}
+.xi-to-top.is-shown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.xi-to-top svg { width: 20px; height: 20px; }
+.xi-to-top:hover {
+    background: var(--xi-glass-bg-hover);
+    border-color: var(--xi-accent);
+    box-shadow: 0 10px 28px var(--xi-glass-shadow);
+}
+.xi-to-top.is-shown:active { transform: translateY(1px) scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+    .xi-to-top { transform: none; transition: opacity .01s, visibility .01s; }
+}
+
+/* Фолбэк без backdrop-filter: непрозрачная поверхность вместо стекла */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .xi-to-top { background: var(--xi-surface); border-color: var(--xi-line); }
+}
+
+/* Смартфоны: компактнее и ближе к краю, чтобы не наезжать на текст */
+@media (max-width: 560px) {
+    .xi-to-top {
+        width: 44px;
+        height: 44px;
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+    }
+    .xi-to-top svg { width: 18px; height: 18px; }
+}
 
 /* --- Кнопки-ссылки страницы автора --- */
 .author-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }

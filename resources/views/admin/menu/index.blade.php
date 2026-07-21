@@ -33,22 +33,34 @@
                 <select name="parent_id" class="w-full rounded-md border-gray-300">
                     <option value="">- корневой -</option>
                     @foreach ($parents as $parent)
-                        <option value="{{ $parent->id }}">{{ $parent->label }} ({{ $parent->location === 'header' ? 'шапка' : 'футер' }})</option>
+                        <option value="{{ $parent->id }}">{{ $parent->label }}</option>
                     @endforeach
                 </select>
             </div>
             <button class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700">Добавить</button>
         </form>
 
-        <div class="bg-white rounded-lg shadow divide-y">
-            @forelse ($items as $item)
-                @include('admin.menu.row', ['item' => $item, 'parents' => $parents, 'nested' => false])
-                @foreach ($item->children as $child)
-                    @include('admin.menu.row', ['item' => $child, 'parents' => $parents, 'nested' => true])
-                @endforeach
-            @empty
-                <p class="p-6 text-center text-gray-400 text-sm">Пунктов меню пока нет</p>
-            @endforelse
-        </div>
+        @foreach ([
+            ['Шапка сайта', $headerItems, 'Верхнее меню. Только у него бывает выпадающее подменю.'],
+            ['Футер', $footerItems, 'Нижнее меню. Один уровень: подпункты здесь не выводятся.'],
+        ] as [$caption, $group, $hint])
+            <section>
+                <div class="flex items-baseline justify-between mb-2">
+                    <h3 class="font-semibold text-gray-800">{{ $caption }}</h3>
+                    <span class="text-xs text-gray-400">{{ $hint }}</span>
+                </div>
+
+                <div class="bg-white rounded-lg shadow divide-y">
+                    @forelse ($group as $item)
+                        @include('admin.menu.row', ['item' => $item, 'parents' => $parents, 'nested' => false])
+                        @foreach ($item->children as $child)
+                            @include('admin.menu.row', ['item' => $child, 'parents' => $parents, 'nested' => true])
+                        @endforeach
+                    @empty
+                        <p class="p-6 text-center text-gray-400 text-sm">Пунктов пока нет</p>
+                    @endforelse
+                </div>
+            </section>
+        @endforeach
     </div>
 </x-app-layout>

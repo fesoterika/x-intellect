@@ -12,6 +12,7 @@
 @endsection
 
 @section('content')
+@php use App\Support\RussianText; @endphp
     <section class="xi-card home-hero" style="padding: 40px 34px;">
         {{-- Переключатель темы в углу блока: иконка солнца/луны по теме.
              Синхронизирован с переключателем в шапке через событие xi-theme. --}}
@@ -62,7 +63,15 @@
                     @if ($section->description)
                         <span class="section-tile-desc">{{ Str::limit($section->descriptionPlain(), 100) }}</span>
                     @endif
-                    <span class="section-tile-count">{{ trans_choice('{0} нет материалов|{1} :count материал|[2,4] :count материала|[5,*] :count материалов', $section->published_pages_count) }}</span>
+                    {{-- Склонение через хелпер, а не trans_choice: явные диапазоны
+                         ошибаются на 21-24, 31-34 («21 материалов») --}}
+                    <span class="section-tile-count">
+                        @if ($section->published_pages_count === 0)
+                            нет материалов
+                        @else
+                            {{ $section->published_pages_count }} {{ RussianText::plural($section->published_pages_count, 'материал', 'материала', 'материалов') }}
+                        @endif
+                    </span>
                 </a>
             @endforeach
 
@@ -75,7 +84,7 @@
                     </span>
                     <span class="section-tile-rule" aria-hidden="true"></span>
                     <span class="section-tile-desc">Темы и сообщения форума проекта 2012-2019 годов. Только чтение - архивная копия.</span>
-                    <span class="section-tile-count">{{ trans_choice('{1} :count тема|[2,4] :count темы|[5,*] :count тем', $forumTopicsCount) }}</span>
+                    <span class="section-tile-count">{{ $forumTopicsCount }} {{ RussianText::plural($forumTopicsCount, 'тема', 'темы', 'тем') }}</span>
                 </a>
             @endif
         </div>

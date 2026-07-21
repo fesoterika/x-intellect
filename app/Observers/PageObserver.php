@@ -108,6 +108,7 @@ class PageObserver
                 'source_url' => $page->getOriginal('source_url'),
                 'archived_at' => $page->getOriginal('archived_at'),
                 'note' => ($manual ? 'Отредактирована вручную ' : 'Обновлена командой ').now()->format('d.m.Y H:i'),
+                'reason' => $page->revisionReason,
             ]);
         }
     }

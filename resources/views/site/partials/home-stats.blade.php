@@ -5,8 +5,8 @@
     use App\Support\RussianText;
 
     $items = [
+        ['value' => $stats['pages'], 'label' => RussianText::plural($stats['pages'], 'материал', 'материала', 'материалов')],
         ['value' => $stats['sections'], 'label' => RussianText::plural($stats['sections'], 'раздел', 'раздела', 'разделов')],
-        ['value' => $stats['pages'], 'label' => RussianText::plural($stats['pages'], 'страница', 'страницы', 'страниц')],
         ['value' => $stats['audio'], 'label' => RussianText::plural($stats['audio'], 'аудиозапись', 'аудиозаписи', 'аудиозаписей')],
         ['value' => $stats['terms'], 'label' => RussianText::plural($stats['terms'], 'термин', 'термина', 'терминов')],
     ];

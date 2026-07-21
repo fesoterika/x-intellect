@@ -26,12 +26,23 @@ class HomeController extends Controller
                     ->count(),
                 'terms' => GlossaryTerm::count(),
             ],
+            // Счётчик плитки должен совпадать с тем, что реально покажет
+            // листинг раздела (SectionController@show): для корня туда
+            // входят и страницы подразделов, поэтому withCount('pages')
+            // (только прямая связь section_id) тут не годится.
             'sections' => Section::root()
                 ->where('is_visible', true)
                 ->where('show_on_home', true)
                 ->orderBy('position')
-                ->withCount(['pages as published_pages_count' => fn ($q) => $q->where('status', 'published')->where('is_listed', true)])
-                ->get(),
+                ->with('children:id,parent_id')
+                ->get()
+                ->each(function (Section $section) {
+                    $sectionIds = $section->children->pluck('id')->push($section->id);
+                    $section->published_pages_count = Page::whereIn('section_id', $sectionIds)
+                        ->where('status', 'published')
+                        ->where('is_listed', true)
+                        ->count();
+                }),
             // «Свежее» — по дате добавления на НОВЫЙ сайт (created_at):
             // published_at хранит дату добавления материала на старом сайте
             // (content:sync-dates) и для блока новинок не подходит
