@@ -6,6 +6,7 @@ Disallow: /admin
 Disallow: /login
 Disallow: /profile
 Disallow: /search
+Disallow: /forum/search
 Allow: /
 
 Sitemap: https://x-intellect.org/sitemap.xml

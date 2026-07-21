@@ -28,9 +28,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Навигация из таблицы menu_items — доступна во всех публичных шаблонах.
         // Шапка — корневые пункты с детьми (выпадающие подменю), футер плоский.
+        // Composer срабатывает на КАЖДЫЙ site.*-шаблон (включая partial'ы),
+        // поэтому меню берётся из кеша с мемоизацией в рамках запроса.
         View::composer('site.*', function ($view) {
-            $view->with('headerMenu', MenuItem::location('header')->root()->with('children')->get())
-                ->with('footerMenu', MenuItem::location('footer')->root()->get());
+            $view->with('headerMenu', MenuItem::tree('header'))
+                ->with('footerMenu', MenuItem::tree('footer'));
         });
     }
 }
