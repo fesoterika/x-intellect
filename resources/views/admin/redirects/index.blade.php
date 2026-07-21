@@ -5,11 +5,33 @@
     </x-slot>
 
     <div class="py-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <p class="text-sm text-gray-500">
-            301 - постоянный перенос со старых архивных URL (сохранение ссылочного веса).
-            302 - обёртки <code>/go/*.html</code> для обхода adblock: внутренняя ссылка того же домена,
-            сервер перенаправляет на внешний ресурс (Дзен, донат и т.п.).
-        </p>
+        <div class="flex flex-wrap gap-4 items-start justify-between">
+            <p class="text-sm text-gray-500 flex-1 min-w-64">
+                301 - постоянный перенос со старых архивных URL (сохранение ссылочного веса).
+                302 - обёртки <code>/go/*.html</code> для обхода adblock: внутренняя ссылка того же домена,
+                сервер перенаправляет на внешний ресурс (Дзен, донат и т.п.).
+            </p>
+            <form method="POST" action="{{ route('admin.redirects.fix-chains') }}"
+                  onsubmit="return confirm('Проверить редиректы и схлопнуть цепочки? Правятся только однозначные случаи.')">
+                @csrf
+                <button class="px-4 py-2 bg-emerald-600 text-white rounded-md text-sm font-medium hover:bg-emerald-700">
+                    Исправить цепочки
+                </button>
+            </form>
+        </div>
+
+        @if (session('redirects_report'))
+            <x-modal name="redirects-report" :show="true" maxWidth="2xl">
+                <div class="p-6 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Отчёт проверки редиректов</h3>
+                    <pre class="bg-gray-50 border rounded-md p-4 text-xs font-mono whitespace-pre-wrap max-h-96 overflow-y-auto">{{ session('redirects_report') }}</pre>
+                    <div class="text-right">
+                        <button type="button" x-on:click="$dispatch('close')"
+                                class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Закрыть</button>
+                    </div>
+                </div>
+            </x-modal>
+        @endif
 
         <form method="POST" action="{{ route('admin.redirects.store') }}" class="bg-white rounded-lg shadow p-6 grid md:grid-cols-6 gap-4 items-end">
             @csrf

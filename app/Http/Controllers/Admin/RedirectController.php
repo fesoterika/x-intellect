@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Redirect;
 use App\Support\RussianText;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rule;
 
 class RedirectController extends Controller
@@ -31,6 +32,18 @@ class RedirectController extends Controller
         return view('admin.redirects.index', [
             'redirects' => $redirects,
         ]);
+    }
+
+    /**
+     * Сверка редиректов с фактическими адресами + автоправка однозначных
+     * случаев (переехавшая цель, лишний хоп в цепочке). Отчёт команды
+     * показывается в модалке — там же видно и то, что чинится только руками.
+     */
+    public function fixChains()
+    {
+        Artisan::call('redirects:check', ['--fix' => true]);
+
+        return back()->with('redirects_report', trim(Artisan::output()));
     }
 
     public function store(Request $request)
@@ -64,6 +77,12 @@ class RedirectController extends Controller
         ]);
 
         $data['from_path'] = '/'.ltrim($data['from_path'], '/');
+
+        // Внутренняя цель без ведущего слеша даёт относительный Location —
+        // переход ломается молча (так протух /wiki/proekt-kartiny-...-zemlia).
+        if (! preg_match('~^([a-z][a-z0-9+.-]*:|//)~i', $data['to_url'])) {
+            $data['to_url'] = '/'.ltrim($data['to_url'], '/');
+        }
 
         return $data;
     }

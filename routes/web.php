@@ -41,6 +41,8 @@ Route::prefix('admin')
 
         Route::resource('sections', Admin\SectionController::class)->except(['show']);
         Route::resource('pages', Admin\PageController::class)->except(['show']);
+        // История изменений страницы — правка из формы страницы
+        Route::resource('pages.revisions', Admin\PageRevisionController::class)->only(['update', 'destroy']);
         Route::resource('media', Admin\MediaController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('glossary', Admin\GlossaryTermController::class)->only(['index', 'store', 'update', 'destroy']);
 
@@ -52,6 +54,8 @@ Route::prefix('admin')
 
         // Редиректы и меню — только администратор
         Route::middleware('can:admin')->group(function () {
+            // Схлопывание цепочек редиректов (artisan redirects:check --fix)
+            Route::post('redirects/fix-chains', [Admin\RedirectController::class, 'fixChains'])->name('redirects.fix-chains');
             Route::resource('redirects', Admin\RedirectController::class)->only(['index', 'store', 'update', 'destroy']);
             Route::resource('menu', Admin\MenuItemController::class)->only(['index', 'store', 'update', 'destroy']);
         });

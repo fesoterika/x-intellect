@@ -57,4 +57,6 @@
             @endforeach
         </section>
     @endforeach
+
+    @include('site.partials.scroll-top')
 @endsection

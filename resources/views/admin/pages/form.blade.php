@@ -119,6 +119,15 @@
                     </span>
                 </label>
 
+                <label class="flex items-start gap-2 text-sm text-gray-700">
+                    <input type="hidden" name="is_pinned" value="0">
+                    <input type="checkbox" name="is_pinned" value="1" @checked(old('is_pinned', $page->is_pinned ?? false)) class="mt-0.5 rounded border-gray-300">
+                    <span>
+                        Закрепить материал
+                        <span class="block text-xs text-gray-400">Идёт первым в списке раздела и в админке; в карточке появляется значок булавки. Закреплённых может быть много - между собой они идут по выбранной на сайте сортировке.</span>
+                    </span>
+                </label>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Анонс (excerpt)</label>
                     <textarea name="excerpt" rows="2" class="w-full rounded-md border-gray-300">{{ old('excerpt', $page->excerpt) }}</textarea>
@@ -203,6 +212,19 @@
                 </div>
             </div>
 
+            @if ($page->exists)
+                <div class="bg-white rounded-lg shadow p-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Причина изменения</label>
+                    <input type="text" name="revision_reason" value="{{ old('revision_reason') }}"
+                           placeholder="например: уточнил даты по архивной копии"
+                           class="w-full rounded-md border-gray-300">
+                    <p class="text-xs text-gray-400 mt-1">
+                        Попадёт в историю изменений - в админке и в блоке «История изменений» на самой странице.
+                        Записывается, только если правится заголовок или текст. Поле каждый раз пустое.
+                    </p>
+                </div>
+            @endif
+
             <div class="flex items-center gap-3">
                 <button class="px-6 py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700">Сохранить</button>
                 <a href="{{ route('admin.pages.index') }}" class="text-gray-500 hover:underline text-sm">Отмена</a>
@@ -271,12 +293,56 @@
 
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="font-semibold text-gray-700 mb-3">История изменений</h3>
+                    {{-- Записи правятся по одной: каждая - отдельная форма (она вне
+                         основной формы страницы, вложенные <form> недопустимы).
+                         Служебная пометка note не редактируется: по ней импортёры
+                         узнают вручную правленные страницы и не затирают их. --}}
                     @forelse ($page->revisions as $revision)
-                        <div class="py-2 border-b last:border-0 text-sm">
-                            <div class="text-gray-700">{{ $revision->title }}</div>
-                            <div class="text-xs text-gray-400">
-                                {{ $revision->sourceLabel() }} · {{ $revision->created_at->format('d.m.Y H:i') }}
-                                @if ($revision->note) · {{ $revision->note }} @endif
+                        <div class="py-2 border-b last:border-0 text-sm" x-data="{ editing: false }">
+                            <div x-show="!editing">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="text-gray-700">{{ $revision->title }}</div>
+                                    <button type="button" @click="editing = true"
+                                            class="text-xs text-indigo-600 hover:underline shrink-0">править</button>
+                                </div>
+                                @if ($revision->reason)
+                                    <div class="text-gray-500">{{ $revision->reason }}</div>
+                                @endif
+                                <div class="text-xs text-gray-400">
+                                    {{ $revision->sourceLabel() }}
+                                    @if ($revision->archived_at) · редакция {{ $revision->archived_at->format('Y') }} г. @endif
+                                    · {{ $revision->created_at->format('d.m.Y H:i') }}
+                                    @if ($revision->note) · {{ $revision->note }} @endif
+                                </div>
+                            </div>
+
+                            <div x-show="editing" x-cloak style="display: none" class="space-y-2 py-1">
+                                <form method="POST" action="{{ route('admin.pages.revisions.update', [$page, $revision]) }}" class="space-y-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Заголовок редакции</label>
+                                        <input type="text" name="title" value="{{ $revision->title }}" required class="w-full rounded-md border-gray-300 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Причина изменения</label>
+                                        <textarea name="reason" rows="2" class="w-full rounded-md border-gray-300 text-sm">{{ $revision->reason }}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Дата архивной редакции</label>
+                                        <input type="date" name="archived_at" value="{{ $revision->archived_at?->format('Y-m-d') }}" class="w-full rounded-md border-gray-300 text-sm">
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <button class="px-4 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Сохранить</button>
+                                        <button type="button" @click="editing = false" class="text-sm text-gray-500 hover:underline">Отмена</button>
+                                    </div>
+                                </form>
+                                <form method="POST" action="{{ route('admin.pages.revisions.destroy', [$page, $revision]) }}"
+                                      onsubmit="return confirm('Удалить эту запись истории? Отменить будет нельзя.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs text-red-600 hover:underline">Удалить запись</button>
+                                </form>
                             </div>
                         </div>
                     @empty

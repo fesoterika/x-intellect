@@ -27,6 +27,7 @@ class PageRequest extends FormRequest
             'status' => ['required', Rule::in(['draft', 'published'])],
             'is_listed' => ['boolean'],
             'in_wiki_menu' => ['boolean'],
+            'is_pinned' => ['boolean'],
             'source_type' => ['required', Rule::in(array_keys(\App\Models\Page::SOURCE_TYPES))],
             'source_url' => ['nullable', 'url', 'max:2048'],
             'position' => ['nullable', 'integer', 'min:0'],
@@ -37,6 +38,8 @@ class PageRequest extends FormRequest
             'seo.og_image' => ['nullable', 'string', 'max:2048'],
             'seo.canonical' => ['nullable', 'string', 'max:2048'],
             'seo.schema_type' => ['nullable', Rule::in(['Article', 'FAQPage', 'Person', 'WebPage'])],
+            // Причина правки: уезжает в создаваемую ревизию, а не в саму страницу
+            'revision_reason' => ['nullable', 'string', 'max:500'],
         ];
     }
 
@@ -44,10 +47,12 @@ class PageRequest extends FormRequest
     public function pageData(): array
     {
         $data = $this->validated();
+        unset($data['revision_reason']);
         $data['seo'] = array_filter($data['seo'] ?? []) ?: null;
         $data['position'] = $data['position'] ?? 0;
         $data['is_listed'] = $this->boolean('is_listed');
         $data['in_wiki_menu'] = $this->boolean('in_wiki_menu');
+        $data['is_pinned'] = $this->boolean('is_pinned');
 
         return $data;
     }

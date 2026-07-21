@@ -93,11 +93,6 @@
             'title' => $page->title,
         ])
 
-        {{-- Плашка обратной связи «Нашли ошибку?» --}}
-        @include('site.partials.feedback', [
-            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
-        ])
-
         @if ($page->revisions->isNotEmpty())
             <details class="xi-card" style="margin-top: 22px;">
                 <summary style="cursor: pointer; color: var(--xi-ink-soft); font-weight: 600;">
@@ -107,6 +102,9 @@
                     @foreach ($page->revisions as $revision)
                         <div style="border-top: 1px solid var(--xi-line); padding-top: 10px; font-size: 14px;">
                             <div style="color: var(--xi-ink);">{{ $revision->title }}</div>
+                            @if ($revision->reason)
+                                <div style="color: var(--xi-ink-soft); font-size: 13px;">{{ $revision->reason }}</div>
+                            @endif
                             <div style="color: var(--xi-ink-faint); font-size: 12.5px;">
                                 {{ $revision->sourceLabel() }}
                                 @if ($revision->archived_at) · редакция {{ $revision->archived_at->format('Y') }} г. @endif
@@ -118,5 +116,12 @@
                 </div>
             </details>
         @endif
+
+        {{-- Плашка обратной связи «Нашли ошибку?» --}}
+        @include('site.partials.feedback', [
+            'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
+        ])
     </article>
+
+    @include('site.partials.scroll-top')
 @endsection

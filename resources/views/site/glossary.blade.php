@@ -164,6 +164,8 @@
     @endif
 
     @include('site.partials.feedback', ['url' => $base.($active ? $active->url() : '/glossary')])
+
+    @include('site.partials.scroll-top')
 @endsection
 
 @push('scripts')

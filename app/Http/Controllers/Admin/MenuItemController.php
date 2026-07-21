@@ -11,11 +11,17 @@ class MenuItemController extends Controller
 {
     public function index()
     {
+        // Корневые с детьми — для отображения вложенности
+        $roots = MenuItem::root()->with('children')->orderBy('position')->get();
+
         return view('admin.menu.index', [
-            // Корневые с детьми — для отображения вложенности
-            'items' => MenuItem::root()->with('children')->orderBy('location')->orderBy('position')->get(),
-            // Кандидаты в родители (один уровень вложенности: только корневые)
-            'parents' => MenuItem::root()->orderBy('location')->orderBy('position')->get(),
+            // Шапка и футер — отдельными блоками: это два независимых меню,
+            // вперемешку их не отредактировать.
+            'headerItems' => $roots->where('location', 'header'),
+            'footerItems' => $roots->where('location', 'footer'),
+            // Кандидаты в родители: только корневые пункты шапки — выпадающее
+            // подменю есть лишь у неё, ребёнок футерного пункта не отрисуется.
+            'parents' => $roots->where('location', 'header')->values(),
         ]);
     }
 
@@ -70,7 +76,12 @@ class MenuItemController extends Controller
 
             if ($parent?->parent_id !== null) {
                 $data['parent_id'] = $parent->parent_id;
+                $parent = MenuItem::find($data['parent_id']);
             }
+
+            // Подменю есть только у шапки, и подпункт всегда живёт там же, где
+            // родитель, — иначе он пропадёт с сайта, оставшись в базе.
+            $data['location'] = $parent?->location ?? $data['location'];
         }
 
         $data['parent_id'] = $data['parent_id'] ?? null;

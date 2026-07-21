@@ -64,4 +64,6 @@
 
         @include('site.partials.feedback')
     </article>
+
+    @include('site.partials.scroll-top')
 @endsection

@@ -70,4 +70,6 @@
     @if ($posts->hasPages())
         <div class="forum-pagination">{{ $posts->links('site.partials.pagination') }}</div>
     @endif
+
+    @include('site.partials.scroll-top')
 @endsection
