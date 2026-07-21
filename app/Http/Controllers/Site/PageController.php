@@ -39,7 +39,7 @@ class PageController extends Controller
 
         return view('site.page', [
             'section' => $section,
-            'page' => $page->load(['media', 'revisions']),
+            'page' => $page->load(['media', 'audio', 'revisions']),
             'body' => $this->renderer->render($page),
         ]);
     }

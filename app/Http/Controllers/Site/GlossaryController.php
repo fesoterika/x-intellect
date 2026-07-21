@@ -18,7 +18,7 @@ class GlossaryController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $terms = GlossaryTerm::with('page.section')->orderBy('term')->get();
+        $terms = GlossaryTerm::with('page.section.parent')->orderBy('term')->get();
 
         $active = null;
         $slug = trim((string) $request->query('term'));

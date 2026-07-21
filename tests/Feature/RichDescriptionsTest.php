@@ -101,10 +101,12 @@ class RichDescriptionsTest extends TestCase
 
         $this->assertSame('Полевая оболочка человека.', $term->definitionPlain());
 
-        // data-search и JSON-LD не должны содержать тегов определения
+        // Поисковый индекс карточки строится в JS из DOM (data-term + текст
+        // определения) — сервер не дублирует определение в data-search
         $this->get('/glossary?term=aura')
             ->assertOk()
-            ->assertSee('data-search="аура полевая оболочка человека."', false);
+            ->assertSee('data-term="аура"', false)
+            ->assertDontSee('data-search=', false);
     }
 
     public function test_glossary_rejects_empty_trix_definition(): void

@@ -57,10 +57,12 @@ class SectionController extends Controller
             $sort = self::DEFAULT_SORT;
         }
 
+        // Карточка листинга зовёт $page->audio и $page->url() (section →
+        // rootAncestor → parent) — без eager load это N+1 на каждую строку.
         $query = Page::whereIn('section_id', $sectionIds)
             ->where('status', 'published')
             ->where('is_listed', true)
-            ->with('media');
+            ->with(['audio', 'section.parent']);
 
         // Закреплённые — первыми, но выбранную сортировку не ломают:
         // внутри закреплённых и внутри остальных порядок один и тот же.
@@ -89,6 +91,7 @@ class SectionController extends Controller
             $wikiMenuPages = Page::query()
                 ->where('status', 'published')
                 ->where('in_wiki_menu', true)
+                ->with('section.parent') // url() каждого пункта — без N+1
                 ->orderBy('position')
                 ->orderByRaw(RussianText::titleOrder('title'))
                 ->get(['id', 'section_id', 'title', 'slug', 'page_type']);

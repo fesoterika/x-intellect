@@ -106,11 +106,17 @@
                             @foreach ($groups[$letter] as $term)
                                 @php
                                     $termUrl = $base.$term->url();
-                                    $termText = $term->termWithDefinition();
+                                    // Префикс копии: пусто, когда определение само
+                                    // открывается термином (см. termWithDefinition)
+                                    $copyPrefix = $term->termWithDefinition() === $term->definitionPlain()
+                                        ? '' : $term->term.' - ';
                                 @endphp
+                                {{-- Текст для поиска (data-search) и копирования собирается
+                                     в JS из DOM карточки: дублировать определение ещё двумя
+                                     копиями в атрибутах — сотни лишних КБ на странице --}}
                                 <div class="xi-card glossary-item" id="{{ $term->slug }}"
                                      data-term="{{ mb_strtolower($term->term) }}"
-                                     data-search="{{ mb_strtolower($term->term.' '.$term->definitionPlain()) }}"
+                                     @if ($copyPrefix !== '') data-copy-prefix="{{ $copyPrefix }}" @endif
                                      :class="{ 'is-active': active === @js($term->slug) }"
                                      x-show="cardVisible($el)">
                                     <h3 class="glossary-term-title">
@@ -136,7 +142,7 @@
                                             <button type="button" class="share-btn"
                                                     title="Скопировать термин с определением"
                                                     aria-label="Скопировать термин с определением"
-                                                    @click="copy(@js($termText), @js($term->slug), 'text', 'Термин скопирован')">
+                                                    @click="copy(cardText($el), @js($term->slug), 'text', 'Термин скопирован')">
                                                 <svg x-show="!isCopied(@js($term->slug), 'text')" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 1H5a2 2 0 0 0-2 2v13h2V3h10V1z"/><path d="M19 5H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H9V7h10v14z"/></svg>
                                                 <svg x-show="isCopied(@js($term->slug), 'text')" x-cloak viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.55 17.6 4 12.05l1.4-1.4 4.15 4.15L18.6 5.4 20 6.8z"/></svg>
                                             </button>
@@ -179,6 +185,15 @@
             home: [],
 
             init() {
+                // Поисковый индекс карточки (термин + текст определения) —
+                // из DOM, а не из серверного атрибута: иначе каждое
+                // определение приезжало бы в HTML дважды
+                this.$root.querySelectorAll('[data-term]').forEach((el) => {
+                    const def = el.querySelector('.glossary-def');
+                    el.dataset.search = (el.dataset.term + ' '
+                        + (def ? def.textContent : '')).toLowerCase();
+                });
+
                 // Родная позиция каждой карточки — чтобы вернуть алфавитный
                 // порядок по буквам после очистки поиска (layout() ниже)
                 this.home = [...this.$root.querySelectorAll('[data-search]')]
@@ -238,6 +253,16 @@
 
             isCopied(slug, kind) {
                 return this.copied.slug === slug && this.copied.kind === kind;
+            },
+
+            /** Термин с определением для копирования — из DOM карточки.
+                data-copy-prefix есть только у терминов, определение которых
+                не открывается самим термином (логика termWithDefinition). */
+            cardText(el) {
+                const card = el.closest('.glossary-item');
+                const def = card.querySelector('.glossary-def');
+                return ((card.dataset.copyPrefix || '')
+                    + (def ? def.innerText : '')).trim();
             },
 
             copy(text, slug, kind, msg) {

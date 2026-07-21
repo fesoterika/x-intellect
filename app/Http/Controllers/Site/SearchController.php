@@ -26,7 +26,8 @@ class SearchController extends Controller
             // (политики и т.п., source_type=new + unlisted) — по-прежнему нет.
             $builder = Page::published()
                 ->where(fn ($q) => $q->where('is_listed', true)->orWhere('source_type', '!=', 'new'))
-                ->with('section');
+                // page-card: audio-бейдж и url() через section.parent — без N+1
+                ->with(['audio', 'section.parent']);
 
             // Подстрочный LIKE — общая часть для обеих БД: находит словоформы
             // («сеанс» → «сеансы») и короткие слова, которые InnoDB FULLTEXT
