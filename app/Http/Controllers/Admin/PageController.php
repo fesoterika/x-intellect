@@ -23,6 +23,11 @@ class PageController extends Controller
                 Section::where('id', $s)->orWhere('parent_id', $s)->pluck('id'),
             ))
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
+            // Чекбоксы фильтра: отмечен — показываем только страницы с этим
+            // признаком; снят — фильтр не применяется вовсе.
+            // «НЕ показывается» — выборка скрытых из списков: их и надо проверять.
+            ->when($request->boolean('unlisted'), fn ($q) => $q->where('is_listed', false))
+            ->when($request->boolean('wiki_menu'), fn ($q) => $q->where('in_wiki_menu', true))
             ->when($request->query('q'), function ($q, $term) {
                 // Регистронезависимо и с поддержкой кириллицы (SQLite LOWER()
                 // не сворачивает регистр русских букв — см. RussianText).
@@ -35,6 +40,7 @@ class PageController extends Controller
                 // Совпадения в заголовке — выше совпадений только в тексте
                 RussianText::containsFirstOrder($q, 'title', $term);
             })
+            ->orderByDesc('is_pinned')
             ->latest('updated_at')
             ->paginate(25)
             ->withQueryString();
@@ -74,6 +80,12 @@ class PageController extends Controller
 
     public function update(PageRequest $request, Page $page)
     {
+        // Причина правки — не поле страницы: PageObserver кладёт её в ревизию,
+        // которая создаётся при изменении заголовка или текста
+        $page->revisionReason = $request->filled('revision_reason')
+            ? trim($request->input('revision_reason'))
+            : null;
+
         $page->update($request->pageData());
 
         return redirect()->route('admin.pages.edit', $page)

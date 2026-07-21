@@ -9,9 +9,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Указатель «Сеансы 2013» дополняется пунктами из снимка Wayback 07.12.2021:
- * стенограмм этих сеансов веб-архив не снимал, поэтому ссылки ведут на
- * сохранившиеся записи основного сайта, а старые wiki-адреса получают 301.
+ * Указатель «Сеансы 2013» дополняется пунктами из снимка Wayback 07.12.2021,
+ * а старые wiki-адреса этих сеансов получают 301. Цели — сами стенограммы:
+ * проектные страницы стояли заглушками, пока стенограммы не восстановились
+ * из Wayback (18.07.2026).
  */
 class Sessions2013WaybackItemsTest extends TestCase
 {
@@ -24,7 +25,6 @@ class Sessions2013WaybackItemsTest extends TestCase
         parent::setUp();
 
         $wiki = Section::create(['title' => 'Вики', 'slug' => 'wiki', 'is_visible' => true]);
-        $projects = Section::create(['title' => 'Проекты', 'slug' => 'projects', 'is_visible' => true]);
 
         $this->index = Page::create([
             'section_id' => $wiki->id,
@@ -37,12 +37,12 @@ class Sessions2013WaybackItemsTest extends TestCase
         ]);
 
         foreach ([
-            ['Проект «Ноосфера - 7» Кто такие Учителя', 'proekt-noosfera-7-kto-takie-uchitelya', $projects],
-            ['Проект «Ноосфера -9» Взаимодействие Ноосферы с людьми', 'proekt-noosfera-9-vzaimodejstvie-noosfery-s-lyud-mi', $projects],
-            ['Аудиозапись 20131125', 'audiozapis-20131125', $wiki],
-        ] as [$title, $slug, $section]) {
+            ['Сеанс с Силами 20130721', 'seans-s-silami-20130721'],
+            ['Сеанс с Силами 20131110', 'seans-s-silami-20131110'],
+            ['Аудиозапись 20131125', 'audiozapis-20131125'],
+        ] as [$title, $slug]) {
             Page::create([
-                'section_id' => $section->id,
+                'section_id' => $wiki->id,
                 'title' => $title,
                 'slug' => $slug,
                 'status' => 'draft',
@@ -61,8 +61,8 @@ class Sessions2013WaybackItemsTest extends TestCase
         // существующее тело не тронуто, пункты — внутри списка
         $this->assertStringContainsString('<figure>картинка пользователя</figure>', $body);
         $this->assertStringContainsString('seans-s-silami-20131123', $body);
-        $this->assertStringContainsString('/projects/proekt-noosfera-7-kto-takie-uchitelya"><strong>Сеанс с Силами 20130721', $body);
-        $this->assertStringContainsString('/projects/proekt-noosfera-9-vzaimodejstvie-noosfery-s-lyud-mi"><strong>Сеанс с Силами 20131110', $body);
+        $this->assertStringContainsString('/wiki/seans-s-silami-20130721"><strong>Сеанс с Силами 20130721', $body);
+        $this->assertStringContainsString('/wiki/seans-s-silami-20131110"><strong>Сеанс с Силами 20131110', $body);
         $this->assertStringContainsString('/wiki/audiozapis-20131125"><strong>&nbsp;- ДОРОГА В НЕБО', $body);
         $this->assertSame(1, substr_count($body, '</ul>'));
         $this->assertStringEndsWith('</ul>', $body);
@@ -91,12 +91,12 @@ class Sessions2013WaybackItemsTest extends TestCase
 
         $this->assertDatabaseHas('redirects', [
             'from_path' => '/wiki/index.php?title=Сеанс_с_Силами_20130721',
-            'to_url' => '/projects/proekt-noosfera-7-kto-takie-uchitelya',
+            'to_url' => '/wiki/seans-s-silami-20130721',
             'status_code' => 301,
         ]);
         $this->assertDatabaseHas('redirects', [
             'from_path' => '/wiki/index.php?title=Сеанс с Силами 20131110',
-            'to_url' => '/projects/proekt-noosfera-9-vzaimodejstvie-noosfery-s-lyud-mi',
+            'to_url' => '/wiki/seans-s-silami-20131110',
         ]);
         // существующий редирект не перезаписан
         $this->assertDatabaseHas('redirects', [

@@ -28,4 +28,6 @@
     @elseif ($query !== '')
         <p class="forum-search-empty">Введите не менее двух символов.</p>
     @endif
+
+    @include('site.partials.scroll-top')
 @endsection

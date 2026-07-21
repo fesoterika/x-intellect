@@ -16,9 +16,16 @@ class Page extends Model
         'new'                 => 'Новый материал',
     ];
 
+    /**
+     * Причина изменения из формы правки: PageObserver кладёт её в создаваемую
+     * ревизию. Объявлена настоящим свойством, иначе Eloquent примет её за
+     * атрибут и попытается сохранить в несуществующую колонку pages.
+     */
+    public ?string $revisionReason = null;
+
     protected $fillable = [
         'section_id', 'title', 'slug', 'excerpt', 'body', 'body_rendered',
-        'page_type', 'status', 'is_listed', 'in_wiki_menu', 'source_type', 'source_url', 'seo',
+        'page_type', 'status', 'is_listed', 'in_wiki_menu', 'is_pinned', 'source_type', 'source_url', 'seo',
         'position', 'published_at', 'archived_at',
     ];
 
@@ -28,6 +35,7 @@ class Page extends Model
             'seo' => 'array',
             'is_listed' => 'boolean',
             'in_wiki_menu' => 'boolean',
+            'is_pinned' => 'boolean',
             'published_at' => 'datetime',
             'archived_at' => 'date',
         ];

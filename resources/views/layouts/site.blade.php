@@ -60,7 +60,7 @@
                 </svg>
                 <span>
                     X-Intellect.org
-                    <span class="tagline">новый сайт · архив проекта</span>
+                    <span class="tagline">новый сайт проекта · архив</span>
                 </span>
             </a>
 

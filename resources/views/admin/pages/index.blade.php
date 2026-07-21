@@ -8,7 +8,7 @@
     </x-slot>
 
     <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-        <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap gap-3 items-end">
+        <form method="GET" class="bg-white rounded-lg shadow p-4 flex flex-wrap gap-3 items-start">
             <div>
                 <label class="block text-xs text-gray-500 mb-1">Раздел</label>
                 <select name="section" class="rounded-md border-gray-300 text-sm">
@@ -39,7 +39,22 @@
                 <label class="block text-xs text-gray-500 mb-1">Поиск по заголовку и содержимому</label>
                 <input type="text" name="q" value="{{ request('q') }}" class="w-full rounded-md border-gray-300 text-sm">
             </div>
-            <button class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
+            <div class="flex flex-col gap-1.5">
+                <span class="block text-xs text-gray-500 mb-0.5">Признаки</span>
+                <label class="flex items-center gap-2 text-xs text-gray-600">
+                    <input type="checkbox" name="unlisted" value="1" @checked(request()->boolean('unlisted')) class="rounded border-gray-300">
+                    НЕ показывается
+                </label>
+                <label class="flex items-center gap-2 text-xs text-gray-600">
+                    <input type="checkbox" name="wiki_menu" value="1" @checked(request()->boolean('wiki_menu')) class="rounded border-gray-300">
+                    Выводить в меню вики
+                </label>
+            </div>
+            {{-- Пустая подпись держит кнопку на одной линии с полями ввода --}}
+            <div>
+                <span class="block text-xs mb-1" aria-hidden="true">&nbsp;</span>
+                <button class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
+            </div>
         </form>
 
         <div class="bg-white rounded-lg shadow overflow-x-auto">
@@ -58,6 +73,9 @@
                     @forelse ($pages as $page)
                         <tr class="border-t">
                             <td class="px-5 py-3">
+                                @if ($page->is_pinned)
+                                    <svg class="inline-block w-3.5 h-3.5 -mt-0.5 mr-1 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Закреплено"><title>Закреплено</title><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+                                @endif
                                 <a class="text-indigo-700 hover:underline font-medium" href="{{ route('admin.pages.edit', $page) }}">{{ $page->title }}</a>
                                 <div class="text-xs text-gray-400">/{{ $page->section?->slug }}/{{ $page->slug }}</div>
                             </td>
