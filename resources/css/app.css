@@ -187,28 +187,33 @@ html { scroll-padding-top: 84px; }
     display: block;
     will-change: transform;
 }
+/* Сильная растушёвка: широкий blur + градиент с плавным затуханием
+   через промежуточную ступень — у пятна нет читаемого «края шара» */
 .light-aura i {
     display: block;
     border-radius: 50%;
-    filter: blur(48px);
+    filter: blur(76px);
     will-change: transform, opacity;
 }
 .light-aura span:nth-child(1) { left: -10%; top: -140px; animation: xi-aura-o1 44s ease-in-out infinite; }
 .light-aura span:nth-child(1) i {
     width: 560px; height: 400px;
-    background: radial-gradient(closest-side, rgba(106, 76, 214, 0.28), transparent 72%);
+    background: radial-gradient(closest-side,
+        rgba(106, 76, 214, 0.26) 0%, rgba(106, 76, 214, 0.13) 45%, transparent 82%);
     animation: xi-aura-b1 31s ease-in-out infinite, xi-aura-breathe 14s ease-in-out infinite;
 }
 .light-aura span:nth-child(2) { right: -8%; top: -120px; animation: xi-aura-o2 56s ease-in-out infinite; }
 .light-aura span:nth-child(2) i {
     width: 520px; height: 380px;
-    background: radial-gradient(closest-side, rgba(56, 132, 235, 0.23), transparent 72%);
+    background: radial-gradient(closest-side,
+        rgba(56, 132, 235, 0.21) 0%, rgba(56, 132, 235, 0.11) 45%, transparent 82%);
     animation: xi-aura-b2 37s ease-in-out infinite, xi-aura-breathe 18s ease-in-out infinite reverse;
 }
 .light-aura span:nth-child(3) { left: 34%; top: -80px; animation: xi-aura-o3 48s ease-in-out infinite; }
 .light-aura span:nth-child(3) i {
     width: 440px; height: 340px;
-    background: radial-gradient(closest-side, rgba(190, 110, 235, 0.17), transparent 72%);
+    background: radial-gradient(closest-side,
+        rgba(190, 110, 235, 0.16) 0%, rgba(190, 110, 235, 0.08) 45%, transparent 82%);
     animation: xi-aura-b3 29s ease-in-out infinite, xi-aura-breathe 16s ease-in-out infinite;
 }
 /* Внешние петли: от своего края навстречу — сблизились, не сливаясь,
