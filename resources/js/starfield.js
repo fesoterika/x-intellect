@@ -43,19 +43,33 @@ function buildFigure() {
     for (let i = 0; i < 8; i++) edges.push([i, (i + 1) % 8, 'ring']);
 
     // Орбита. Сдвиг на 30° нужен, чтобы её вершины не сливались с боками кольца.
+    // Точки орбиты (по возрастанию угла): 0 — право-верх, 1 — центр-верх,
+    // 2 — лево-верх, 3 — лево-низ, 4 — центр-низ, 5 — право-низ.
     const orbit0 = pts.length;
     for (let i = 0; i < 6; i++) {
         const t = ((30 + i * 60) * Math.PI) / 180;
         pts.push([C + EX * Math.cos(t), C + EY * Math.sin(t), 0.6]);
     }
-    for (let i = 0; i < 6; i++) edges.push([orbit0 + i, orbit0 + ((i + 1) % 6), 'orbit']);
+    // Кольцо шире орбиты, поэтому по бокам эллипс замыкается не сам на себя,
+    // а на боковые звёзды кольца (2 — восток/право, 6 — запад/лево): иначе
+    // левый и правый края орбиты выглядят обрезанными.
+    edges.push(
+        [orbit0 + 0, orbit0 + 1, 'orbit'],
+        [orbit0 + 1, orbit0 + 2, 'orbit'],
+        [orbit0 + 2, 6, 'orbit'],
+        [6, orbit0 + 3, 'orbit'],
+        [orbit0 + 3, orbit0 + 4, 'orbit'],
+        [orbit0 + 4, orbit0 + 5, 'orbit'],
+        [orbit0 + 5, 2, 'orbit'],
+        [2, orbit0 + 0, 'orbit'],
+    );
 
     // Лучи: две диагонали через центр, концы лежат на кольце
     const center = pts.length;
     pts.push([C, C, 1.6]);
     edges.push([7, center, 'main'], [center, 3, 'main'], [1, center, 'main'], [center, 5, 'main']);
 
-    pts[0][2] = 2.0; // зенитная звезда — точка знака
+    pts[0][2] = 2.3; // зенитная звезда — точка знака, крупнее прочих
     [1, 3, 5, 7].forEach((i) => { pts[i][2] = 1.5; });
 
     pts.forEach((p) => { p[1] = C + (p[1] - C) * SQUASH; });
@@ -170,15 +184,17 @@ export default function initStarfield() {
             const [x, y] = figurePoint(p);
             const weight = p[2];
             const tw = reduced ? 0.72 : 0.68 + 0.18 * Math.sin(i * 1.7 + time * 0.5);
-            const radius = 4 + 6 * weight;
+            const crown = i === 0; // зенитная звезда — точка знака
 
-            ctx.globalAlpha = tw * 0.22;
+            // Ореол крупнее у зенитной звезды, ядро мягче — свечение вместо чёткой точки
+            const radius = (4 + 6 * weight) * (crown ? 1.5 : 1);
+            ctx.globalAlpha = tw * (crown ? 0.3 : 0.22);
             ctx.drawImage(figureHalo, x - radius, y - radius, radius * 2, radius * 2);
             ctx.globalAlpha = 1;
 
             ctx.beginPath();
-            ctx.arc(x, y, weight, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${FIGURE_TINT}, ${(tw * 0.78).toFixed(3)})`;
+            ctx.arc(x, y, weight * (crown ? 0.7 : 1), 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${FIGURE_TINT}, ${(tw * (crown ? 0.6 : 0.78)).toFixed(3)})`;
             ctx.fill();
         });
     }
