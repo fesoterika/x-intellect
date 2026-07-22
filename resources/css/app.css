@@ -103,7 +103,7 @@ html { scroll-padding-top: 84px; }
     --xi-glass-line: rgba(255, 255, 255, 0.72);
     --xi-glass-edge: rgba(255, 255, 255, 0.95);
     --xi-glass-sheen: rgba(255, 255, 255, 0.5);
-    --xi-glass-shadow: rgba(90, 63, 214, 0.22);
+    --xi-glass-shadow: rgba(90, 63, 214, 0.30);
 }
 
 /* Тёмная тема */
@@ -160,6 +160,73 @@ html { scroll-padding-top: 84px; }
         radial-gradient(560px 380px at 48% 60px, rgba(150, 120, 235, 0.12) 0%, transparent 66%),
         radial-gradient(800px 400px at 10% 110%, rgba(95, 76, 121, 0.10) 0%, transparent 55%),
         var(--xi-bg);
+}
+
+/* Светлая тема: «живая аура» — три пятна-свечения медленно циркулируют
+   по замкнутым петлям. Конец каждой петли совпадает с началом (0% = 100%
+   в keyframes), поэтому цикл бесшовный — без реверса и рывка на границе.
+   Статичные ауры выше остаются фолбэком: их видят посетители с
+   prefers-reduced-motion и страницы без разметки .light-aura. */
+.light-aura {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    display: none;
+}
+.light-aura span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(48px);
+    will-change: transform, opacity;
+}
+.light-aura span:nth-child(1) {
+    width: 560px; height: 400px; left: -8%; top: -140px;
+    background: radial-gradient(closest-side, rgba(106, 76, 214, 0.28), transparent 72%);
+    animation: xi-aura-1 40s ease-in-out infinite, xi-aura-breathe 14s ease-in-out infinite;
+}
+.light-aura span:nth-child(2) {
+    width: 520px; height: 380px; right: -6%; top: -120px;
+    background: radial-gradient(closest-side, rgba(56, 132, 235, 0.23), transparent 72%);
+    animation: xi-aura-2 52s ease-in-out infinite, xi-aura-breathe 18s ease-in-out infinite reverse;
+}
+.light-aura span:nth-child(3) {
+    width: 440px; height: 340px; left: 26%; top: -60px;
+    background: radial-gradient(closest-side, rgba(190, 110, 235, 0.17), transparent 72%);
+    animation: xi-aura-3 36s ease-in-out infinite, xi-aura-breathe 16s ease-in-out infinite;
+}
+@keyframes xi-aura-1 {
+    0%   { transform: translate(0, 0) scale(1); }
+    25%  { transform: translate(90px, 55px) scale(1.1); }
+    50%  { transform: translate(150px, 20px) scale(1.18); }
+    75%  { transform: translate(70px, -35px) scale(1.06); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes xi-aura-2 {
+    0%   { transform: translate(0, 0) scale(1.12); }
+    25%  { transform: translate(-100px, 60px) scale(1.0); }
+    50%  { transform: translate(-160px, 15px) scale(0.92); }
+    75%  { transform: translate(-75px, -40px) scale(1.04); }
+    100% { transform: translate(0, 0) scale(1.12); }
+}
+@keyframes xi-aura-3 {
+    0%   { transform: translate(-70px, 0) scale(0.96); }
+    25%  { transform: translate(20px, 45px) scale(1.06); }
+    50%  { transform: translate(110px, 15px) scale(1.14); }
+    75%  { transform: translate(30px, -30px) scale(1.02); }
+    100% { transform: translate(-70px, 0) scale(0.96); }
+}
+@keyframes xi-aura-breathe {
+    0%   { opacity: 0.78; }
+    50%  { opacity: 1; }
+    100% { opacity: 0.78; }
+}
+/* Включение: только светлая тема и только без запроса на снижение
+   движения — иначе остаются статичные ауры на .site-body */
+@media (prefers-reduced-motion: no-preference) {
+    :root:not([data-theme="dark"]) .light-aura { display: block; }
+    :root:not([data-theme="dark"]) .site-body { background: var(--xi-bg); }
 }
 
 /* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
@@ -926,7 +993,7 @@ html { scroll-padding-top: 84px; }
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     backdrop-filter: blur(14px) saturate(150%);
     box-shadow:
-        0 10px 30px -18px var(--xi-glass-shadow),
+        0 12px 32px -14px var(--xi-glass-shadow),
         inset 0 1px 0 var(--xi-glass-edge);
     transition: border-color .2s, transform .15s, box-shadow .2s, background-color .2s;
 }
@@ -1040,7 +1107,7 @@ html { scroll-padding-top: 84px; }
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     backdrop-filter: blur(14px) saturate(150%);
     box-shadow:
-        0 10px 30px -18px var(--xi-glass-shadow),
+        0 12px 32px -14px var(--xi-glass-shadow),
         inset 0 1px 0 var(--xi-glass-edge);
 }
 .stats-strip .stat-cell {
@@ -1158,7 +1225,7 @@ html { scroll-padding-top: 84px; }
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     backdrop-filter: blur(14px) saturate(150%);
     box-shadow:
-        0 10px 30px -18px var(--xi-glass-shadow),
+        0 12px 32px -14px var(--xi-glass-shadow),
         inset 0 1px 0 var(--xi-glass-edge);
     transition: border-color .2s, box-shadow .2s, background-color .2s;
 }
@@ -1269,7 +1336,7 @@ html { scroll-padding-top: 84px; }
     -webkit-backdrop-filter: blur(14px) saturate(150%);
     backdrop-filter: blur(14px) saturate(150%);
     box-shadow:
-        0 10px 30px -18px var(--xi-glass-shadow),
+        0 12px 32px -14px var(--xi-glass-shadow),
         inset 0 1px 0 var(--xi-glass-edge);
 }
 /* Блик по верхнему краю — тот же, что у плиток разделов */

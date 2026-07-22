@@ -34,6 +34,8 @@
 </head>
 <body class="site-body">
     <div class="starfield" aria-hidden="true"></div>
+    {{-- Светлая тема: «живая аура» — как в layouts/site (см. .light-aura в app.css) --}}
+    <div class="light-aura" aria-hidden="true"><span></span><span></span><span></span></div>
 
     <main class="xi-maint" role="main">
         <div class="xi-maint__logo" aria-hidden="true">
