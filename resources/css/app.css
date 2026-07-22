@@ -167,7 +167,7 @@ html { scroll-padding-top: 84px; }
    своего края навстречу соседу — пятна сближаются, касаясь краями
    свечений, но не сливаются — и возвращаются каждое на свою сторону;
    внутренний (i) вьётся малой петлёй и «дышит». Периоды слоёв взаимно
-   простые (44/31, 56/37, 48/29 с), поэтому совместный рисунок
+   простые (66/47, 84/55, 72/43 с), поэтому совместный рисунок
    повторяется лишь через десятки минут — каждое сближение выглядит
    по-новому. Каждая отдельная петля замкнута (0% = 100% в keyframes) —
    цикл бесшовный, без реверса и рывка на границе. Смещения внешних
@@ -195,26 +195,26 @@ html { scroll-padding-top: 84px; }
     filter: blur(76px);
     will-change: transform, opacity;
 }
-.light-aura span:nth-child(1) { left: -10%; top: -140px; animation: xi-aura-o1 44s ease-in-out infinite; }
+.light-aura span:nth-child(1) { left: -10%; top: -140px; animation: xi-aura-o1 66s ease-in-out infinite; }
 .light-aura span:nth-child(1) i {
     width: 560px; height: 400px;
     background: radial-gradient(closest-side,
-        rgba(106, 76, 214, 0.26) 0%, rgba(106, 76, 214, 0.13) 45%, transparent 82%);
-    animation: xi-aura-b1 31s ease-in-out infinite, xi-aura-breathe 14s ease-in-out infinite;
+        rgba(106, 76, 214, 0.23) 0%, rgba(106, 76, 214, 0.11) 45%, transparent 82%);
+    animation: xi-aura-b1 47s ease-in-out infinite, xi-aura-breathe 20s ease-in-out infinite;
 }
-.light-aura span:nth-child(2) { right: -8%; top: -120px; animation: xi-aura-o2 56s ease-in-out infinite; }
+.light-aura span:nth-child(2) { right: -8%; top: -120px; animation: xi-aura-o2 84s ease-in-out infinite; }
 .light-aura span:nth-child(2) i {
     width: 520px; height: 380px;
     background: radial-gradient(closest-side,
-        rgba(56, 132, 235, 0.21) 0%, rgba(56, 132, 235, 0.11) 45%, transparent 82%);
-    animation: xi-aura-b2 37s ease-in-out infinite, xi-aura-breathe 18s ease-in-out infinite reverse;
+        rgba(56, 132, 235, 0.19) 0%, rgba(56, 132, 235, 0.10) 45%, transparent 82%);
+    animation: xi-aura-b2 55s ease-in-out infinite, xi-aura-breathe 26s ease-in-out infinite reverse;
 }
-.light-aura span:nth-child(3) { left: 34%; top: -80px; animation: xi-aura-o3 48s ease-in-out infinite; }
+.light-aura span:nth-child(3) { left: 34%; top: -80px; animation: xi-aura-o3 72s ease-in-out infinite; }
 .light-aura span:nth-child(3) i {
     width: 440px; height: 340px;
     background: radial-gradient(closest-side,
-        rgba(190, 110, 235, 0.16) 0%, rgba(190, 110, 235, 0.08) 45%, transparent 82%);
-    animation: xi-aura-b3 29s ease-in-out infinite, xi-aura-breathe 16s ease-in-out infinite;
+        rgba(190, 110, 235, 0.14) 0%, rgba(190, 110, 235, 0.07) 45%, transparent 82%);
+    animation: xi-aura-b3 43s ease-in-out infinite, xi-aura-breathe 22s ease-in-out infinite;
 }
 /* Внешние петли: от своего края навстречу — сблизились, не сливаясь,
    и вернулись каждый на свою сторону (0% и 100% — у края).
