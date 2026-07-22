@@ -162,11 +162,18 @@ html { scroll-padding-top: 84px; }
         var(--xi-bg);
 }
 
-/* Светлая тема: «живая аура» — три пятна-свечения медленно циркулируют
-   по замкнутым петлям. Конец каждой петли совпадает с началом (0% = 100%
-   в keyframes), поэтому цикл бесшовный — без реверса и рывка на границе.
-   Статичные ауры выше остаются фолбэком: их видят посетители с
-   prefers-reduced-motion и страницы без разметки .light-aura. */
+/* Светлая тема: «живая аура» — три пятна-свечения. Каждое несут два
+   вложенных слоя движения: внешний (span, «орбита») ведёт пятно от
+   своего края навстречу соседу — пятна сближаются, касаясь краями
+   свечений, но не сливаются — и возвращаются каждое на свою сторону;
+   внутренний (i) вьётся малой петлёй и «дышит». Периоды слоёв взаимно
+   простые (44/31, 56/37, 48/29 с), поэтому совместный рисунок
+   повторяется лишь через десятки минут — каждое сближение выглядит
+   по-новому. Каждая отдельная петля замкнута (0% = 100% в keyframes) —
+   цикл бесшовный, без реверса и рывка на границе. Смещения внешних
+   петель в vw — доли ширины экрана, пропорции сближения сохраняются
+   на любом мониторе. Статичные ауры выше остаются фолбэком: их видят
+   посетители с prefers-reduced-motion и страницы без разметки. */
 .light-aura {
     position: fixed;
     inset: 0;
@@ -177,45 +184,83 @@ html { scroll-padding-top: 84px; }
 }
 .light-aura span {
     position: absolute;
+    display: block;
+    will-change: transform;
+}
+.light-aura i {
+    display: block;
     border-radius: 50%;
     filter: blur(48px);
     will-change: transform, opacity;
 }
-.light-aura span:nth-child(1) {
-    width: 560px; height: 400px; left: -8%; top: -140px;
+.light-aura span:nth-child(1) { left: -10%; top: -140px; animation: xi-aura-o1 44s ease-in-out infinite; }
+.light-aura span:nth-child(1) i {
+    width: 560px; height: 400px;
     background: radial-gradient(closest-side, rgba(106, 76, 214, 0.28), transparent 72%);
-    animation: xi-aura-1 40s ease-in-out infinite, xi-aura-breathe 14s ease-in-out infinite;
+    animation: xi-aura-b1 31s ease-in-out infinite, xi-aura-breathe 14s ease-in-out infinite;
 }
-.light-aura span:nth-child(2) {
-    width: 520px; height: 380px; right: -6%; top: -120px;
+.light-aura span:nth-child(2) { right: -8%; top: -120px; animation: xi-aura-o2 56s ease-in-out infinite; }
+.light-aura span:nth-child(2) i {
+    width: 520px; height: 380px;
     background: radial-gradient(closest-side, rgba(56, 132, 235, 0.23), transparent 72%);
-    animation: xi-aura-2 52s ease-in-out infinite, xi-aura-breathe 18s ease-in-out infinite reverse;
+    animation: xi-aura-b2 37s ease-in-out infinite, xi-aura-breathe 18s ease-in-out infinite reverse;
 }
-.light-aura span:nth-child(3) {
-    width: 440px; height: 340px; left: 26%; top: -60px;
+.light-aura span:nth-child(3) { left: 34%; top: -80px; animation: xi-aura-o3 48s ease-in-out infinite; }
+.light-aura span:nth-child(3) i {
+    width: 440px; height: 340px;
     background: radial-gradient(closest-side, rgba(190, 110, 235, 0.17), transparent 72%);
-    animation: xi-aura-3 36s ease-in-out infinite, xi-aura-breathe 16s ease-in-out infinite;
+    animation: xi-aura-b3 29s ease-in-out infinite, xi-aura-breathe 16s ease-in-out infinite;
 }
-@keyframes xi-aura-1 {
+/* Внешние петли: от своего края навстречу — сблизились, не сливаясь,
+   и вернулись каждый на свою сторону (0% и 100% — у края).
+
+   Глубина захода — calc() от ширины экрана: разлёт краёв растёт с
+   шириной быстрее, чем чистые vw-смещения, поэтому амплитуда подобрана
+   так, что ближняя дистанция центров ~постоянна (~390px — свечения
+   касаются краями, ядра раздельны) на любом мониторе. На узких экранах
+   max()/min() гасит горизонтальный ход в ноль: пятна и так рядом,
+   остаются внутренние петли и «дыхание». */
+@keyframes xi-aura-o1 {
+    0%   { transform: translate(0, 0); }
+    30%  { transform: translate(max(0px, calc(30vw - 238px)), 45px); }
+    55%  { transform: translate(max(0px, calc(60vw - 475px)), 0); }
+    80%  { transform: translate(max(0px, calc(25vw - 198px)), -35px); }
+    100% { transform: translate(0, 0); }
+}
+@keyframes xi-aura-o2 {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(min(0px, calc(228px - 29vw)), 40px); }
+    50%  { transform: translate(min(0px, calc(455px - 58vw)), -5px); }
+    75%  { transform: translate(min(0px, calc(171px - 22vw)), -40px); }
+    100% { transform: translate(0, 0); }
+}
+@keyframes xi-aura-o3 {
+    0%   { transform: translate(0, 0); }
+    33%  { transform: translate(-4vw, 35px); }
+    66%  { transform: translate(4vw, -30px); }
+    100% { transform: translate(0, 0); }
+}
+/* Внутренние малые петли */
+@keyframes xi-aura-b1 {
     0%   { transform: translate(0, 0) scale(1); }
-    25%  { transform: translate(90px, 55px) scale(1.1); }
-    50%  { transform: translate(150px, 20px) scale(1.18); }
-    75%  { transform: translate(70px, -35px) scale(1.06); }
+    25%  { transform: translate(26px, 18px) scale(1.08); }
+    50%  { transform: translate(40px, -6px) scale(1.14); }
+    75%  { transform: translate(14px, -20px) scale(1.04); }
     100% { transform: translate(0, 0) scale(1); }
 }
-@keyframes xi-aura-2 {
-    0%   { transform: translate(0, 0) scale(1.12); }
-    25%  { transform: translate(-100px, 60px) scale(1.0); }
-    50%  { transform: translate(-160px, 15px) scale(0.92); }
-    75%  { transform: translate(-75px, -40px) scale(1.04); }
-    100% { transform: translate(0, 0) scale(1.12); }
+@keyframes xi-aura-b2 {
+    0%   { transform: translate(0, 0) scale(1.1); }
+    25%  { transform: translate(-24px, 16px) scale(1.0); }
+    50%  { transform: translate(-38px, -4px) scale(0.92); }
+    75%  { transform: translate(-12px, -18px) scale(1.02); }
+    100% { transform: translate(0, 0) scale(1.1); }
 }
-@keyframes xi-aura-3 {
-    0%   { transform: translate(-70px, 0) scale(0.96); }
-    25%  { transform: translate(20px, 45px) scale(1.06); }
-    50%  { transform: translate(110px, 15px) scale(1.14); }
-    75%  { transform: translate(30px, -30px) scale(1.02); }
-    100% { transform: translate(-70px, 0) scale(0.96); }
+@keyframes xi-aura-b3 {
+    0%   { transform: translate(0, 0) scale(0.96); }
+    25%  { transform: translate(20px, 14px) scale(1.04); }
+    50%  { transform: translate(32px, -4px) scale(1.1); }
+    75%  { transform: translate(10px, -16px) scale(1.0); }
+    100% { transform: translate(0, 0) scale(0.96); }
 }
 @keyframes xi-aura-breathe {
     0%   { opacity: 0.78; }

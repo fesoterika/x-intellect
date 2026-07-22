@@ -32,8 +32,9 @@
 </head>
 <body class="site-body">
     <div class="starfield" aria-hidden="true"></div>
-    {{-- Светлая тема: «живая аура» — три дрейфующих пятна (см. .light-aura в app.css) --}}
-    <div class="light-aura" aria-hidden="true"><span></span><span></span><span></span></div>
+    {{-- Светлая тема: «живая аура» — три пятна, сближающихся без слияния;
+         span — внешняя «орбита», i — само пятно (см. .light-aura в app.css) --}}
+    <div class="light-aura" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span></div>
 
     {{-- Напоминание редактору: посетители сейчас видят заглушку техработ --}}
     @if (auth()->user()?->isEditor() && \App\Models\Setting::maintenanceEnabled())
