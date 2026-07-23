@@ -65,6 +65,22 @@ Route::prefix('admin')
             Route::post('redirects/fix-chains', [Admin\RedirectController::class, 'fixChains'])->name('redirects.fix-chains');
             Route::resource('redirects', Admin\RedirectController::class)->only(['index', 'store', 'update', 'destroy']);
             Route::resource('menu', Admin\MenuItemController::class)->only(['index', 'store', 'update', 'destroy']);
+
+            // Архив форума: правка/удаление тем, разделов и сообщений.
+            // Категории и разделы — денормализованные поля тем, поэтому
+            // у них не resource, а именованные действия. Фиксированные
+            // пути (group/section/posts) — ДО {topic}, чтобы не были
+            // приняты за id темы (whereNumber страхует дополнительно)
+            Route::get('forum', [Admin\ForumController::class, 'index'])->name('forum.index');
+            Route::put('forum/group', [Admin\ForumController::class, 'renameGroup'])->name('forum.group.rename');
+            Route::delete('forum/group', [Admin\ForumController::class, 'destroyGroup'])->name('forum.group.destroy');
+            Route::put('forum/section', [Admin\ForumController::class, 'renameSection'])->name('forum.section.rename');
+            Route::delete('forum/section', [Admin\ForumController::class, 'destroySection'])->name('forum.section.destroy');
+            Route::put('forum/posts/{post}', [Admin\ForumController::class, 'updatePost'])->name('forum.posts.update');
+            Route::delete('forum/posts/{post}', [Admin\ForumController::class, 'destroyPost'])->name('forum.posts.destroy');
+            Route::get('forum/{topic:id}', [Admin\ForumController::class, 'edit'])->whereNumber('topic')->name('forum.edit');
+            Route::put('forum/{topic:id}', [Admin\ForumController::class, 'update'])->whereNumber('topic')->name('forum.update');
+            Route::delete('forum/{topic:id}', [Admin\ForumController::class, 'destroy'])->whereNumber('topic')->name('forum.destroy');
         });
     });
 
