@@ -15,6 +15,7 @@
                     @can('admin')
                         <x-nav-link :href="route('admin.redirects.index')" :active="request()->routeIs('admin.redirects.*')">Редиректы</x-nav-link>
                         <x-nav-link :href="route('admin.menu.index')" :active="request()->routeIs('admin.menu.*')">Меню</x-nav-link>
+                        <x-nav-link :href="route('admin.forum.index')" :active="request()->routeIs('admin.forum.*')">Форум</x-nav-link>
                     @endcan
                     <x-nav-link href="{{ url('/') }}" :active="false">↗ Сайт</x-nav-link>
                 </div>
@@ -69,6 +70,7 @@
             @can('admin')
                 <x-responsive-nav-link :href="route('admin.redirects.index')" :active="request()->routeIs('admin.redirects.*')">Редиректы</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.menu.index')" :active="request()->routeIs('admin.menu.*')">Меню</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.forum.index')" :active="request()->routeIs('admin.forum.*')">Форум</x-responsive-nav-link>
             @endcan
         </div>
 
