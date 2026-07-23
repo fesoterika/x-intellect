@@ -250,11 +250,11 @@ php artisan storage:link
 ```bash
 # архив курсов
 rsync -avz --progress storage/app/public/media/files/ \
-  cx22616@vh376.timeweb.ru:~/x-intellect/storage/app/public/media/files/
+  {ssh-логин}@{хост}:~/x-intellect/storage/app/public/media/files/
 
 # аудио
 rsync -avz --progress storage/app/public/media/audio/ \
-  cx22616@vh376.timeweb.ru:~/x-intellect/storage/app/public/media/audio/
+  {ssh-логин}@{хост}:~/x-intellect/storage/app/public/media/audio/
 ```
 
 Обе команды возобновляемые: при обрыве достаточно запустить снова — переданное
