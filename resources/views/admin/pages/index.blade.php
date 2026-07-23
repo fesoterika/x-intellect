@@ -49,6 +49,10 @@
                     <input type="checkbox" name="wiki_menu" value="1" @checked(request()->boolean('wiki_menu')) class="rounded border-gray-300">
                     Выводить в меню вики
                 </label>
+                <label class="flex items-center gap-2 text-xs text-gray-600">
+                    <input type="checkbox" name="has_disclaimer" value="1" @checked(request()->boolean('has_disclaimer')) class="rounded border-gray-300">
+                    Есть дисклеймер
+                </label>
             </div>
             {{-- Пустая подпись держит кнопку на одной линии с полями ввода --}}
             <div>
