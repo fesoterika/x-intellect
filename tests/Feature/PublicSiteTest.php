@@ -47,7 +47,7 @@ class PublicSiteTest extends TestCase
             ->assertSee('О сайте X-INTELLECT')
             ->assertSee('Архив X-Intellect')          // бейдж эпохи
             ->assertSee('application/ld+json', false) // JSON-LD разметка
-            ->assertSee('Владелец этого сайта не является автором'); // дисклеймер в футере
+            ->assertSee('Владелец сайта не является автором проекта'); // дисклеймер в футере
     }
 
     public function test_draft_page_is_hidden_from_guests(): void
