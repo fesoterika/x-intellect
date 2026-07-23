@@ -2058,9 +2058,11 @@ a.xi-download .xi-download__meta {
 .forum-disclaimer svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; color: var(--xi-accent); }
 .forum-disclaimer a { color: var(--xi-accent); white-space: nowrap; }
 
-/* Приписка внизу «медицинских» тем: нарочито неброская — мелкий приглушённый
-   текст над тонкой линией, без фона и акцентов */
-.forum-medical-note {
+/* Приписка внизу «медицинских» тем форума и материалов с дисклеймером:
+   нарочито неброская — мелкий приглушённый текст над тонкой линией,
+   без фона и акцентов */
+.forum-medical-note,
+.page-disclaimer {
     margin: 22px 0 10px; padding-top: 12px;
     border-top: 1px solid var(--xi-line);
     color: var(--xi-ink-faint); font-size: 12.5px; line-height: 1.6;

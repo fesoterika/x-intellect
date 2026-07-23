@@ -121,6 +121,11 @@
         @include('site.partials.feedback', [
             'url' => $page->seoValue('canonical', rtrim(config('app.url'), '/').$page->url()),
         ])
+
+        {{-- Дисклеймер материала: неброская приписка, редактируется в админке --}}
+        @if ($page->disclaimer)
+            <div class="page-disclaimer" role="note">{{ $page->disclaimer }}</div>
+        @endif
     </article>
 
     @include('site.partials.scroll-top')

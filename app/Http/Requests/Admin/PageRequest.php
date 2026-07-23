@@ -22,6 +22,7 @@ class PageRequest extends FormRequest
                 Rule::unique('pages', 'slug')->ignore($this->route('page')),
             ],
             'excerpt' => ['nullable', 'string'],
+            'disclaimer' => ['nullable', 'string'],
             'body' => ['nullable', 'string'],
             'page_type' => ['required', Rule::in(['page', 'author'])],
             'status' => ['required', Rule::in(['draft', 'published'])],
