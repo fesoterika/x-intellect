@@ -24,7 +24,7 @@ class Page extends Model
     public ?string $revisionReason = null;
 
     protected $fillable = [
-        'section_id', 'title', 'slug', 'excerpt', 'body', 'body_rendered',
+        'section_id', 'title', 'slug', 'excerpt', 'disclaimer', 'body', 'body_rendered',
         'page_type', 'status', 'is_listed', 'in_wiki_menu', 'is_pinned', 'source_type', 'source_url', 'seo',
         'position', 'published_at', 'archived_at',
     ];
