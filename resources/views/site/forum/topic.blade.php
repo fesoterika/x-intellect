@@ -63,12 +63,14 @@
         @endforeach
     </div>
 
-    @if ($showMedicalNote)
-        @include('site.partials.forum-medical-note')
-    @endif
-
     @if ($posts->hasPages())
         <div class="forum-pagination">{{ $posts->links('site.partials.pagination') }}</div>
+    @endif
+
+    {{-- Приписка-дисклеймер темы (редактируется в админке, admin/forum):
+         дистанцирование от мнений участников, например о здоровье и лечении --}}
+    @if ($topic->disclaimer)
+        <div class="forum-medical-note" role="note">{{ $topic->disclaimer }}</div>
     @endif
 
     @include('site.partials.scroll-top')
