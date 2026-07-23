@@ -28,6 +28,8 @@ class PageController extends Controller
             // «НЕ показывается» — выборка скрытых из списков: их и надо проверять.
             ->when($request->boolean('unlisted'), fn ($q) => $q->where('is_listed', false))
             ->when($request->boolean('wiki_menu'), fn ($q) => $q->where('in_wiki_menu', true))
+            // «Есть дисклеймер» — материалы с правовой припиской внизу страницы
+            ->when($request->boolean('has_disclaimer'), fn ($q) => $q->whereNotNull('disclaimer'))
             ->when($request->query('q'), function ($q, $term) {
                 // Регистронезависимо и с поддержкой кириллицы (SQLite LOWER()
                 // не сворачивает регистр русских букв — см. RussianText).
