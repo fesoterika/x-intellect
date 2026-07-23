@@ -69,6 +69,22 @@ class PageDisclaimerTest extends TestCase
             ->assertDontSee('page-disclaimer');
     }
 
+    public function test_admin_list_marks_pages_with_disclaimer(): void
+    {
+        $withNote = $this->makePage(['disclaimer' => 'Оценочные суждения авторов.']);
+        $plain = $this->makePage(['title' => 'Обычный', 'slug' => 'obycnyi']);
+        $editor = User::factory()->create(['role' => 'editor']);
+
+        $html = $this->actingAs($editor)
+            ->get(route('admin.pages.index'))
+            ->assertOk()
+            ->assertSee('Есть дисклеймер')
+            ->getContent();
+
+        // Иконка одна — только у материала с дисклеймером
+        $this->assertSame(1, substr_count($html, 'aria-label="Есть дисклеймер"'));
+    }
+
     public function test_editor_edits_disclaimer_without_creating_a_revision(): void
     {
         $page = $this->makePage();
