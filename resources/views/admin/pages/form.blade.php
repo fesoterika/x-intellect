@@ -134,6 +134,13 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Дисклеймер</label>
+                    <textarea name="disclaimer" rows="3" class="w-full rounded-md border-gray-300 text-sm"
+                              placeholder="Например: материал не является медицинской консультацией или рекомендацией…">{{ old('disclaimer', $page->disclaimer) }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1">Неброская приписка внизу страницы, под плашкой «Нашли ошибку?». Пусто - приписки нет.</p>
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Текст страницы</label>
                     {{-- Trix-редактор: клиентский JS-виджет без React/Vue-рантайма.
                          Кнопка «♪ Аудио» вставляет short-код [[audio:ID]].
