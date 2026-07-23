@@ -79,6 +79,10 @@
                 <input type="text" name="q" value="{{ request('q') }}" class="w-full rounded-md border-gray-300 text-sm">
             </div>
             <button class="w-full sm:w-auto px-4 py-2 bg-gray-800 text-white rounded-md text-sm">Фильтр</button>
+            {{-- Скан бесхозных — по требованию (?orphans=1): результат покажет модалка ниже --}}
+            <a href="{{ route('admin.media.index', ['orphans' => 1]) }}"
+               class="w-full sm:w-auto sm:ml-auto px-4 py-2 border border-red-300 text-red-700 rounded-md text-sm text-center hover:bg-red-50"
+               title="Найти файлы, не привязанные к страницам и не упомянутые в текстах сайта">Найти бесхозные…</a>
         </form>
 
         <div class="bg-white rounded-lg shadow overflow-x-auto">
@@ -162,5 +166,62 @@
         </div>
 
         {{ $media->links() }}
+
+        {{-- Модалка подтверждения удаления бесхозных файлов (после клика «Найти бесхозные…»).
+             «Нет» — обычный переход на индекс без ?orphans, операция отменена.
+             «Да» — DELETE со списком показанных id; сервер перепроверит каждый --}}
+        @if (! is_null($orphans))
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <a href="{{ route('admin.media.index') }}" class="absolute inset-0 bg-gray-900/60" aria-hidden="true"></a>
+                <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[85vh]"
+                     role="dialog" aria-modal="true" aria-labelledby="orphans-title">
+                    <div class="px-6 py-4 border-b">
+                        <h3 id="orphans-title" class="font-semibold text-gray-800">
+                            @if ($orphans->isEmpty())
+                                Бесхозных файлов не найдено
+                            @else
+                                Найдено бесхозных файлов: {{ $orphans->count() }}
+                            @endif
+                        </h3>
+                        @unless ($orphans->isEmpty())
+                            <p class="text-sm text-gray-500 mt-1">Эти файлы не привязаны ни к одной странице и не упоминаются в текстах сайта (страницы, история ревизий, глоссарий, форум).</p>
+                        @endunless
+                    </div>
+
+                    @if ($orphans->isEmpty())
+                        <div class="px-6 py-5 text-sm text-gray-500">Все медиафайлы привязаны к страницам или упоминаются в содержимом сайта.</div>
+                        <div class="px-6 py-4 border-t text-right">
+                            <a href="{{ route('admin.media.index') }}" class="px-4 py-2 bg-gray-800 text-white rounded-md text-sm inline-block">Закрыть</a>
+                        </div>
+                    @else
+                        <div class="overflow-y-auto px-6 py-3 divide-y">
+                            @foreach ($orphans as $orphan)
+                                <div class="py-2 flex items-baseline gap-3 text-sm">
+                                    <span class="text-xs text-gray-400 shrink-0 w-24">#{{ $orphan->id }} · {{ $orphan->type }}</span>
+                                    <span class="min-w-0">
+                                        {{ $orphan->title }}
+                                        <a href="{{ $orphan->url() }}" target="_blank" class="block text-xs text-indigo-600 hover:underline truncate">{{ $orphan->file_path }}</a>
+                                    </span>
+                                    @if ($orphan->size)
+                                        <span class="ml-auto text-xs text-gray-400 shrink-0">{{ Illuminate\Support\Number::fileSize($orphan->size, precision: 1) }}</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="px-6 py-4 border-t flex flex-wrap items-center justify-end gap-3">
+                            <span class="mr-auto text-sm text-gray-600">Удалить все перечисленные файлы?</span>
+                            <a href="{{ route('admin.media.index') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-50">Нет, отменить</a>
+                            <form method="POST" action="{{ route('admin.media.orphans.destroy') }}">
+                                @csrf @method('DELETE')
+                                @foreach ($orphans as $orphan)
+                                    <input type="hidden" name="ids[]" value="{{ $orphan->id }}">
+                                @endforeach
+                                <button class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">Да, удалить ({{ $orphans->count() }})</button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
 </x-app-layout>
