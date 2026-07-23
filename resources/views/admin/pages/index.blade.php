@@ -76,6 +76,10 @@
                                 @if ($page->is_pinned)
                                     <svg class="inline-block w-3.5 h-3.5 -mt-0.5 mr-1 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Закреплено"><title>Закреплено</title><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
                                 @endif
+                                @if ($page->disclaimer)
+                                    {{-- Весы: у материала есть дисклеймер (правовая приписка внизу страницы) --}}
+                                    <svg class="inline-block w-3.5 h-3.5 -mt-0.5 mr-1 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Есть дисклеймер"><title>Есть дисклеймер</title><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+                                @endif
                                 <a class="text-indigo-700 hover:underline font-medium" href="{{ route('admin.pages.edit', $page) }}">{{ $page->title }}</a>
                                 <div class="text-xs text-gray-400">/{{ $page->section?->slug }}/{{ $page->slug }}</div>
                             </td>
