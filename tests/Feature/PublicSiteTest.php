@@ -1127,6 +1127,38 @@ class PublicSiteTest extends TestCase
         }
     }
 
+    public function test_legal_info_page_is_hidden_only_from_home_latest(): void
+    {
+        $this->seedCore();
+
+        // «Правовая информация» создана в админке прода со свежей датой —
+        // без исключения в HomeController возглавляла бы «Свежее»
+        Page::create([
+            'section_id' => Section::where('slug', 'rules')->firstOrFail()->id,
+            'title' => 'Правовая информация',
+            'slug' => 'pravovaia-informaciia',
+            'body' => '<p>Дисклеймер</p>',
+            'status' => 'published',
+            'source_type' => 'new',
+            'published_at' => now(),
+        ]);
+
+        $home = collect($this->get('/')->viewData('latestPages'))->pluck('slug');
+        $this->assertFalse($home->contains('pravovaia-informaciia'), 'Страница не должна попадать в «Свежее»');
+
+        // …но остаётся доступной, в листинге раздела и в поиске
+        $this->get('/rules/pravovaia-informaciia')->assertOk();
+
+        $section = collect($this->get('/rules')->viewData('pages')->items())->pluck('slug');
+        $this->assertTrue($section->contains('pravovaia-informaciia'), 'Страница должна остаться в листинге раздела');
+
+        $results = $this->get('/search?'.http_build_query(['q' => 'Правовая информация']))->viewData('results');
+        $this->assertTrue(
+            collect($results->items())->pluck('slug')->contains('pravovaia-informaciia'),
+            'Страница должна находиться поиском'
+        );
+    }
+
     public function test_unlisted_page_hidden_from_listing_but_reachable(): void
     {
         $this->seedCore();
