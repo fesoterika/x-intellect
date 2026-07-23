@@ -50,6 +50,9 @@ Route::prefix('admin')
         Route::resource('pages', Admin\PageController::class)->except(['show']);
         // История изменений страницы — правка из формы страницы
         Route::resource('pages.revisions', Admin\PageRevisionController::class)->only(['update', 'destroy']);
+        // Массовое удаление бесхозных файлов — ДО resource, чтобы путь
+        // media/orphans не был принят за id записи media/{medium}
+        Route::delete('media/orphans', [Admin\MediaController::class, 'destroyOrphans'])->name('media.orphans.destroy');
         Route::resource('media', Admin\MediaController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('glossary', Admin\GlossaryTermController::class)->only(['index', 'store', 'update', 'destroy']);
 
