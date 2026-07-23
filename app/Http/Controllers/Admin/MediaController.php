@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
+use App\Services\OrphanMedia;
 use App\Support\RussianText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -37,6 +38,10 @@ class MediaController extends Controller
         return view('admin.media.index', [
             'media' => $media,
             'pages' => Page::orderBy('title')->get(['id', 'title']),
+            // Кнопка «Найти бесхозные» перезагружает страницу с ?orphans=1 —
+            // скан по требованию (LIKE по всем текстам сайта не для каждого
+            // открытия раздела); найденное показывает модалка подтверждения
+            'orphans' => $request->boolean('orphans') ? app(OrphanMedia::class)->find() : null,
         ]);
     }
 
@@ -102,5 +107,38 @@ class MediaController extends Controller
         $medium->delete();
 
         return back()->with('status', 'Медиафайл удалён.');
+    }
+
+    /**
+     * Массовое удаление бесхозных файлов, подтверждённых в модалке.
+     * Удаляются ТОЛЬКО присланные id и только если запись всё ещё
+     * бесхозна (между показом списка и подтверждением файл могли
+     * привязать к странице — такой молча пропускается).
+     */
+    public function destroyOrphans(Request $request, OrphanMedia $orphans)
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $deleted = 0;
+        foreach (Media::whereIn('id', $data['ids'])->get() as $medium) {
+            if (! $orphans->isOrphan($medium)) {
+                continue;
+            }
+
+            if (! str_starts_with($medium->file_path, 'http')) {
+                Storage::disk($medium->disk)->delete($medium->file_path);
+            }
+
+            $medium->delete();
+            $deleted++;
+        }
+
+        return redirect()->route('admin.media.index')
+            ->with('status', $deleted > 0
+                ? 'Удалено бесхозных файлов: '.$deleted.'.'
+                : 'Бесхозных файлов среди выбранных не осталось — ничего не удалено.');
     }
 }
