@@ -961,6 +961,8 @@ class PublicSiteTest extends TestCase
             ->assertSee('Структура Вселенной')
             ->assertSee('Цивилизация «Зелёные»')
             ->assertSee('архивная копия форума X-Intellect', false)
+            // правовая оговорка обязана быть на каждой странице форума
+            ->assertSee('не являются позицией владельца сайта', false)
             ->assertSee('web.archive.org/web/20160408131611/http://www.x-intellect.org/forum/index.php', false)
             // никакого функционала регистрации/отправки
             ->assertDontSee('Регистрация</a>', false)

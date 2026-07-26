@@ -33,3 +33,6 @@ Thumbs.db
 
 # Локальные настройки Claude Code (launch.json, worktrees)
 /.claude/
+
+# Отчёты аудита полноты архива — рабочие файлы, в публичный репозиторий не идут
+/docs/audit/
