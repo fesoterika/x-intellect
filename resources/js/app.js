@@ -1,3 +1,6 @@
+// ВАЖНО: compat подключается первым — он ставит queueMicrotask, без которого
+// Alpine.start() падает на Safari <12.1 и страница остаётся без плеера и меню
+import { storage } from './compat';
 import Alpine from 'alpinejs';
 import initStarfield from './starfield';
 
@@ -32,7 +35,7 @@ Alpine.data('audioPlayer', (tracks, cover, pageTitle) => ({
 
             // Позиция прослушивания сохраняется раз в ~5 секунд
             if (Math.floor(audio.currentTime) % 5 === 0 && audio.currentTime > 0) {
-                localStorage.setItem(this.posKey(), String(Math.floor(audio.currentTime)));
+                storage.set(this.posKey(), String(Math.floor(audio.currentTime)));
             }
 
             if (this.playing) this.updateMediaSessionPosition();
@@ -41,14 +44,14 @@ Alpine.data('audioPlayer', (tracks, cover, pageTitle) => ({
         audio.addEventListener('loadedmetadata', () => {
             this.duration = audio.duration;
 
-            const saved = parseInt(localStorage.getItem(this.posKey()) || '0', 10);
+            const saved = parseInt(storage.get(this.posKey()) || '0', 10);
             if (saved > 5 && saved < audio.duration - 10) {
                 audio.currentTime = saved;
             }
         });
 
         audio.addEventListener('ended', () => {
-            localStorage.removeItem(this.posKey());
+            storage.remove(this.posKey());
             if (this.current < this.tracks.length - 1) {
                 this.select(this.current + 1, true);
             } else {
@@ -187,6 +190,12 @@ Alpine.data('audioPlayer', (tracks, cover, pageTitle) => ({
 
 Alpine.start();
 
+// Метка «Alpine поднялся» для ES5-сторожа из layouts/site.blade.php. Ставится
+// ПОСЛЕ start(), поэтому ловит не только «бандл не загрузился» (Safari 9-10 без
+// поддержки ES-модулей), но и «загрузился, но упал по дороге». Пока метки нет,
+// сторож держит на <html> класс xi-no-alpine с деградацией меню и плеера.
+document.documentElement.setAttribute('data-alpine', 'ready');
+
 /**
  * Тултипы глоссария (Этап 3 плана): термины размечаются при сохранении
  * страницы (span.glossary-term с data-атрибутами), подсказка показывается
@@ -232,7 +241,12 @@ function showTooltip(target) {
  */
 const statValues = document.querySelectorAll('.home-stats .stat-value[data-count]');
 
-if (statValues.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+// IntersectionObserver появился только в Safari 12.1: без проверки конструктор
+// бросает ReferenceError и обрывает выполнение всего, что идёт ниже по файлу.
+// Числа уже отрендерены сервером — на старых браузерах они просто статичны.
+if (statValues.length
+    && typeof window.IntersectionObserver === 'function'
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const formatStat = new Intl.NumberFormat('ru-RU');
 
     const animateStat = (el) => {
@@ -270,6 +284,17 @@ if (statValues.length && !window.matchMedia('(prefers-reduced-motion: reduce)').
    CSS-обходы (contain, отказ от backdrop-filter на самой шапке) снижают, но не
    убирают прыжок, поэтому паразитный скролл откатывается точечно: запоминаем
    позицию перед вводом и возвращаем её, если сразу после ввода она «уехала». */
+// behavior: 'instant' нужен, чтобы перебить `scroll-behavior: smooth` из CSS.
+// Но объектную форму scrollTo() понимают не все старые браузеры: те, что
+// читают аргументы позиционно, получат undefined и унесут страницу в самый
+// верх. Там, где нет и CSS-плавности, позиционная форма и так мгновенная.
+const smoothScrollCss = 'scrollBehavior' in document.documentElement.style;
+
+const scrollToInstantly = (y) => {
+    if (smoothScrollCss) window.scrollTo({ top: y, behavior: 'instant' });
+    else window.scrollTo(window.scrollX, y);
+};
+
 document.querySelectorAll('.site-search input').forEach((input) => {
     let savedY = 0;
     let until = 0;
@@ -283,7 +308,7 @@ document.querySelectorAll('.site-search input').forEach((input) => {
     // помогает — анимация продолжает вести к своей цели кадр за кадром.
     window.addEventListener('scroll', () => {
         if (performance.now() < until && Math.abs(window.scrollY - savedY) > 1) {
-            window.scrollTo({ top: savedY, behavior: 'instant' });
+            scrollToInstantly(savedY);
         }
     }, { passive: true });
 });

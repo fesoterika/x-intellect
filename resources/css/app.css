@@ -273,10 +273,16 @@ html { scroll-padding-top: 84px; }
     100% { opacity: 0.78; }
 }
 /* Включение: только светлая тема и только без запроса на снижение
-   движения — иначе остаются статичные ауры на .site-body */
+   движения — иначе остаются статичные ауры на .site-body.
+
+   :not(.xi-legacy) выключает ауру на старых устройствах ровно тем же путём
+   (класс ставит сторож в шапке layouts/site.blade.php). ВАЖНО, что условие
+   стоит на ОБОИХ правилах: второе гасит градиенты .site-body, потому что
+   глубину даёт аура, — спрятать её, не сняв это правило, значит оставить
+   светлую тему плоской заливкой. */
 @media (prefers-reduced-motion: no-preference) {
-    :root:not([data-theme="dark"]) .light-aura { display: block; }
-    :root:not([data-theme="dark"]) .site-body { background: var(--xi-bg); }
+    :root:not(.xi-legacy):not([data-theme="dark"]) .light-aura { display: block; }
+    :root:not(.xi-legacy):not([data-theme="dark"]) .site-body { background: var(--xi-bg); }
 }
 
 /* Космический фон: мягкая туманность (глубина + контекст, чтобы точки
@@ -2147,4 +2153,126 @@ a.xi-download .xi-download__meta {
     .forum-block-title { padding: 12px 16px; font-size: 16px; }
     .forum-topic-list { padding: 4px 16px 8px; }
     .forum-disclaimer a { white-space: normal; }
+}
+
+/* ============================================================
+   СОВМЕСТИМОСТЬ СО СТАРЫМИ БРАУЗЕРАМИ
+
+   Ничего из этого блока не применяется на современных браузерах: все
+   правила висят на классах, которые ставит ES5-сторож в шапке
+   layouts/site.blade.php, и там их снимают сразу же.
+
+   Что понижается автоматически и здесь не дублируется (см. build.cssTarget
+   в vite.config.js): inset -> top/right/bottom/left, -webkit-sticky,
+   -webkit-backdrop-filter.
+   ============================================================ */
+
+/* --- 1. Работа без Alpine: класс xi-no-alpine ---------------
+   Стоит в разметке изначально и снимается, когда Alpine поднялся. Держится у
+   тех, кто не выполняет собранный Vite бандл: Safari 9-10.0 и iOS 9-10.2 (нет
+   <script type="module">), выключенный JS, любой сбой загрузки бандла. */
+
+/* Гамбургер без Alpine не нажимается, поэтому на узких экранах меню
+   показывается развёрнутым — иначе навигация недоступна вовсе. */
+@media (max-width: 860px) {
+    .xi-no-alpine .site-burger { display: none; }
+
+    .xi-no-alpine .site-nav {
+        display: flex;
+        position: static;
+        flex-basis: 100%; /* своя строка в flex-wrap шапки */
+        padding: 6px 0 0;
+        background: none;
+        border-bottom: 0;
+        box-shadow: none;
+    }
+
+    /* Подменю раскрываются по тапу на стрелку — без Alpine показываем списком */
+    .xi-no-alpine .nav-submenu { display: block; }
+    .xi-no-alpine .nav-caret { display: none; }
+}
+
+/* Плеер: собственный интерфейс полностью управляется Alpine (он же ставит
+   <audio> источник), поэтому без Alpine показывается нативный проигрыватель
+   браузера и список ссылок на файлы — см. site/partials/audio-player.blade.php */
+.audio-player .ap-fallback { display: none; }
+
+.xi-no-alpine .audio-player .ap-controls,
+.xi-no-alpine .audio-player .ap-playlist { display: none; }
+.xi-no-alpine .audio-player .ap-fallback { display: block; }
+
+.audio-player .ap-fallback audio { width: 100%; }
+
+.audio-player .ap-fallback-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--xi-line);
+}
+.audio-player .ap-fallback-list li { margin-bottom: 6px; }
+.audio-player .ap-fallback-list li:last-child { margin-bottom: 0; }
+.audio-player .ap-fallback-list a { color: var(--xi-accent); font-size: 14.5px; }
+.audio-player .ap-fallback-list .dur { color: var(--xi-ink-faint); font-size: 12.5px; }
+
+/* --- 2. Анимации фона на старых устройствах: класс xi-legacy ---
+   Ставится, когда браузер не знает `inset` (Safari <14.1 и ровесники).
+
+   Обе фоновые анимации непрерывные и на слабом железе заметно греют:
+     * светлая «аура» — три слоя с filter: blur(76px), причём кадры
+       xi-aura-b1..b3 меняют scale(), а масштабирование размытого слоя
+       заставляет композитор пересчитывать блюр заново. Светлая тема стоит
+       по умолчанию, так что это касается всех;
+     * замощённые звёздные слои — полноэкранная анимация opacity на двух
+       слоях с will-change (запасной вариант, когда canvas не поднялся).
+
+   Статичный вид ниже — ровно тот же, что уже отдаётся по
+   prefers-reduced-motion: у светлой темы остаются градиенты .site-body,
+   у тёмной — туманность и неподвижные звёзды. Canvas со звёздами при этом
+   классе не стартует вовсе (см. starfield.js).
+
+   Саму ауру гасит не отдельное правило здесь, а `:not(.xi-legacy)` в её
+   собственном включателе выше: перебивать его отсюда пришлось бы через
+   !important (у включателя специфичность (0,3,0)), и вдобавок мимо прошло
+   бы парное правило, гасящее градиенты .site-body. */
+.xi-legacy .starfield::before,
+.xi-legacy .starfield::after { animation: none; will-change: auto; }
+
+/* --- 3. gap во флексах: класс xi-no-flexgap -----------------
+   Flexbox-gap появился только в Safari 14.1 — до него элементы слипаются.
+   Проверить это через @supports нельзя: `@supports (gap: 1px)` истинен уже в
+   Safari 10, потому что gap там работает в grid. Поэтому класс ставит JS.
+   В grid-контейнерах gap работает с Safari 10.1 — их здесь нет. */
+
+.xi-no-flexgap .site-header-inner > * + * { margin-left: 22px; }
+.xi-no-flexgap .site-logo > * + * { margin-left: 12px; }
+.xi-no-flexgap .title-with-edit > * + * { margin-left: 12px; }
+.xi-no-flexgap .audio-player .ap-track > * + * { margin-left: 10px; }
+.xi-no-flexgap .feedback-actions > * + * { margin-left: 8px; }
+.xi-no-flexgap .home-section-head > * + * { margin-left: 12px; }
+.xi-no-flexgap .section-tile-head > * + * { margin-left: 10px; }
+.xi-no-flexgap .page-card-top > * + * { margin-left: 10px; }
+.xi-no-flexgap .theme-toggle > * + * { margin-left: 8px; }
+
+/* Колонки */
+.xi-no-flexgap .section-tile > * + * { margin-top: 7px; }
+.xi-no-flexgap .stats-strip .stat-cell > * + * { margin-top: 2px; }
+
+/* Переносящиеся ряды: поле у каждого элемента, иначе первый в новой строке
+   прижимался бы к краю, а перенос ломал бы схему «через один» */
+/* Меню — по соседям, а не по всем детям: лишнее поле после последнего пункта
+   прибавляет ширины ряду и на десктопе сталкивает поиск на вторую строку */
+.xi-no-flexgap .site-nav > * + * { margin-left: 4px; }
+.xi-no-flexgap .glossary-alphabet > * { margin-right: 6px; margin-bottom: 6px; }
+.xi-no-flexgap .xi-pagination > * { margin-right: 6px; margin-bottom: 6px; }
+.xi-no-flexgap .share > * { margin-right: 8px; margin-bottom: 8px; }
+.xi-no-flexgap .site-footer nav > * { margin-right: 16px; margin-bottom: 6px; }
+.xi-no-flexgap .page-meta > * { margin-right: 12px; margin-bottom: 10px; }
+.xi-no-flexgap .section-footer > * { margin-right: 18px; margin-bottom: 14px; }
+.xi-no-flexgap .author-links > * { margin-right: 10px; margin-bottom: 10px; }
+.xi-no-flexgap .audio-player .ap-controls > * { margin-right: 12px; margin-bottom: 12px; }
+
+@media (max-width: 860px) {
+    /* На узких экранах меню — колонка, горизонтальное поле там лишнее */
+    .xi-no-flexgap .site-nav > * + * { margin-left: 0; margin-top: 2px; }
+    .xi-no-flexgap .site-header-inner > * + * { margin-left: 10px; }
 }
