@@ -223,7 +223,13 @@
 
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="apple-touch-icon" href="/favicon.svg">
+    {{-- iOS НЕ умеет SVG в apple-touch-icon: со ссылкой на .svg Safari при
+         добавлении на рабочий стол рисовал вместо значка скриншот страницы.
+         180x180 — размер домашнего экрана iPhone (60pt при 3x), iOS сама
+         масштабирует его под остальные места. Фон непрозрачный: прозрачные
+         пиксели iOS заливает чёрным, и вокруг значка была бы тёмная рамка.
+         Файл собран из favicon.svg, поэтому рисунок тот же. --}}
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
