@@ -79,6 +79,102 @@
                 //                и сам starfield.js, читая этот же класс
                 html.className = html.className + ' xi-no-flexgap xi-legacy';
             }
+
+            // JS работает, не работает только Alpine (Safari 9-10) - значит
+            // гамбургер можно оживить вручную. Метка ставится СИНХРОННО: по ней
+            // app.css понимает, что разворачивать меню списком не нужно.
+            html.className = html.className + ' xi-menu-js';
+
+            // Меню на смартфоне без Alpine. Раньше здесь меню просто держалось
+            // развёрнутым - и на iOS 9 закрывало собой весь экран: шапка у нас
+            // position: sticky, а развёрнутый список со всеми подменю выше
+            // экрана, так что содержимое оказывалось под ним навсегда.
+            // Обработчики переключают тот же класс is-open, что вешает Alpine,
+            // поэтому отдельных стилей не нужно.
+            function initFallbackMenu() {
+                var burger = document.querySelector('.site-burger');
+                var nav = document.getElementById('site-nav');
+                if (!burger || !nav) return;
+
+                // Alpine жив - у него свой @click на этих же кнопках,
+                // вмешиваться нельзя, иначе меню откроется и тут же закроется
+                function fallback() {
+                    return (' ' + html.className + ' ').indexOf(' ' + MARK + ' ') !== -1;
+                }
+
+                function toggle(el) {
+                    var padded = ' ' + el.className + ' ';
+                    var open = padded.indexOf(' is-open ') === -1;
+
+                    el.className = open
+                        ? el.className + ' is-open'
+                        : padded.split(' is-open ').join(' ').replace(/^\s+|\s+$/g, '');
+
+                    return open;
+                }
+
+                // Иконки гамбургера и подложка живут на x-show/x-cloak, то есть
+                // без Alpine остаются скрытыми. Показываем их сами, иначе при
+                // открытом меню кнопка так и выглядит гамбургером, а закрыть
+                // меню тапом по свободному месту нельзя.
+                var icons = burger.getElementsByTagName('svg');
+                var backdrop = document.querySelector('.site-nav-backdrop');
+
+                function paint(open) {
+                    if (icons.length > 1) {
+                        // x-cloak прячет через display: none !important —
+                        // инлайновый стиль его не перебьёт, снимаем атрибут
+                        icons[1].removeAttribute('x-cloak');
+                        icons[0].style.display = open ? 'none' : '';
+                        icons[1].style.display = open ? '' : 'none';
+                    }
+
+                    if (backdrop) {
+                        backdrop.removeAttribute('x-cloak');
+                        backdrop.style.display = open ? 'block' : 'none';
+                    }
+
+                    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+
+                burger.addEventListener('click', function () {
+                    if (!fallback()) return;
+                    paint(toggle(nav));
+                });
+
+                if (backdrop) {
+                    backdrop.addEventListener('click', function () {
+                        // подложка видна только при открытом меню, но переключать
+                        // вслепую нельзя - иначе клик по ней открыл бы закрытое
+                        if (!fallback()) return;
+                        if ((' ' + nav.className + ' ').indexOf(' is-open ') === -1) return;
+
+                        toggle(nav);
+                        paint(false);
+                    });
+                }
+
+                var carets = document.querySelectorAll('.nav-caret');
+
+                for (var i = 0; i < carets.length; i++) {
+                    (function (caret) {
+                        caret.addEventListener('click', function (event) {
+                            if (!fallback()) return;
+                            event.preventDefault();
+
+                            var item = caret.parentNode.parentNode; // .nav-item
+                            var sub = item.querySelector('.nav-submenu');
+                            if (sub) caret.setAttribute('aria-expanded', toggle(sub) ? 'true' : 'false');
+                        });
+                    })(carets[i]);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initFallbackMenu);
+            } else {
+                initFallbackMenu();
+            }
         })();
     </script>
 

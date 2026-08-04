@@ -2172,12 +2172,25 @@ a.xi-download .xi-download__meta {
    тех, кто не выполняет собранный Vite бандл: Safari 9-10.0 и iOS 9-10.2 (нет
    <script type="module">), выключенный JS, любой сбой загрузки бандла. */
 
-/* Гамбургер без Alpine не нажимается, поэтому на узких экранах меню
-   показывается развёрнутым — иначе навигация недоступна вовсе. */
-@media (max-width: 860px) {
-    .xi-no-alpine .site-burger { display: none; }
+/* Меню на смартфоне.
 
-    .xi-no-alpine .site-nav {
+   Обычно гамбургер работает и без Alpine: сторож в layouts/site.blade.php вешает
+   на него свой ES5-обработчик, который переключает тот же класс is-open, — и там
+   же ставит метку xi-menu-js. Никаких особых стилей этому случаю не нужно.
+
+   Правила ниже — только для случая, когда JS выключен СОВСЕМ и оживить
+   гамбургер некому: тогда меню показывается развёрнутым списком.
+
+   ВАЖНО про `position: static` у шапки. Она у нас sticky с z-index: 20, а
+   развёрнутое меню со всеми подменю выше экрана смартфона — оставить шапку
+   липкой значит намертво закрыть ею всё содержимое (ровно этот баг и был на
+   iOS 9, пока меню держалось развёрнутым у всех без Alpine). Здесь меню
+   просто стоит вверху страницы и уезжает вверх при прокрутке. */
+@media (max-width: 860px) {
+    .xi-no-alpine:not(.xi-menu-js) .site-header { position: static; }
+    .xi-no-alpine:not(.xi-menu-js) .site-burger { display: none; }
+
+    .xi-no-alpine:not(.xi-menu-js) .site-nav {
         display: flex;
         position: static;
         flex-basis: 100%; /* своя строка в flex-wrap шапки */
@@ -2187,9 +2200,9 @@ a.xi-download .xi-download__meta {
         box-shadow: none;
     }
 
-    /* Подменю раскрываются по тапу на стрелку — без Alpine показываем списком */
-    .xi-no-alpine .nav-submenu { display: block; }
-    .xi-no-alpine .nav-caret { display: none; }
+    /* Подменю раскрываются по тапу на стрелку — без JS показываем списком */
+    .xi-no-alpine:not(.xi-menu-js) .nav-submenu { display: block; }
+    .xi-no-alpine:not(.xi-menu-js) .nav-caret { display: none; }
 }
 
 /* Плеер: собственный интерфейс полностью управляется Alpine (он же ставит
