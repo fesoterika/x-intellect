@@ -82,10 +82,15 @@
             <a href="{{ $trackData[0]['url'] }}">скачайте запись файлом</a>.
         </audio>
 
+        {{-- Записи открываются в новой вкладке: на старых iOS переход по ссылке
+             на mp3 в текущей вкладке уводит со страницы к системному плееру, и
+             вернуться к остальному списку можно только кнопкой «назад».
+             Блок виден только в режиме деградации, поэтому на современных
+             браузерах это поведение ни на что не влияет. --}}
         <ul class="ap-fallback-list">
             @foreach ($trackData as $index => $track)
                 <li>
-                    <a href="{{ $track['url'] }}">{{ $index + 1 }}. {{ $track['title'] }}</a>
+                    <a href="{{ $track['url'] }}" target="_blank" rel="noopener">{{ $index + 1 }}. {{ $track['title'] }}</a>
                     @if ($track['duration'])
                         <span class="dur">{{ $track['duration'] }}</span>
                     @endif
