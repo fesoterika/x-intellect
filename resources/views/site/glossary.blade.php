@@ -73,8 +73,11 @@
         <p style="color: var(--xi-ink-faint);">Термины глоссария готовятся к публикации из архива вики.</p>
     @else
         <div x-data="glossaryFilter(@js(['q' => $q, 'term' => $active?->slug ?? '']))">
-            {{-- Поиск по глоссарию --}}
-            <div class="glossary-search">
+            {{-- Поиск по глоссарию. Модификатор --js помечает, что поле живёт
+                 только на Alpine (x-model без формы и без name): на браузерах
+                 без него блок скрывается, см. app.css. У поиска по форуму класс
+                 тот же, но там настоящая GET-форма — её прятать нельзя. --}}
+            <div class="glossary-search glossary-search--js">
                 <svg class="glossary-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>

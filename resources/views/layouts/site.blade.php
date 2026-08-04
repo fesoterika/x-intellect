@@ -262,7 +262,7 @@
                 </svg>
                 <span>
                     X-Intellect.org
-                    <span class="tagline">новый сайт проекта · архив</span>
+                    <span class="tagline">новый сайт проекта</span>
                 </span>
             </a>
 

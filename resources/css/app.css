@@ -535,15 +535,19 @@ html { scroll-padding-top: 84px; }
 
     /* Safari 9-10 не знает CSS Grid (он появился в 10.1) и отбрасывает строку
        выше как недопустимую — кнопка оставалась display: none из базового
-       правила, и на iOS 9 иконки меню просто не было. Центрирование там же
-       держится на place-items, которого в Safari 9 тоже нет, поэтому даём
-       флексовые longhand-ы. Блок применяется ТОЛЬКО там, где grid не
-       поддерживается, — на современных браузерах ничего не меняется. */
+       правила, и на iOS 9 иконки меню просто не было.
+
+       Центрируем значок абсолютным позиционированием с margin: auto, а НЕ
+       флексом: в Safari 9 SVG внутри flex-контейнера позиционируется неверно и
+       уезжает к левому краю. Правило обязано жить внутри этого медиазапроса —
+       глобально оно сделало бы кнопку видимой и на десктопе, где база
+       display: none. */
     @supports not (display: grid) {
-        .site-burger {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .site-burger { display: block; position: relative; padding: 0; }
+        .site-burger svg {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            margin: auto;
         }
     }
 
@@ -2240,6 +2244,84 @@ a.xi-download .xi-download__meta {
 .audio-player .ap-fallback-list li:last-child { margin-bottom: 0; }
 .audio-player .ap-fallback-list a { color: var(--xi-accent); font-size: 14.5px; }
 .audio-player .ap-fallback-list .dur { color: var(--xi-ink-faint); font-size: 12.5px; }
+
+/* Интерактив, который без Alpine мёртв, а не просто ограничен, — убираем
+   совсем: нерабочее поле или пустая кнопка хуже, чем их отсутствие.
+
+   Поиск по глоссарию — это `x-model` без формы и без name, то есть без Alpine
+   ввод не делает ничего. Прячем ТОЛЬКО его: у поиска по форуму и в шапке
+   класс тот же, но там настоящие GET-формы, которые работают и без JS,
+   поэтому в глоссарии добавлен отдельный модификатор.
+
+   Переключатели темы (в подвале и в блоке-заставке на главной) рисуют значок и
+   подпись через <template x-if>, так что без Alpine остаётся пустая кнопка,
+   которая ещё и ничего не делает. Тёмная тема на таких устройствах недоступна —
+   остаётся светлая по умолчанию.
+
+   Копирование держится на Alpine и navigator.clipboard, которых там нет:
+   прячем и кнопку под материалом (.share-copy), и пару кнопок в карточке
+   термина (.glossary-copy). Соседние ссылки «поделиться» — обычные <a href>,
+   они работают и остаются. */
+.xi-no-alpine .glossary-search--js,
+.xi-no-alpine .theme-toggle,
+.xi-no-alpine .hero-theme-toggle,
+.xi-no-alpine .share-copy,
+.xi-no-alpine .glossary-copy { display: none; }
+
+/* В подвале карточки термина остаётся только ссылка «Подробнее», а у терминов
+   без страницы — вообще ничего. Разделительная черта над пустотой выглядела бы
+   как случайная линия, поэтому убираем её; отступ сверху оставляем. */
+.xi-no-alpine .glossary-actions { border-top: 0; padding-top: 0; }
+
+/* Значки в круглых кнопках: Safari 9-10.0 не знает ни grid, ни place-items,
+   а SVG внутри flex-контейнера там позиционируется неверно — значки уезжали
+   влево или в левый верхний угол.
+
+   Центрируем абсолютным позиционированием с margin: auto: у значков размеры
+   заданы явно, поэтому четыре нулевых смещения плюс авто-поля дают ТОЧНЫЙ
+   центр (проверено: поля 5,5/5,5/5,5/5,5 у 13px значка в кнопке 24px).
+   Строчный способ через line-height и vertical-align: middle не годится — он
+   выравнивает по базовой линии, и значок садится ниже середины (8 сверху,
+   3 снизу). Приём работает начиная с Safari 3 и не применяется ни в одном
+   браузере с grid, то есть с Safari 10.1 и новее.
+
+   (.site-burger лечится там же, где объявлен, — внутри своего медиазапроса,
+   иначе кнопка стала бы видна и на десктопе, где база display: none.) */
+@supports not (display: grid) {
+    .nav-caret,
+    .page-card-pin,
+    .share-btn,
+    .audio-player .ap-btn {
+        display: block;
+        position: relative;
+        padding: 0;
+    }
+
+    .nav-caret svg,
+    .page-card-pin svg,
+    .share-btn svg,
+    .audio-player .ap-btn svg {
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        margin: auto;
+    }
+
+    /* Внутри стрелки плитки не значок, а текстовая стрелка «→» — ей хватает
+       обычного строчного центрирования */
+    .section-tile-arrow {
+        display: block;
+        line-height: 28px; /* = высота кружка */
+        text-align: center;
+        padding: 0;
+    }
+
+    /* Лупа в строке поиска: у неё position: absolute и left, но НЕТ top —
+       по вертикали её держит статическая позиция внутри flex-контейнера,
+       а в Safari 9 такого выравнивания нет, и значок улетает наверх.
+       Прибиваем явно: середина минус половина собственной высоты. */
+    .site-search-icon { top: 50%; margin-top: -8px; }      /* высота 16px */
+    .glossary-search-icon { top: 50%; margin-top: -9px; }  /* высота 18px */
+}
 
 /* --- 2. Анимации фона на старых устройствах: класс xi-legacy ---
    Ставится, когда браузер не знает `inset` (Safari <14.1 и ровесники).
