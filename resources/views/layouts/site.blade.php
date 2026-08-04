@@ -54,7 +54,17 @@
                 if (html.getAttribute('data-alpine') === 'ready') { setMark(false); return; }
 
                 waited += 250;
-                if (waited >= 1200) setMark(true); // фора на загрузку и старт
+
+                if (waited >= 1200) {
+                    setMark(true); // фора на загрузку и старт
+
+                    // Сюда попадают и те, у кого модули есть, а бандл не доехал:
+                    // метка вернулась уже ПОСЛЕ DOMContentLoaded, то есть после
+                    // разовой инициализации ниже, и запасной плеер остался бы без
+                    // источника. Функция идемпотентна - повторный вызов безвреден.
+                    if (document.body) initFallbackAudio();
+                }
+
                 if (waited < 15000) window.setTimeout(tick, 250);
             }
 
@@ -170,10 +180,36 @@
                 }
             }
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initFallbackMenu);
-            } else {
+            // Запасной аудиоплеер. В разметке у него data-src, а не src, чтобы
+            // современные браузеры (там блок скрыт) не делали по нему запросов.
+            // preload поднимаем до metadata и явно зовём load(): на старых iOS
+            // элемент с preload="none" остаётся неинициализированным - нативные
+            // кнопки видны, но нажатие на play ничего не запускает.
+            function initFallbackAudio() {
+                var players = document.querySelectorAll('.ap-fallback audio[data-src]');
+
+                for (var i = 0; i < players.length; i++) {
+                    var audio = players[i];
+                    if (audio.getAttribute('src')) continue;
+
+                    audio.setAttribute('preload', 'metadata');
+                    audio.setAttribute('src', audio.getAttribute('data-src'));
+
+                    if (typeof audio.load === 'function') audio.load();
+                }
+            }
+
+            function initFallback() {
                 initFallbackMenu();
+                // Плеер поднимаем только в деградации: у живого Alpine свой
+                // проигрыватель, а этот блок остаётся скрытым и не нужен
+                if ((' ' + html.className + ' ').indexOf(' ' + MARK + ' ') !== -1) initFallbackAudio();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initFallback);
+            } else {
+                initFallback();
             }
         })();
     </script>

@@ -533,6 +533,20 @@ html { scroll-padding-top: 84px; }
     .site-search--desktop { display: none; }
     .site-burger { display: grid; }
 
+    /* Safari 9-10 не знает CSS Grid (он появился в 10.1) и отбрасывает строку
+       выше как недопустимую — кнопка оставалась display: none из базового
+       правила, и на iOS 9 иконки меню просто не было. Центрирование там же
+       держится на place-items, которого в Safari 9 тоже нет, поэтому даём
+       флексовые longhand-ы. Блок применяется ТОЛЬКО там, где grid не
+       поддерживается, — на современных браузерах ничего не меняется. */
+    @supports not (display: grid) {
+        .site-burger {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
     .site-nav {
         display: none;
         position: absolute;
