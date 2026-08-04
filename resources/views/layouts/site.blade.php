@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+{{-- Класс xi-no-alpine стоит в разметке ИЗНАЧАЛЬНО: это базовое состояние для
+     всех, у кого не выполнится собранный Vite бандл (правила деградации меню и
+     плеера — в конце app.css). Скрипт ниже снимает его у браузеров, где бандл
+     точно поедет. Так «JS выключен совсем» работает без отдельного <noscript>. --}}
+<html lang="ru" class="xi-no-alpine">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,6 +15,69 @@
                 document.documentElement.setAttribute('data-theme', localStorage.getItem('xi-theme') || 'light');
             } catch (e) {
                 document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    {{-- Сторож совместимости. Vite собирает только ES-модули, а <script
+         type="module"> появился в Safari 10.1 / iOS 10.3 — на Safari 9-10.0
+         бандл не выполняется вовсе: меню на смартфоне не открыть, а плеер
+         остаётся пустым <audio> без src (источник ему ставит Alpine).
+
+         Код намеренно на ES5 — ни стрелок, ни const, ни шаблонных строк:
+         иначе он сам упадёт ровно там, где нужен. --}}
+    <script>
+        (function () {
+            var html = document.documentElement;
+            var MARK = 'xi-no-alpine';
+
+            function setMark(on) {
+                var padded = ' ' + html.className + ' ';
+                var has = padded.indexOf(' ' + MARK + ' ') !== -1;
+
+                if (on && !has) html.className = html.className + ' ' + MARK;
+                if (!on && has) html.className = padded.split(' ' + MARK + ' ').join(' ').replace(/^\s+|\s+$/g, '');
+            }
+
+            // Браузер понимает модули - бандл поедет, снимаем метку СИНХРОННО,
+            // до первой отрисовки, чтобы запасной вариант нигде не мелькнул.
+            // Safari 10.1 - известное исключение: модули есть, а свойства
+            // noModule нет, поэтому там метку снимет уже проверка ниже.
+            if ('noModule' in HTMLScriptElement.prototype) setMark(false);
+
+            // Метка возвращается, если Alpine так и не поднялся: бандл не
+            // загрузился, упал по дороге или это старый Safari. Проверяем и
+            // дальше - на медленной связи бандл может приехать позже.
+            var waited = 0;
+
+            function tick() {
+                if (html.getAttribute('data-alpine') === 'ready') { setMark(false); return; }
+
+                waited += 250;
+                if (waited >= 1200) setMark(true); // фора на загрузку и старт
+                if (waited < 15000) window.setTimeout(tick, 250);
+            }
+
+            window.setTimeout(tick, 250);
+
+            // Возраст браузера определяем по поддержке `inset`: оно приехало
+            // в Safari 14.1 — в том же выпуске, что и flexbox-gap. Проверять
+            // сам gap через @supports нельзя (`@supports (gap: 1px)` истинен
+            // уже в Safari 10, потому что gap работает в grid), а замер живым
+            // элементом требует <body> и успевает только к DOMContentLoaded —
+            // то есть ПОЗЖЕ модульного бандла, который к тому моменту уже
+            // запустил фон. CSS.supports синхронен и работает с Safari 9.
+            //
+            // Неточность: Chrome 84-86 и Firefox 63-65 умеют gap, но ещё не
+            // знают inset — они получат отступы на полях вместо gap. Разница
+            // незаметна, зато нет гонки и лишнего пересчёта вёрстки.
+            var modern = window.CSS && window.CSS.supports && window.CSS.supports('inset', '0');
+
+            if (!modern) {
+                // xi-no-flexgap — отступы на полях вместо gap (правила в app.css)
+                // xi-legacy    — выключает анимации фона; стартовать им не даёт
+                //                и сам starfield.js, читая этот же класс
+                html.className = html.className + ' xi-no-flexgap xi-legacy';
             }
         })();
     </script>

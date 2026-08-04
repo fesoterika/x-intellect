@@ -59,4 +59,32 @@
             <span style="font-size: 13.5px; color: var(--xi-ink-soft);" x-text="tracks[0].title"></span>
         </div>
     </template>
+
+    {{-- Запасной проигрыватель для старых устройств. Собственный интерфейс выше
+         целиком держится на Alpine — он же подставляет <audio> источник, поэтому
+         без Alpine (Safari 9-10 без ES-модулей, выключенный JS, сбой загрузки
+         бандла) плеер оказывался мёртвым: пустой <audio> без src и без controls.
+
+         Блок скрыт по умолчанию и раскрывается классом xi-no-alpine на <html>,
+         который снимает сторож в layouts/site.blade.php. На современных
+         браузерах не отображается никогда и вёрстку не меняет. --}}
+    @if ($trackData->isNotEmpty())
+    <div class="ap-fallback">
+        <audio controls preload="none" src="{{ $trackData[0]['url'] }}">
+            Ваш браузер не умеет воспроизводить аудио —
+            <a href="{{ $trackData[0]['url'] }}">скачайте запись файлом</a>.
+        </audio>
+
+        <ul class="ap-fallback-list">
+            @foreach ($trackData as $index => $track)
+                <li>
+                    <a href="{{ $track['url'] }}">{{ $index + 1 }}. {{ $track['title'] }}</a>
+                    @if ($track['duration'])
+                        <span class="dur">{{ $track['duration'] }}</span>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 </div>

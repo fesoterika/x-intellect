@@ -107,6 +107,14 @@ export default function initStarfield() {
     const host = document.querySelector('.starfield');
     if (!host || typeof window.requestAnimationFrame !== 'function') return;
 
+    // На старых устройствах canvas не поднимаем совсем: перерисовка всего
+    // полотна каждый кадр (при dpr до 2) плюс сборка строки rgba() на каждую
+    // звезду заметно греют слабое железо. Класс ставит сторож в шапке
+    // layouts/site.blade.php — синхронно, до выполнения этого модуля.
+    // Без is-canvas остаются замощённые звёздные слои из app.css, там же
+    // xi-legacy снимает с них анимацию мерцания: небо статично, но на месте.
+    if (document.documentElement.className.indexOf('xi-legacy') !== -1) return;
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

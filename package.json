@@ -19,5 +19,12 @@
     },
     "dependencies": {
         "trix": "^2.1.19"
-    }
+    },
+    "browserslist": [
+        "defaults",
+        "safari >= 9",
+        "ios_saf >= 9",
+        "not op_mini all",
+        "not ie <= 11"
+    ]
 }
