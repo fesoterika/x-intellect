@@ -14,9 +14,14 @@
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
     # Redirect Trailing Slashes If Not A Folder...
+    # Цель задаётся абсолютным https-адресом намеренно. Apache стоит за nginx
+    # хостинга и о TLS не знает, поэтому из относительного %1 он собирал ссылку
+    # на http:// — выходило два перехода с провалом протокола посередине.
+    # Старый сайт был на WordPress, где адреса заканчиваются слешем, так что
+    # через это правило проходит заметная часть внешних ссылок.
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteRule ^ https://%{HTTP_HOST}%1 [L,R=301]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
