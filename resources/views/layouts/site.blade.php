@@ -375,7 +375,7 @@
                 <a href="{{ url('/rules/pravovaia-informaciia') }}">Правовая информация</a>
             </p>
 
-            <p>© 2012-{{ date('Y') }} X-Intellect.org · Создатель нового сайта - <a href="{{ route('fesoterika') }}">Ф. (@fesoterika)</a></p>
+            <p>© 2012-{{ date('Y') }} X-Intellect.org · Создатель нового сайта - <a href="https://fesoterika.ru" target="_blank" rel="noopener noreferrer">Ф. | Эзотерика</a></p>
         </div>
     </footer>
 
