@@ -1836,6 +1836,11 @@ html { scroll-padding-top: 84px; }
 
 .author-links .btn-primary svg { width: 18px; height: 18px; }
 
+/* Монограмма приходит отдельным файлом через <img>, поэтому под неё нужно своё
+   правило: селектор `.author-links a svg` на картинку не действует. Файл уже
+   белый, перекрашивать нечем — img не наследует currentColor */
+.author-links .btn-primary img { width: 18px; height: 18px; flex: 0 0 auto; display: block; }
+
 /* Старые Safari (iOS 9-14) не знают color-mix — там кнопка остаётся крупной
    и цветной, просто без ореола */
 @supports not (color: color-mix(in srgb, red 50%, transparent)) {

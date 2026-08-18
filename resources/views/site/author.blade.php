@@ -34,9 +34,10 @@
             {{-- Блок ссылок с заглушки: внешние ресурсы идут через внутренние
                  обёртки /go/*.html - механизм обхода adblock (таблица redirects) --}}
             <div class="author-links">
-                {{-- «Мой сайт» стоит первым и выделен классом btn-primary --}}
-                <a class="btn-primary" href="/go/about.html" target="_blank" rel="noopener noreferrer">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+                {{-- «Мой сайт» стоит первым и выделен классом btn-primary.
+                     Иконка — монограмма из Ф.ai, белая, отдельным файлом --}}
+                <a class="btn-primary" href="https://fesoterika.ru" target="_blank" rel="noopener noreferrer">
+                    <img src="/images/f-monogram.svg" alt="" width="18" height="18" aria-hidden="true">
                     Мой сайт
                 </a>
                 <a class="btn-solid" href="/go/dzen.html" target="_blank" rel="noopener noreferrer">
