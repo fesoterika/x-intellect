@@ -49,7 +49,9 @@
                     Телеграм
                 </a>
                 <a class="btn-solid" href="https://vk.com/fesoterika" target="_blank" rel="noopener noreferrer">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.8 16.9c-5.5 0-8.96-3.9-9.1-10.3h2.78c.1 4.74 2.26 6.76 3.9 7.18V6.6h2.66v3.96c1.6-.18 3.28-2.05 3.84-3.96h2.6c-.43 2.34-2.24 4.2-3.52 4.97 1.28.62 3.34 2.25 4.13 5.33h-2.86c-.62-1.96-2.16-3.48-4.2-3.69v3.69z"/></svg>
+                    {{-- viewBox обрезан по самому знаку: в исходном «0 0 24 24»
+                         логотип занимал лишь 43% высоты и выглядел мельче соседей --}}
+                    <svg viewBox="4 7 16 10" fill="currentColor" aria-hidden="true"><path d="M12.8 16.9c-5.5 0-8.96-3.9-9.1-10.3h2.78c.1 4.74 2.26 6.76 3.9 7.18V6.6h2.66v3.96c1.6-.18 3.28-2.05 3.84-3.96h2.6c-.43 2.34-2.24 4.2-3.52 4.97 1.28.62 3.34 2.25 4.13 5.33h-2.86c-.62-1.96-2.16-3.48-4.2-3.69v3.69z"/></svg>
                     ВК
                 </a>
                 <a class="btn-solid" href="https://github.com/fesoterika" target="_blank" rel="noopener noreferrer">
