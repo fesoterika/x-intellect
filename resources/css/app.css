@@ -1815,6 +1815,33 @@ html { scroll-padding-top: 84px; }
 .author-links .btn-outline { border: 1px solid var(--xi-line); color: var(--xi-ink-soft); }
 .author-links .btn-outline:hover { border-color: var(--xi-accent); color: var(--xi-ink); }
 
+/* Главная кнопка «Мой сайт»: крупнее остальных, с ореолом и мягким свечением,
+   чтобы читаться первой в ряду. Тень задаётся через color-mix от акцента —
+   так она остаётся согласованной и в светлой, и в тёмной теме */
+.author-links .btn-primary {
+    background: var(--xi-accent);
+    color: #fff;
+    padding: 13px 24px;
+    font-size: 15px;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--xi-accent) 22%, transparent),
+                0 6px 18px color-mix(in srgb, var(--xi-accent) 35%, transparent);
+}
+
+.author-links .btn-primary:hover {
+    background: var(--xi-accent-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--xi-accent) 28%, transparent),
+                0 10px 24px color-mix(in srgb, var(--xi-accent) 45%, transparent);
+}
+
+.author-links .btn-primary svg { width: 18px; height: 18px; }
+
+/* Старые Safari (iOS 9-14) не знают color-mix — там кнопка остаётся крупной
+   и цветной, просто без ореола */
+@supports not (color: color-mix(in srgb, red 50%, transparent)) {
+    .author-links .btn-primary { box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
+}
+
 @media (max-width: 560px) {
     /* Портрет по центру страницы, текст под ним */
     .author-head { flex-direction: column; align-items: center; text-align: center; gap: 14px; }
