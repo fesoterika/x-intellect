@@ -2180,7 +2180,15 @@ a.xi-download .xi-download__meta {
 .forum-topic-dates { color: var(--xi-ink-faint); font-size: 12.5px; }
 
 .forum-posts { display: grid; gap: 14px; margin-top: 18px; }
-.forum-post { padding: 18px 22px; }
+
+/* min-width: 0 обязателен. У элемента grid по умолчанию min-width: auto, то есть
+   он не может стать уже своего содержимого — и одна длинная строка без пробелов
+   растягивает карточку, а с ней и всю страницу. В архиве такие строки есть:
+   в теме «Астральный выход» лежит URL старой вики на 284 символа (кириллица
+   в percent-кодировке). Ширина документа доходила до 2832px при окне 1265px.
+   overflow-wrap на .xi-prose один эту ситуацию не лечит: пока контейнер вправе
+   расширяться, переносить нечего. */
+.forum-post { padding: 18px 22px; min-width: 0; }
 .forum-post-head {
     display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
     padding-bottom: 10px; margin-bottom: 12px;
@@ -2188,7 +2196,10 @@ a.xi-download .xi-download__meta {
 }
 .forum-post-author { font-weight: 700; color: var(--xi-accent); font-size: 15px; }
 .forum-post-date { color: var(--xi-ink-faint); font-size: 12.5px; }
-.forum-post-body { font-size: 15.5px; }
+/* anywhere вместо break-word: break-word не разрывает слово, если у строки есть
+   хоть одна другая возможность переноса, и длинный URL всё равно вылезает.
+   Старые движки без поддержки anywhere откатятся на break-word из .xi-prose */
+.forum-post-body { font-size: 15.5px; overflow-wrap: anywhere; }
 .forum-post-body blockquote p:first-child { margin-bottom: 4px; }
 .forum-pagination { margin-top: 22px; display: flex; justify-content: center; }
 
