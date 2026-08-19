@@ -1,3 +1,26 @@
+# Точечные файлы наружу не отдаём. Apache сам закрывает только .ht* — из-за
+# этого .user.ini с лимитами PHP отдавался с кодом 200 любому желающему.
+# FilesMatch сверяет последний сегмент пути, поэтому содержимое .well-known
+# (проверка домена при выпуске сертификата) не задевается: там имена файлов
+# с точки не начинаются.
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Тот же запрет через rewrite: на этом хостинге статику отдаёт nginx мимо
+# Apache, и до FilesMatch запрос может не дойти. Правило стоит до остальных,
+# чтобы отработать раньше фронт-контроллера.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)\.(?!well-known)  - [F,L]
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
