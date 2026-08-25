@@ -5,9 +5,11 @@
 @section('meta')
     <meta name="description" content="Архивная копия форума проекта X-Intellect за 2012–2019 годы: {{ $topicsCount }} тем и {{ $postsCount }} сообщений участников. Форум неактивен, материалы доступны только для чтения.">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/forum">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Архив форума X-Intellect">
-    <meta property="og:description" content="Темы и сообщения форума проекта 2012–2015 годов. Только чтение.">
+    @include('site.partials.og', [
+        'ogTitle' => 'Архив форума X-Intellect',
+        'ogDescription' => 'Темы и сообщения форума проекта 2012–2019 годов. Только чтение.',
+        'ogUrl' => rtrim(config('app.url'), '/').'/forum',
+    ])
 @endsection
 
 @section('content')

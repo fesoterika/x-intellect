@@ -3,8 +3,16 @@
 @section('title', $section->title.' - X-Intellect')
 
 @section('meta')
-    <meta name="description" content="{{ Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158) }}">
+    @php
+        $sectionDesc = Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158);
+    @endphp
+    <meta name="description" content="{{ $sectionDesc }}">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $section->url() }}">
+    @include('site.partials.og', [
+        'ogTitle' => $section->title.' - X-Intellect',
+        'ogDescription' => $sectionDesc,
+        'ogUrl' => rtrim(config('app.url'), '/').$section->url(),
+    ])
 @endsection
 
 {{-- Запомненная сортировка (localStorage, как тема) применяется до рендера:

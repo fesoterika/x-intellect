@@ -114,7 +114,7 @@ Laravel-приложение с админкой, публичной часть�
 | Аудиоплеер | Alpine-компонент: плейлист, скорость, перемотка ±15с, позиция в localStorage; short-код `[[audio:ID]]` |
 | Глоссарий | `/glossary` + адрес термина `?term=slug`, живой фильтр, копирование, разметка в определениях, автотултипы в статьях |
 | Форум | `/forum` — архив phpBB в режиме чтения; дисклеймеры у тем с советами о здоровье; правка тем/разделов/сообщений из админки |
-| SEO | авто-slug (транслитерация), meta из seo-полей, JSON-LD (Article/Person/FAQPage/DefinedTerm/BreadcrumbList), `sitemap:generate`, middleware редиректов (301 архивные / 302 `/go/*`, кеш 1 час) |
+| SEO | авто-slug (транслитерация), meta из seo-полей, Open Graph на всех типах страниц (`site.partials.og`), JSON-LD (Article/Person/FAQPage/DefinedTerm/BreadcrumbList), `sitemap:generate`, IndexNow, `Clean-param` для Яндекса, middleware редиректов (301 архивные / 302 `/go/*`, кеш 1 час) |
 | robots/llms | статичные `public/robots.txt`, `public/llms.txt` |
 | Импорт архива | офлайн-слепок + Wayback Machine: основной сайт, вики, термины, аудио, форум, перелинковка, аудит полноты (отчёты генерируются локально, в репозиторий не входят) |
 
@@ -314,6 +314,10 @@ rsync -avz --progress storage/app/public/media/audio/ \
 - `audit:archive {archive} --wayback --fix-redirects` — аудит полноты импорта → отчёты
   в `docs/audit/` (каталог в `.gitignore`: это рабочие файлы, в репозиторий не попадают)
 - `sitemap:generate` — карта сайта
+- `indexnow:key` — создать файл-подтверждение ключа IndexNow в `public/`
+  (`--show` — только показать состояние)
+- `indexnow:submit --all` — подать в IndexNow весь сайт; без `--all` принимает
+  конкретные адреса. Обычные правки уходят сами из `PageObserver`
 
 Все команды идемпотентны и поддерживают `--dry` (просмотр без записи) и,
 где применимо, `--refresh` (перечистка тела уже импортированных страниц).

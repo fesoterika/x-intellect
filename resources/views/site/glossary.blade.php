@@ -9,9 +9,19 @@
     : 'Глоссарий - толкователь терминов проекта X-Intellect')
 
 @section('meta')
-    <meta name="description" content="{{ $active
-        ? Str::limit($active->termWithDefinition(), 300)
-        : 'Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.' }}">
+    @php
+        $glossaryDesc = $active
+            ? Str::limit($active->termWithDefinition(), 300)
+            : 'Глоссарий X-Intellect: толкователь специфических терминов и понятий, посредством которых происходит диалог с Силами.';
+    @endphp
+    <meta name="description" content="{{ $glossaryDesc }}">
+    @include('site.partials.og', [
+        'ogTitle' => $active
+            ? $active->term.' - глоссарий проекта X-Intellect'
+            : 'Глоссарий - толкователь терминов проекта X-Intellect',
+        'ogDescription' => $glossaryDesc,
+        'ogUrl' => $base.($active ? $active->url() : '/glossary'),
+    ])
 
     {{-- В индекс идут только /glossary и /glossary?term=<slug>; состояние
          свободного поиска (?q=) — служебное, закрываем от роботов. --}}
