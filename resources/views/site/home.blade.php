@@ -5,10 +5,11 @@
 @section('meta')
     <meta name="description" content="Восстановленный архив проекта X-Intellect (ранее - «Сфера Разума», основан А. Г. Глазом): вики, глоссарий, библиотека, аудиозаписи курсов, история проекта 1982-2017.">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="X-Intellect - архив проекта">
-    <meta property="og:description" content="Вики, библиотека, записи курсов и история проекта «Сфера Разума» / X-Интеллект.">
-    <meta property="og:image" content="{{ asset('images/x-intellect_logo.webp') }}">
+    @include('site.partials.og', [
+        'ogTitle' => 'X-Intellect - архив проекта',
+        'ogDescription' => 'Вики, библиотека, записи курсов и история проекта «Сфера Разума» / X-Интеллект.',
+        'ogUrl' => rtrim(config('app.url'), '/').'/',
+    ])
 @endsection
 
 @section('content')

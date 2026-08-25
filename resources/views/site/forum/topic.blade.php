@@ -10,8 +10,12 @@
 @section('meta')
     <meta name="description" content="{{ $desc !== '' ? $desc : 'Тема архивного форума X-Intellect: '.$topic->title }}">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $topic->url() }}">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $topic->title }} — Архив форума X-Intellect">
+    @include('site.partials.og', [
+        'ogType' => 'article',
+        'ogTitle' => $topic->title.' — Архив форума X-Intellect',
+        'ogDescription' => $desc !== '' ? $desc : 'Тема архивного форума X-Intellect: '.$topic->title,
+        'ogUrl' => rtrim(config('app.url'), '/').$topic->url(),
+    ])
     {{-- SEO-разметка обсуждения: schema.org DiscussionForumPosting --}}
     <script type="application/ld+json">
     {!! json_encode([

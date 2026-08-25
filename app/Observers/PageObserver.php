@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Jobs\RegenerateSitemap;
+use App\Jobs\SubmitToIndexNow;
 use App\Models\Page;
 use App\Models\Redirect;
 use App\Services\GlossaryLinker;
@@ -119,6 +120,11 @@ class PageObserver
 
         if ($page->isPublished() || $page->wasChanged('status')) {
             RegenerateSitemap::dispatch();
+
+            // Подаём в IndexNow и новый адрес, и прежний: при переименовании
+            // slug поисковику нужно переобойти оба — по старому теперь 301.
+            $urls = array_filter([$page->url(), $page->urlBeforeSave()]);
+            SubmitToIndexNow::dispatch(array_values(array_unique($urls)));
         }
     }
 
@@ -189,5 +195,9 @@ class PageObserver
     public function deleted(Page $page): void
     {
         RegenerateSitemap::dispatch();
+
+        // Удалённый адрес тоже подаётся: поисковик переобойдёт его и увидит
+        // 404 или 301, вместо того чтобы годами держать страницу в выдаче.
+        SubmitToIndexNow::dispatch([$page->url()]);
     }
 }
