@@ -11,6 +11,7 @@ use App\Services\ImageAligner;
 use App\Services\ImageFigures;
 use App\Services\ImageGallery;
 use App\Services\ImageSeo;
+use App\Services\IndexNow;
 use App\Services\SeoService;
 use App\Services\AttachmentDownloads;
 use App\Services\LinkTargets;
@@ -123,8 +124,12 @@ class PageObserver
 
             // Подаём в IndexNow и новый адрес, и прежний: при переименовании
             // slug поисковику нужно переобойти оба — по старому теперь 301.
-            $urls = array_filter([$page->url(), $page->urlBeforeSave()]);
-            SubmitToIndexNow::dispatch(array_values(array_unique($urls)));
+            // Без ключа задание в очередь не ставим: оно всё равно ничего не
+            // отправит, а строки в jobs копились бы на каждое сохранение.
+            if (app(IndexNow::class)->enabled()) {
+                $urls = array_filter([$page->url(), $page->urlBeforeSave()]);
+                SubmitToIndexNow::dispatch(array_values(array_unique($urls)));
+            }
         }
     }
 
@@ -198,6 +203,8 @@ class PageObserver
 
         // Удалённый адрес тоже подаётся: поисковик переобойдёт его и увидит
         // 404 или 301, вместо того чтобы годами держать страницу в выдаче.
-        SubmitToIndexNow::dispatch([$page->url()]);
+        if (app(IndexNow::class)->enabled()) {
+            SubmitToIndexNow::dispatch([$page->url()]);
+        }
     }
 }
