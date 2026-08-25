@@ -27,11 +27,28 @@ class IndexNow
         return (string) config('indexnow.key');
     }
 
+    /**
+     * Базовый адрес сайта — единственный источник и для абсолютных адресов,
+     * и для keyLocation. Раньше host() брался из indexnow.host, а адреса
+     * достраивались от app.url: стоило им разойтись, и normalize() отбрасывал
+     * вообще всё — хост достроенного адреса не совпадал с проверяемым.
+     */
+    public function baseUrl(): string
+    {
+        return rtrim((string) (config('indexnow.host') ?: config('app.url')), '/');
+    }
+
     public function host(): string
     {
-        $host = config('indexnow.host') ?: config('app.url');
+        return (string) parse_url($this->baseUrl(), PHP_URL_HOST);
+    }
 
-        return (string) parse_url($host, PHP_URL_HOST);
+    /**
+     * Адрес файла-подтверждения ключа.
+     */
+    public function keyLocation(): string
+    {
+        return $this->baseUrl().'/'.$this->key().'.txt';
     }
 
     /**
@@ -51,7 +68,7 @@ class IndexNow
      */
     public function normalize(iterable $urls): array
     {
-        $base = rtrim((string) config('app.url'), '/');
+        $base = $this->baseUrl();
         $host = $this->host();
         $out = [];
 
@@ -61,7 +78,7 @@ class IndexNow
                 continue;
             }
 
-            if (! str_starts_with($url, 'http')) {
+            if (! preg_match('~^https?://~i', $url)) {
                 $url = $base.'/'.ltrim($url, '/');
             }
 
@@ -100,7 +117,7 @@ class IndexNow
                     ->post((string) config('indexnow.endpoint'), [
                         'host' => $this->host(),
                         'key' => $this->key(),
-                        'keyLocation' => rtrim((string) config('app.url'), '/').'/'.$this->key().'.txt',
+                        'keyLocation' => $this->keyLocation(),
                         'urlList' => array_values($chunk),
                     ]);
 

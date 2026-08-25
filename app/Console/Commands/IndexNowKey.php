@@ -39,7 +39,7 @@ class IndexNowKey extends Command
         file_put_contents($path, $indexNow->key());
 
         $this->info('Файл создан: '.$path);
-        $this->line('Проверьте доступность: '.rtrim((string) config('app.url'), '/').'/'.$indexNow->key().'.txt');
+        $this->line('Проверьте доступность: '.$indexNow->keyLocation());
 
         return self::SUCCESS;
     }

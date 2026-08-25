@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\ForumTopic;
+use App\Models\GlossaryTerm;
 use App\Models\Page;
+use App\Models\Section;
 use App\Services\IndexNow;
 use Illuminate\Console\Command;
 
@@ -54,20 +56,31 @@ class IndexNowSubmit extends Command
     {
         $urls = ['/'];
 
-        foreach (Page::where('status', 'published')->get() as $page) {
-            $urls[] = $page->url();
-        }
-
-        foreach (\App\Models\Section::all() as $section) {
+        // Состав повторяет GenerateSitemap: подавать в поиск то, чего нет в
+        // карте сайта, — значит разойтись с ней. Скрытые разделы поэтому
+        // отсеиваются, а термины глоссария, наоборот, подаются: каждый из
+        // них самостоятельный адрес /glossary?term=<slug>.
+        foreach (Section::where('is_visible', true)->get() as $section) {
             $urls[] = $section->url();
         }
 
-        $urls[] = '/forum';
-        foreach (ForumTopic::all() as $topic) {
-            $urls[] = $topic->url();
+        $urls[] = '/glossary';
+        foreach (GlossaryTerm::all() as $term) {
+            $urls[] = $term->url();
         }
 
-        $urls[] = '/glossary';
+        Page::published()->chunk(200, function ($pages) use (&$urls) {
+            foreach ($pages as $page) {
+                $urls[] = $page->url();
+            }
+        });
+
+        if (ForumTopic::query()->exists()) {
+            $urls[] = '/forum';
+            foreach (ForumTopic::all() as $topic) {
+                $urls[] = $topic->url();
+            }
+        }
 
         return $urls;
     }
