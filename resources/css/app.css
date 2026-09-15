@@ -937,7 +937,7 @@ html { scroll-padding-top: 84px; }
 .glossary-tooltip {
     position: absolute;
     z-index: 50;
-    max-width: 320px;
+    max-width: 500px;
     background: var(--xi-surface-2);
     border: 1px solid var(--xi-accent-deep);
     border-radius: 10px;
@@ -949,6 +949,10 @@ html { scroll-padding-top: 84px; }
 }
 
 .glossary-tooltip strong { color: var(--xi-accent); }
+
+@media (max-width: 860px) {
+    .glossary-tooltip { max-width: 320px; }
+}
 
 /* --- Аудиоплеер --- */
 .audio-player {
