@@ -136,6 +136,7 @@ export default function initStarfield() {
     let raf = null;
     let meteor = null;
     let nextMeteor = 6;
+    let scrollTimer = null;
 
     function seed() {
         stars = [];
@@ -279,10 +280,15 @@ export default function initStarfield() {
         raf = window.requestAnimationFrame(frame);
     }
 
+    function play() {
+        if (raf !== null) return;
+        raf = window.requestAnimationFrame(frame);
+    }
+
     function start() {
         if (raf !== null) return;
         resize();
-        raf = window.requestAnimationFrame(frame);
+        play();
     }
 
     function stop() {
@@ -308,6 +314,23 @@ export default function initStarfield() {
             if (reduced) window.requestAnimationFrame(frame);
         }, 200);
     });
+
+    // При прокрутке canvas остаётся на последнем кадре: полотно фиксировано и
+    // его перерисовка не влияет на содержание страницы. Это освобождает кадры
+    // для самого скролла, а мерцание спокойно продолжается после остановки.
+    window.addEventListener('scroll', () => {
+        if (document.documentElement.getAttribute('data-theme') !== 'dark' || reduced) return;
+
+        if (raf !== null) {
+            window.cancelAnimationFrame(raf);
+            raf = null;
+        }
+
+        window.clearTimeout(scrollTimer);
+        scrollTimer = window.setTimeout(() => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') play();
+        }, 120);
+    }, { passive: true });
 
     window.addEventListener('xi-theme', sync);
 
