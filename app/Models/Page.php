@@ -153,6 +153,6 @@ class Page extends Model
             return $absolute($m[1]);
         }
 
-        return $absolute('/images/x-intellect_logo.webp');
+        return $absolute('/images/x-intellect_logo.png');
     }
 }

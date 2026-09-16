@@ -43,7 +43,7 @@ class PlayerCoverImageTest extends TestCase
         $page = $this->makePage('bez-kartinok');
 
         $this->assertSame(
-            rtrim(config('app.url'), '/').'/images/x-intellect_logo.webp',
+            rtrim(config('app.url'), '/').'/images/x-intellect_logo.png',
             $page->coverImageUrl(),
         );
     }

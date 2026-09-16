@@ -252,20 +252,7 @@
     <header class="site-header" x-data="{ menuOpen: false }" @keydown.escape.window="menuOpen = false">
         <div class="site-header-inner">
             <a class="site-logo" href="{{ route('home') }}">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="X-Intellect">
-                    <rect fill="#fff" x="2" y="2" width="95.9" height="95.9" rx="8.4" ry="8.4"/>
-                    <g opacity=".9"><ellipse fill="none" stroke="#6667ab" stroke-width="5" cx="49.9" cy="50" rx="35.9" ry="13.5"/></g>
-                    <g>
-                        <line stroke="#40334f" stroke-width="2" x1="31.4" y1="17.1" x2="68.6" y2="82.9"/>
-                        <rect fill="#40334f" stroke="#40334f" stroke-width="2" x="45.9" y="12.2" width="8.2" height="75.5" transform="translate(-18.1 31.1) rotate(-29.5)"/>
-                    </g>
-                    <g>
-                        <line stroke="#40334f" stroke-width="2" x1="68.6" y1="17.1" x2="31.4" y2="82.9"/>
-                        <rect fill="#40334f" stroke="#40334f" stroke-width="2" x="12.2" y="45.9" width="75.5" height="8.2" transform="translate(-18.1 68.9) rotate(-60.5)"/>
-                    </g>
-                    <circle fill="none" stroke="#6667ab" stroke-width="5" cx="50" cy="50" r="37.9"/>
-                    <circle fill="#5f4c79" cx="50" cy="13.1" r="8.4"/>
-                </svg>
+                <img src="/favicon.svg" width="38" height="38" alt="">
                 <span>
                     X-Intellect.org
                     <span class="tagline">новый сайт проекта</span>
