@@ -278,37 +278,39 @@ if (statValues.length
     statValues.forEach((el) => statsObserver.observe(el));
 }
 
-/* Chromium-баг: ввод в инпут внутри position:sticky (поиск в шапке) заставляет
-   браузер «показать каретку», но её позиция считается по потоковым координатам
-   шапки — страница скроллит вверх на десятки пикселей при каждом начале ввода.
-   CSS-обходы (contain, отказ от backdrop-filter на самой шапке) снижают, но не
-   убирают прыжок, поэтому паразитный скролл откатывается точечно: запоминаем
-   позицию перед вводом и возвращаем её, если сразу после ввода она «уехала». */
-// behavior: 'instant' нужен, чтобы перебить `scroll-behavior: smooth` из CSS.
-// Но объектную форму scrollTo() понимают не все старые браузеры: те, что
-// читают аргументы позиционно, получат undefined и унесут страницу в самый
-// верх. Там, где нет и CSS-плавности, позиционная форма и так мгновенная.
-const smoothScrollCss = 'scrollBehavior' in document.documentElement.style;
-
-const scrollToInstantly = (y) => {
-    if (smoothScrollCss) window.scrollTo({ top: y, behavior: 'instant' });
-    else window.scrollTo(window.scrollX, y);
-};
+/* Chromium иногда пытается проскроллить документ к каретке, когда ввод идёт в
+   поиск внутри sticky-шапки. Раньше обработчик 250 мс после КАЖДОГО символа
+   перехватывал все scroll-события; этим он боролся и с нормальной прокруткой,
+   отчего страница визуально дёргалась. На время фокуса отключаем только
+   плавный скролл браузера, а возможный паразитный сдвиг возвращаем в ближайшем
+   кадре. Обычная ручная прокрутка не перехватывается вовсе. */
+const documentRoot = document.documentElement;
+const canSetScrollBehavior = 'scrollBehavior' in documentRoot.style;
 
 document.querySelectorAll('.site-search input').forEach((input) => {
-    let savedY = 0;
-    let until = 0;
+    let originalScrollBehavior = '';
+    let restoreFrame = null;
 
-    input.addEventListener('beforeinput', () => {
-        savedY = window.scrollY;
-        until = performance.now() + 250;
+    input.addEventListener('focus', () => {
+        if (!canSetScrollBehavior) return;
+        originalScrollBehavior = documentRoot.style.scrollBehavior;
+        documentRoot.style.scrollBehavior = 'auto';
     });
 
-    // Окно держится всё время браузерной smooth-анимации: разовый откат не
-    // помогает — анимация продолжает вести к своей цели кадр за кадром.
-    window.addEventListener('scroll', () => {
-        if (performance.now() < until && Math.abs(window.scrollY - savedY) > 1) {
-            scrollToInstantly(savedY);
-        }
-    }, { passive: true });
+    input.addEventListener('blur', () => {
+        if (!canSetScrollBehavior) return;
+        documentRoot.style.scrollBehavior = originalScrollBehavior;
+    });
+
+    input.addEventListener('beforeinput', () => {
+        const savedY = window.scrollY;
+
+        if (restoreFrame !== null) window.cancelAnimationFrame(restoreFrame);
+        restoreFrame = window.requestAnimationFrame(() => {
+            restoreFrame = null;
+            if (Math.abs(window.scrollY - savedY) > 1) {
+                window.scrollTo(window.scrollX, savedY);
+            }
+        });
+    });
 });
