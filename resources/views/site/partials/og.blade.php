@@ -9,7 +9,7 @@
 @php
     $ogType = $ogType ?? 'website';
     $ogUrl = $ogUrl ?? rtrim(config('app.url'), '/').request()->getPathInfo();
-    $ogImage = $ogImage ?? asset('images/x-intellect_logo.webp');
+    $ogImage = $ogImage ?? asset('images/x-intellect_logo.png');
 @endphp
 <meta property="og:type" content="{{ $ogType }}">
 <meta property="og:title" content="{{ $ogTitle }}">

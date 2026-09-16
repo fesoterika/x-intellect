@@ -1188,13 +1188,13 @@ class PublicSiteTest extends TestCase
         // На странице без своего og_image подставляется логотип
         $this->get('/about/o-sajte-x-intellect')
             ->assertOk()
-            ->assertSee('images/x-intellect_logo.webp', false);
+            ->assertSee('images/x-intellect_logo.png', false);
 
         // На главной — тоже
         $this->get('/')
             ->assertOk()
             ->assertSee('property="og:image"', false)
-            ->assertSee('images/x-intellect_logo.webp', false);
+            ->assertSee('images/x-intellect_logo.png', false);
     }
 
     public function test_og_image_uses_custom_value_when_set(): void
@@ -1207,7 +1207,7 @@ class PublicSiteTest extends TestCase
         $this->get('/about/o-sajte-x-intellect')
             ->assertOk()
             ->assertSee('https://example.com/custom.jpg', false)
-            ->assertDontSee('images/x-intellect_logo.webp', false);
+            ->assertDontSee('images/x-intellect_logo.png', false);
     }
 
     public function test_year_list_is_tagged_as_timeline_on_save(): void

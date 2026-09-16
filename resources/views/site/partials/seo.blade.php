@@ -12,7 +12,7 @@
     'ogDescription' => $seoDesc,
     'ogUrl' => $seoUrl,
     {{-- OG-картинка: значение поля, иначе — логотип сайта по умолчанию --}}
-    'ogImage' => $page->seoValue('og_image') ?: asset('images/x-intellect_logo.webp'),
+    'ogImage' => $page->seoValue('og_image') ?: asset('images/x-intellect_logo.png'),
 ])
 
 @include('site.partials.json-ld', ['page' => $page])
