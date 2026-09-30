@@ -30,6 +30,7 @@ class SectionController extends Controller
      */
     public const WIKI_MENU_ORDER = [
         'proekty-2005-2012',
+        'vnezemnye-tsivilizatsii',
         'texniki',
         'seansy-1991-2008',
         'seansy-2009-2010',
