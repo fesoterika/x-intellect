@@ -65,12 +65,14 @@ class WikiSidebarTest extends TestCase
         // Отмечаем в «неправильном» порядке position — меню должно их пересортировать
         $this->makePage($seansy, 'Сеансы 2013', 'seansy-2013', ['position' => 1, 'in_wiki_menu' => true]);
         $this->makePage($common, 'Проекты 2005 - 2012', 'proekty-2005-2012', ['position' => 99, 'in_wiki_menu' => true]);
+        $this->makePage($wiki, 'Внеземные Цивилизации (ВЦ) - классификация', 'vnezemnye-tsivilizatsii', ['position' => 1, 'in_wiki_menu' => true]);
         $this->makePage($common, 'Техники', 'texniki', ['position' => 50, 'in_wiki_menu' => true]);
 
         $sidebar = $this->sidebar($this->get('/wiki')->assertOk()->getContent());
 
-        // Обязательный порядок: Проекты 2005-2012 → Техники → Сеансы 2013
-        $this->assertLessThan(strpos($sidebar, 'Техники'), strpos($sidebar, 'Проекты 2005 - 2012'));
+        // Обязательный порядок: Проекты 2005-2012 → ВЦ → Техники → Сеансы 2013
+        $this->assertLessThan(strpos($sidebar, 'Внеземные Цивилизации'), strpos($sidebar, 'Проекты 2005 - 2012'));
+        $this->assertLessThan(strpos($sidebar, 'Техники'), strpos($sidebar, 'Внеземные Цивилизации'));
         $this->assertLessThan(strpos($sidebar, 'Сеансы 2013'), strpos($sidebar, 'Техники'));
     }
 
