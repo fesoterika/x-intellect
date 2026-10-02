@@ -4,14 +4,18 @@
 
 @section('meta')
     @php
+        $sectionCanonicalUrl = rtrim(config('app.url'), '/').$section->url();
+        if ($pages->currentPage() > 1) {
+            $sectionCanonicalUrl .= '?page='.$pages->currentPage();
+        }
         $sectionDesc = Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158);
     @endphp
     <meta name="description" content="{{ $sectionDesc }}">
-    <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $section->url() }}">
+    <link rel="canonical" href="{{ $sectionCanonicalUrl }}">
     @include('site.partials.og', [
         'ogTitle' => $section->title.' - X-Intellect',
         'ogDescription' => $sectionDesc,
-        'ogUrl' => rtrim(config('app.url'), '/').$section->url(),
+        'ogUrl' => $sectionCanonicalUrl,
     ])
 @endsection
 

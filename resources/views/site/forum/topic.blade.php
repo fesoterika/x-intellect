@@ -3,18 +3,22 @@
 @section('title', $topic->title.' — Архив форума X-Intellect')
 
 @php
+    $topicCanonicalUrl = rtrim(config('app.url'), '/').$topic->url();
+    if ($posts->currentPage() > 1) {
+        $topicCanonicalUrl .= '?page='.$posts->currentPage();
+    }
     $firstPost = $topic->posts->first();
     $desc = Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags($firstPost?->body ?? ''))), 155);
 @endphp
 
 @section('meta')
     <meta name="description" content="{{ $desc !== '' ? $desc : 'Тема архивного форума X-Intellect: '.$topic->title }}">
-    <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}{{ $topic->url() }}">
+    <link rel="canonical" href="{{ $topicCanonicalUrl }}">
     @include('site.partials.og', [
         'ogType' => 'article',
         'ogTitle' => $topic->title.' — Архив форума X-Intellect',
         'ogDescription' => $desc !== '' ? $desc : 'Тема архивного форума X-Intellect: '.$topic->title,
-        'ogUrl' => rtrim(config('app.url'), '/').$topic->url(),
+        'ogUrl' => $topicCanonicalUrl,
     ])
     {{-- SEO-разметка обсуждения: schema.org DiscussionForumPosting --}}
     <script type="application/ld+json">
@@ -22,7 +26,7 @@
         '@context' => 'https://schema.org',
         '@type' => 'DiscussionForumPosting',
         'headline' => $topic->title,
-        'url' => rtrim(config('app.url'), '/').$topic->url(),
+        'url' => $topicCanonicalUrl,
         'author' => ['@type' => 'Person', 'name' => $firstPost?->author ?? 'Участник форума'],
         'datePublished' => $topic->started_at?->toIso8601String(),
         'dateModified' => $topic->last_posted_at?->toIso8601String(),
