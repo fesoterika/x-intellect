@@ -742,6 +742,14 @@ html { scroll-padding-top: 84px; }
    ограничивается колонкой текста, содержимое прокручивается вбок (display:block
    превращает сам table в scroll-контейнер — без обёртки в разметке) */
 @media (max-width: 860px) {
+    /* Архивные цитаты в pre: сохраняем отступы и разрывы строк, но
+       переносим длинные строки и слова по ширине мобильной колонки. */
+    .xi-prose pre {
+        max-width: 100%;
+        white-space: pre-wrap;
+        overflow-wrap: break-word; /* запасной вариант для старых Safari */
+        overflow-wrap: anywhere;
+    }
     .xi-prose table { display: block; max-width: 100%; overflow-x: auto; }
     /* caption у block-таблицы попадает в зону прокрутки — держим его видимым:
        блок во всю ширину рамки, при прокрутке прилипает к левому краю */
