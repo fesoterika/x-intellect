@@ -597,8 +597,6 @@ Array.prototype.forEach.call(document.querySelectorAll('*'), function (el) {
 
 Авторство новых Git-коммитов закреплено в [правилах проекта](AGENTS.md):
 `fesoterika` — https://github.com/fesoterika.
-Участие Codex в изменениях отмечается в сообщениях соответствующих коммитов:
-`Co-authored-by: Codex <codex@openai.com>`.
 
 ## Благодарности
 
