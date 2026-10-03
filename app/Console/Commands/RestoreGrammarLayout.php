@@ -21,6 +21,9 @@ class RestoreGrammarLayout extends Command
 
     private const ORIGINAL_SHA256 = '800b4e01b33b102ffe7a20cc800ff0e3d7d31385d6e7f7c8f3d34de555f30a6d';
 
+    /** Первая восстановленная редакция до удаления оставшихся пустых маркеров. */
+    private const RESTORED_SHA256 = '4c8803a708ce4369514fc1d9062e63f6f3d2565e5dfd29e89a73ee03be0b5709';
+
     public function handle(): int
     {
         return DB::transaction(function () {
@@ -38,7 +41,7 @@ class RestoreGrammarLayout extends Command
                 return self::SUCCESS;
             }
 
-            if (hash('sha256', $page->body) !== self::ORIGINAL_SHA256) {
+            if (! in_array(hash('sha256', $page->body), [self::ORIGINAL_SHA256, self::RESTORED_SHA256], true)) {
                 $this->error('Текст изменился после аудита; восстановление отменено, чтобы сохранить новые правки.');
 
                 return self::FAILURE;
