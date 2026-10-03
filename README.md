@@ -591,10 +591,12 @@ Array.prototype.forEach.call(document.querySelectorAll('*'), function (el) {
 
 ## Участники разработки
 
-- **Fesoterika** — разработка сайта, сохранение и редактирование архива.
+- **[fesoterika](https://github.com/fesoterika)** — разработка сайта, сохранение и редактирование архива.
 - **Claude (Anthropic)** — помощь в разработке и импорте материалов.
 - **Codex (OpenAI)** — помощь в разработке, проверке кода и актуализации документации.
 
+Авторство новых Git-коммитов закреплено в [правилах проекта](AGENTS.md):
+`fesoterika` — https://github.com/fesoterika.
 Участие Codex в изменениях отмечается в сообщениях соответствующих коммитов:
 `Co-authored-by: Codex <codex@openai.com>`.
 
