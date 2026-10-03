@@ -589,6 +589,15 @@ Array.prototype.forEach.call(document.querySelectorAll('*'), function (el) {
   `SESSION_SECURE_COOKIE=true`, свой `APP_KEY`, смена пароля сид-админа)
 - Тесты: `tests/Feature/SecurityTest.php`
 
+## Участники разработки
+
+- **Fesoterika** — разработка сайта, сохранение и редактирование архива.
+- **Claude (Anthropic)** — помощь в разработке и импорте материалов.
+- **Codex (OpenAI)** — помощь в разработке, проверке кода и актуализации документации.
+
+Участие Codex в изменениях отмечается в сообщениях соответствующих коммитов:
+`Co-authored-by: Codex <codex@openai.com>`.
+
 ## Благодарности
 
 Материалы сайта собраны из нескольких архивов, а также из моего собственного архива,
