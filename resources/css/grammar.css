@@ -1,0 +1,140 @@
+/* Справочник /rules/opgry: структура и компактные таблицы архивной страницы,
+   палитра и типографика текущего сайта. Стили ограничены её телом. */
+.xi-prose .xi-grammar-toc {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--xi-line);
+}
+.xi-prose .xi-grammar-toc summary {
+    width: fit-content;
+    color: var(--xi-ink);
+    font-family: var(--xi-font-serif);
+    font-size: 1.3em;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.xi-prose .xi-grammar-toc ul {
+    margin: 18px 0 0;
+    padding-left: 1.2em;
+    column-count: 2;
+    column-gap: 38px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+.xi-prose .xi-grammar-toc li {
+    margin: 0 0 7px;
+    break-inside: avoid;
+}
+.xi-prose .xi-grammar-toc a {
+    border-bottom: 0;
+}
+.xi-prose .xi-grammar-toc a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.xi-prose .xi-grammar-source {
+    margin: 0 0 28px;
+    color: var(--xi-ink-soft);
+    font-size: 14px;
+    font-style: italic;
+}
+.xi-prose .xi-grammar-scroll-hint {
+    display: none;
+    margin: -12px 0 24px;
+    color: var(--xi-ink-soft);
+    font-size: 13.5px;
+}
+.xi-prose .xi-grammar-section + .xi-grammar-section {
+    margin-top: 32px;
+}
+.xi-prose .xi-grammar-section h2 {
+    margin: 0 0 16px;
+    font-size: 1.25em;
+    line-height: 1.4;
+}
+.xi-prose .xi-grammar-section h2:target {
+    color: var(--xi-accent);
+}
+.xi-prose .xi-grammar-section h3 {
+    margin: 22px 0 12px;
+    font-size: 1.08em;
+}
+.xi-prose .xi-grammar-note {
+    margin: 16px 0 8px;
+    font-weight: 600;
+}
+.xi-prose .xi-grammar-table-scroll {
+    max-width: 100%;
+    margin: 14px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.xi-prose .xi-grammar table {
+    display: table;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    border: 1px solid var(--xi-line);
+    border-collapse: separate;
+    border-spacing: 1px;
+    background: var(--xi-surface);
+    font-size: 15px;
+    line-height: 1.45;
+}
+.xi-prose .xi-grammar td,
+.xi-prose .xi-grammar th {
+    padding: 8px 10px;
+    border: 0;
+    background: var(--xi-surface-2);
+    color: var(--xi-ink);
+    vertical-align: middle;
+    overflow-wrap: break-word;
+}
+.xi-prose .xi-grammar th {
+    font-weight: 600;
+    text-align: center;
+}
+.xi-prose .xi-grammar th[scope="row"],
+.xi-prose .xi-grammar th[scope="rowgroup"] {
+    font-weight: 500;
+    text-align: left;
+}
+.xi-prose .xi-grammar td > :last-child,
+.xi-prose .xi-grammar th > :last-child {
+    margin-bottom: 0;
+}
+.xi-prose .xi-grammar td > ul,
+.xi-prose .xi-grammar td > ol {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 1.25em;
+}
+.xi-prose .xi-grammar-example {
+    margin: 4px 0;
+    padding-left: 0.8em;
+    color: var(--xi-ink-soft);
+}
+.xi-prose .xi-grammar-center {
+    text-align: center;
+}
+.xi-prose .xi-grammar-symbol {
+    font-size: 1.5em;
+    line-height: 1;
+}
+.xi-prose .xi-grammar hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--xi-line);
+}
+@media (max-width: 640px) {
+    .xi-prose .xi-grammar-scroll-hint { display: block; }
+    .xi-prose .xi-grammar-toc ul {
+        column-count: 1;
+        font-size: 14.5px;
+    }
+    .xi-prose .xi-grammar td,
+    .xi-prose .xi-grammar th {
+        padding: 7px 8px;
+    }
+}
