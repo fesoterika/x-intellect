@@ -20,7 +20,7 @@ class RedirectSeeder extends Seeder
                 'comment' => 'Дзен-канал автора (обход adblock)'],
             ['from_path' => '/go/about.html', 'to_url' => 'https://dzen.ru/a/aCwgF-lXJnE3jl37?share_to=link', 'status_code' => 302,
                 'comment' => 'Статья «Кто я?» (обход adblock)'],
-            ['from_path' => '/go/donate.html', 'to_url' => 'https://dzen.ru/fesoterika?donate=true', 'status_code' => 302,
+            ['from_path' => '/go/donate.html', 'to_url' => 'https://boosty.to/fesoterika/donate', 'status_code' => 302,
                 'comment' => 'Поддержать автора (обход adblock)'],
 
             // 301 со старых архивных URL на новые SEO-url.
