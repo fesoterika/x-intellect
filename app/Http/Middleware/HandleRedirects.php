@@ -30,6 +30,17 @@ class HandleRedirects
                 rtrim($path, '/'),
             ]));
 
+            // WordPress shortlink: одна запись /?p=ID обслуживает также
+            // /index.php?p=ID и ссылки с добавленными utm-параметрами.
+            // На остальных путях p может быть параметром самого приложения.
+            if (in_array($path, ['/', '/index.php'], true)) {
+                $query = $request->query();
+                $id = $query['p'] ?? $query['page_id'] ?? null;
+                if (is_string($id) && preg_match('/^[1-9][0-9]*$/D', $id)) {
+                    $candidates[] = '/?p='.$id;
+                }
+            }
+
             // Более специфичное правило (например, с query-string) приоритетнее
             $redirect = Redirect::whereIn('from_path', $candidates)
                 ->orderByRaw('LENGTH(from_path) DESC')

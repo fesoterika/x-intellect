@@ -1,0 +1,764 @@
+[
+  {
+    "from_path": "/?p=1",
+    "to_url": "/hello/privetstvie",
+    "status_code": 301,
+    "comment": "WordPress ?p=1: Приветствие от представителей Внеземного Разума (2012)"
+  },
+  {
+    "from_path": "/?p=2",
+    "to_url": "/about/istoriya-proekta",
+    "status_code": 301,
+    "comment": "WordPress ?p=2: История проекта: от Группы-1 до X-Intellect"
+  },
+  {
+    "from_path": "/?p=12",
+    "to_url": "/about/metodologia",
+    "status_code": 301,
+    "comment": "WordPress ?p=12: Методология"
+  },
+  {
+    "from_path": "/?p=14",
+    "to_url": "/about/mission",
+    "status_code": 301,
+    "comment": "WordPress ?p=14: Миссия"
+  },
+  {
+    "from_path": "/?p=18",
+    "to_url": "/library",
+    "status_code": 301,
+    "comment": "WordPress ?p=18: Библиотека"
+  },
+  {
+    "from_path": "/?p=68",
+    "to_url": "/wiki/proekt-dusa-cast-1",
+    "status_code": 301,
+    "comment": "WordPress ?p=68: Проект Душа. Часть 1."
+  },
+  {
+    "from_path": "/?p=71",
+    "to_url": "/wiki/proekt-dusa-cast-2",
+    "status_code": 301,
+    "comment": "WordPress ?p=71: Проект Душа. Часть 2."
+  },
+  {
+    "from_path": "/?p=80",
+    "to_url": "/courses/astralnye-peremeshheniia-vo-vremeni",
+    "status_code": 301,
+    "comment": "WordPress ?p=80: Курс 1. Астральные перемещения во времени"
+  },
+  {
+    "from_path": "/?p=82",
+    "to_url": "/courses/izucenie-sobstvennyx-inkarnacionnyx-ziznei",
+    "status_code": 301,
+    "comment": "WordPress ?p=82: Курс 2: Изучение собственных инкарнационных жизней"
+  },
+  {
+    "from_path": "/?p=88",
+    "to_url": "/courses/psixo-emocionalnaia-i-energeticeskaia-korrekciia",
+    "status_code": 301,
+    "comment": "WordPress ?p=88: Курс 3: Психо-эмоциональная и энергетическая коррекция"
+  },
+  {
+    "from_path": "/?p=91",
+    "to_url": "/courses/karmiceskaia-korrekciia",
+    "status_code": 301,
+    "comment": "WordPress ?p=91: Курс 4: Кармическая коррекция"
+  },
+  {
+    "from_path": "/?p=93",
+    "to_url": "/courses/ziznennoe-prednaznacenie-programma-dusi-na-dannuiu-zizn",
+    "status_code": 301,
+    "comment": "WordPress ?p=93: Курс 5: Жизненное предназначение - программа души на данную жизнь"
+  },
+  {
+    "from_path": "/?p=117",
+    "to_url": "/projects/questions",
+    "status_code": 301,
+    "comment": "WordPress ?p=117: Вопрос — ответ (проект: Целительство)"
+  },
+  {
+    "from_path": "/?p=146",
+    "to_url": "/wiki/proekt-dusa-cast-3",
+    "status_code": 301,
+    "comment": "WordPress ?p=146: Проект Душа. Часть 3."
+  },
+  {
+    "from_path": "/?p=259",
+    "to_url": "/rules/pravila-proekta",
+    "status_code": 301,
+    "comment": "WordPress ?p=259: Правила проекта"
+  },
+  {
+    "from_path": "/?p=297",
+    "to_url": "/projects/297",
+    "status_code": 301,
+    "comment": "WordPress ?p=297: Проект «Целительство»"
+  },
+  {
+    "from_path": "/?p=317",
+    "to_url": "/about/contacts",
+    "status_code": 301,
+    "comment": "WordPress ?p=317: Ресурсы проекта"
+  },
+  {
+    "from_path": "/?p=378",
+    "to_url": "/articles/2012-07-04",
+    "status_code": 301,
+    "comment": "WordPress ?p=378: День Рождения Александра Глаза"
+  },
+  {
+    "from_path": "/?p=413",
+    "to_url": "/articles/2012-07-08",
+    "status_code": 301,
+    "comment": "WordPress ?p=413: Ченнелинг: Мнение Сил о сайте X-INTELLECT"
+  },
+  {
+    "from_path": "/?p=501",
+    "to_url": "/articles/lotos",
+    "status_code": 301,
+    "comment": "WordPress ?p=501: Статья: Практика на основе «Цветок Лотоса»"
+  },
+  {
+    "from_path": "/?p=544",
+    "to_url": "/articles/talisman",
+    "status_code": 301,
+    "comment": "WordPress ?p=544: Ченнелинг: Талисманы и амулеты"
+  },
+  {
+    "from_path": "/?p=562",
+    "to_url": "/articles/tandem-posrednik-vedushiy",
+    "status_code": 301,
+    "comment": "WordPress ?p=562: Статья: Тандемы. Посредники и ведущие."
+  },
+  {
+    "from_path": "/?p=672",
+    "to_url": "/articles/statia-inkarnacionnaia-iaceika",
+    "status_code": 301,
+    "comment": "WordPress ?p=672: Статья: Инкарнационная ячейка"
+  },
+  {
+    "from_path": "/?p=720",
+    "to_url": "/articles/statia-nekotorye-metodiki-cistki-posle-vozdeistviia-destruktivnyx-sil",
+    "status_code": 301,
+    "comment": "WordPress ?p=720: Статья: Некоторые методики чистки после воздействия деструктивных сил"
+  },
+  {
+    "from_path": "/?p=746",
+    "to_url": "/projects/dusha-prodoljenie",
+    "status_code": 301,
+    "comment": "WordPress ?p=746: Проект «ДУША»: Вопросы и ответы (по информации из предыдущих ченнелингов)"
+  },
+  {
+    "from_path": "/?p=782",
+    "to_url": "/projects/proekt-kartiny-ucitelei-noosfery-zemlia",
+    "status_code": 301,
+    "comment": "WordPress ?p=782: Проект «Картины Учителей Ноосферы: Земля»"
+  },
+  {
+    "from_path": "/?p=834",
+    "to_url": "/projects/proekt-kartiny-ucitelei-noosfery-ogon",
+    "status_code": 301,
+    "comment": "WordPress ?p=834: Проект «Картины Учителей Ноосферы: Огонь»"
+  },
+  {
+    "from_path": "/?p=870",
+    "to_url": "/projects/proekt-kartiny-ucitelei-noosfery-vozdux",
+    "status_code": 301,
+    "comment": "WordPress ?p=870: Проект «Картины Учителей Ноосферы: Воздух»"
+  },
+  {
+    "from_path": "/?p=889",
+    "to_url": "/articles/dusha-sens-syst",
+    "status_code": 301,
+    "comment": "WordPress ?p=889: Сенсорные системы и система представления знаний: Монография"
+  },
+  {
+    "from_path": "/?p=901",
+    "to_url": "/projects/dusha-sens-syst-mon",
+    "status_code": 301,
+    "comment": "WordPress ?p=901: Сенсорные системы и системы представления знаний: Монография"
+  },
+  {
+    "from_path": "/?p=913",
+    "to_url": "/projects/proekt-kartiny-ucitelei-noosfery-voda-cast-12",
+    "status_code": 301,
+    "comment": "WordPress ?p=913: Проект Картины Учителей Ноосферы: Вода (часть 1/2)"
+  },
+  {
+    "from_path": "/?p=941",
+    "to_url": "/articles/daidzest-x-intellect-sentiabr-2012",
+    "status_code": 301,
+    "comment": "WordPress ?p=941: Дайджест «X-INTELLECT». Сентябрь 2012 (Анонс)"
+  },
+  {
+    "from_path": "/?p=967",
+    "to_url": "/projects/proekt-kartiny-ucitelei-noosfery-voda-cast-22",
+    "status_code": 301,
+    "comment": "WordPress ?p=967: Проект Картины Учителей Ноосферы: Вода (часть 2/2)"
+  },
+  {
+    "from_path": "/?p=974",
+    "to_url": "/articles/camni-000-09-2012",
+    "status_code": 301,
+    "comment": "WordPress ?p=974: Тема: Камни"
+  },
+  {
+    "from_path": "/?p=1097",
+    "to_url": "/articles/daidzest-x-intellect-oktiabr-2012",
+    "status_code": 301,
+    "comment": "WordPress ?p=1097: Дайджест «X-INTELLECT». Октябрь 2012 (Анонс)"
+  },
+  {
+    "from_path": "/?p=1132",
+    "to_url": "/articles/o-sxemax-vozdeistviia-destruktivnyx-sil-ds-na-celoveka",
+    "status_code": 301,
+    "comment": "WordPress ?p=1132: О схемах воздействия Деструктивных Сил (ДС) на человека"
+  },
+  {
+    "from_path": "/?p=1229",
+    "to_url": "/projects/dusha-sens-syst-2",
+    "status_code": 301,
+    "comment": "WordPress ?p=1229: Проект «Душа» (продолжение)"
+  },
+  {
+    "from_path": "/?p=1265",
+    "to_url": "/articles/tema-o-castote-sumana-i-ne-tolko-o-nei",
+    "status_code": 301,
+    "comment": "WordPress ?p=1265: Тема: О «частоте Шумана» и не только о ней"
+  },
+  {
+    "from_path": "/?p=1321",
+    "to_url": "/projects/dusha-karma-2",
+    "status_code": 301,
+    "comment": "WordPress ?p=1321: Проект «Душа» (продолжение, часть 2)"
+  },
+  {
+    "from_path": "/?p=1328",
+    "to_url": "/articles/ny-2012-2013",
+    "status_code": 301,
+    "comment": "WordPress ?p=1328: Поздравляем с Новым Годом!"
+  },
+  {
+    "from_path": "/?p=1358",
+    "to_url": "/projects/2013-01-06-models",
+    "status_code": 301,
+    "comment": "WordPress ?p=1358: Проект эталонизации физиологических систем"
+  },
+  {
+    "from_path": "/?p=1378",
+    "to_url": "/articles/daidzest-x-intellect-dekabr-2012-g",
+    "status_code": 301,
+    "comment": "WordPress ?p=1378: «Дайджест Х-INTELLECT» (декабрь 2012 г.)"
+  },
+  {
+    "from_path": "/?p=1385",
+    "to_url": "/projects/dusha-matrix-3",
+    "status_code": 301,
+    "comment": "WordPress ?p=1385: Проект «Душа» (продолжение, часть 3)"
+  },
+  {
+    "from_path": "/?p=1530",
+    "to_url": "/projects/proekt-bioekran-fiziologiia",
+    "status_code": 301,
+    "comment": "WordPress ?p=1530: Проект «Биоэкран: Физиология»"
+  },
+  {
+    "from_path": "/?p=1555",
+    "to_url": "/projects/dusha-animals-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=1555: Проект «ДУША». Люди и животные (Приложение, часть 4)"
+  },
+  {
+    "from_path": "/?p=1604",
+    "to_url": "/projects/proekt-muzcina-i-zenshhina-c1",
+    "status_code": 301,
+    "comment": "WordPress ?p=1604: Проект «Мужчина и Женщина», ч.1"
+  },
+  {
+    "from_path": "/?p=1624",
+    "to_url": "/projects/manandwuman2",
+    "status_code": 301,
+    "comment": "WordPress ?p=1624: Проект «Мужчина и Женщина» ч.2"
+  },
+  {
+    "from_path": "/?p=1684",
+    "to_url": "/projects/proekt-izosfera-i-parallelnye-miry",
+    "status_code": 301,
+    "comment": "WordPress ?p=1684: Проект «Изосфера и параллельные миры», ч.1"
+  },
+  {
+    "from_path": "/?p=1712",
+    "to_url": "/projects/mf2k",
+    "status_code": 301,
+    "comment": "WordPress ?p=1712: Проект «Мужчина и Женщина» 2 Кольцо"
+  },
+  {
+    "from_path": "/?p=1765",
+    "to_url": "/projects/proekt-muzcina-i-zenshhina-c3",
+    "status_code": 301,
+    "comment": "WordPress ?p=1765: Проект «Мужчина и Женщина» ч.3"
+  },
+  {
+    "from_path": "/?p=1784",
+    "to_url": "/projects/dusa-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=1784: Проект «Душа» (продолжение,ч.4)"
+  },
+  {
+    "from_path": "/?p=1804",
+    "to_url": "/articles/bezvremenno-usel-ot-nas-aleksandr-georgievic-glaz",
+    "status_code": 301,
+    "comment": "WordPress ?p=1804: Безвременно ушел от нас Александр Георгиевич Глаз"
+  },
+  {
+    "from_path": "/?p=1918",
+    "to_url": "/articles/svetlaia-pamiat-aleksandru-glazu",
+    "status_code": 301,
+    "comment": "WordPress ?p=1918: СВЕТЛАЯ ПАМЯТЬ АЛЕКСАНДРУ ГЛАЗУ"
+  },
+  {
+    "from_path": "/?p=1945",
+    "to_url": "/articles/org-2k",
+    "status_code": 301,
+    "comment": "WordPress ?p=1945: Дружеская беседа с Силами 2 Кольца по организационным вопросам"
+  },
+  {
+    "from_path": "/?p=1960",
+    "to_url": "/sitemap.xml",
+    "status_code": 301,
+    "comment": "WordPress ?p=1960: Карта сайта (XML)"
+  },
+  {
+    "from_path": "/?p=1965",
+    "to_url": "/articles/daidzest-x-intellect-aprel-2013",
+    "status_code": 301,
+    "comment": "WordPress ?p=1965: Дайджест «Х-INTELLECT» (Апрель — 2013)"
+  },
+  {
+    "from_path": "/?p=2013",
+    "to_url": "/articles/vzaimodeistvie-i-manipuliaciia-energeticeskimi-centrami-celoveka-2-kolco",
+    "status_code": 301,
+    "comment": "WordPress ?p=2013: «Взаимодействие и манипуляция энергетическими центрами человека» 2 Кольцо"
+  },
+  {
+    "from_path": "/?p=2026",
+    "to_url": "/projects/noosfera",
+    "status_code": 301,
+    "comment": "WordPress ?p=2026: Проект «Ноосфера» (начало: Что такое Ноосфера?)"
+  },
+  {
+    "from_path": "/?p=2042",
+    "to_url": "/articles/ispolnilos-40-dnei-so-dnia-perexoda-aleksandra-georgievica-glaza-v-inye-realnosti-bezgranicnogo-doma-vselennoi",
+    "status_code": 301,
+    "comment": "WordPress ?p=2042: Исполнилось 40 дней со дня перехода Александра Георгиевича Глаза в иные реальности безграничного Дома Вселенной"
+  },
+  {
+    "from_path": "/?p=2074",
+    "to_url": "/projects/proekt-muzcina-i-zenshhina-c4",
+    "status_code": 301,
+    "comment": "WordPress ?p=2074: Проект «Мужчина и Женщина» ч.4"
+  },
+  {
+    "from_path": "/?p=2091",
+    "to_url": "/projects/proekt-izosfera-i-parallelnye-miryc2",
+    "status_code": 301,
+    "comment": "WordPress ?p=2091: Проект «Изосфера и параллельные миры», ч.2"
+  },
+  {
+    "from_path": "/?p=2105",
+    "to_url": "/projects/nsf22",
+    "status_code": 301,
+    "comment": "WordPress ?p=2105: Проект «Ноосфера -1» Структура Ноосферы"
+  },
+  {
+    "from_path": "/?p=2120",
+    "to_url": "/projects/proekt-noosfera-2-inkarnacionnye-iaceiki",
+    "status_code": 301,
+    "comment": "WordPress ?p=2120: Проект «Ноосфера -2» Инкарнационные ячейки"
+  },
+  {
+    "from_path": "/?p=2140",
+    "to_url": "/projects/proekt-noosfera-prodolzhenie-3",
+    "status_code": 301,
+    "comment": "WordPress ?p=2140: Проект «Ноосфера -3» Инкарнационные ячейки"
+  },
+  {
+    "from_path": "/?p=2152",
+    "to_url": "/projects/proekt-muzhchina-i-zhenshhina-ch-5",
+    "status_code": 301,
+    "comment": "WordPress ?p=2152: Проект «Мужчина и Женщина» ч. 5 - О любви"
+  },
+  {
+    "from_path": "/?p=2160",
+    "to_url": "/projects/proekt-noosfera-prodolzhenie-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=2160: Проект «Ноосфера -4» Кто такие Учителя"
+  },
+  {
+    "from_path": "/?p=2167",
+    "to_url": "/articles/segodnya-aleksandru-glazu-ispolnilos-by-53-goda-no-tvortsu-by-lo-ugodno-chtoby-dusha-ego-ustremilas-k-nebesam",
+    "status_code": 301,
+    "comment": "WordPress ?p=2167: Сегодня Александру Глазу исполнилось бы 53 года…но Творцу было угодно, чтобы душа его устремилась к небесам…"
+  },
+  {
+    "from_path": "/?p=2193",
+    "to_url": "/projects/parallel-ny-e-miry-proekt-prodolzhenie",
+    "status_code": 301,
+    "comment": "WordPress ?p=2193: Проект «Изосфера и параллельные миры», ч.3"
+  },
+  {
+    "from_path": "/?p=2220",
+    "to_url": "/projects/proekt-noosfera-5-kto-takie-uchitelya",
+    "status_code": 301,
+    "comment": "WordPress ?p=2220: Проект «Ноосфера -5» Кто такие Учителя"
+  },
+  {
+    "from_path": "/?p=2229",
+    "to_url": "/projects/proekt-noosfera-6-vzaimodejstvie-noosfery-s-lyud-mi",
+    "status_code": 301,
+    "comment": "WordPress ?p=2229: Проект «Ноосфера -6» Взаимодействие Ноосферы с людьми"
+  },
+  {
+    "from_path": "/?p=2349",
+    "to_url": "/projects/proekt-izosfera-i-parallel-ny-e-miry-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=2349: Проект «Изосфера и параллельные миры», ч.4"
+  },
+  {
+    "from_path": "/?p=2392",
+    "to_url": "/articles/dajdzhest-h-intellect-oktyabr-2013",
+    "status_code": 301,
+    "comment": "WordPress ?p=2392: Дайджест «Х-INTELLECT» (Октябрь — 2013)"
+  },
+  {
+    "from_path": "/?p=2463",
+    "to_url": "/projects/proekt-noosfera-7-kto-takie-uchitelya",
+    "status_code": 301,
+    "comment": "WordPress ?p=2463: Проект «Ноосфера - 7» Кто такие Учителя"
+  },
+  {
+    "from_path": "/?p=2476",
+    "to_url": "/projects/proekt-noosfera-8-kto-takie-uchitelya",
+    "status_code": 301,
+    "comment": "WordPress ?p=2476: Проект «Ноосфера -8» Кто такие Учителя?"
+  },
+  {
+    "from_path": "/?p=2485",
+    "to_url": "/projects/proekt-noosfera-9-vzaimodejstvie-noosfery-s-lyud-mi",
+    "status_code": 301,
+    "comment": "WordPress ?p=2485: Проект «Ноосфера -9» Взаимодействие Ноосферы с людьми"
+  },
+  {
+    "from_path": "/?p=2491",
+    "to_url": "/articles/vnimanie",
+    "status_code": 301,
+    "comment": "WordPress ?p=2491: ВНИМАНИЕ! Книга -памяти об Александре Глаз."
+  },
+  {
+    "from_path": "/?p=2515",
+    "to_url": "/articles/vnimanie-konferentsii-s-uchastiem-sil",
+    "status_code": 301,
+    "comment": "WordPress ?p=2515: Внимание! Конференции с участием Сил!"
+  },
+  {
+    "from_path": "/?p=2547",
+    "to_url": "/projects/proekt-noosfera-10-struktury-angelov-hranitelej-arhangelov",
+    "status_code": 301,
+    "comment": "WordPress ?p=2547: Проект «Ноосфера -10» Система Ангелов Хранителей"
+  },
+  {
+    "from_path": "/?p=2561",
+    "to_url": "/articles/s-nastupayushhim-novy-m-2014-godom",
+    "status_code": 301,
+    "comment": "WordPress ?p=2561: С наступающим Новым 2014 Годом!"
+  },
+  {
+    "from_path": "/?p=2599",
+    "to_url": "/projects/proekt-noosfera-11-vzaimodejstvie-noosfery-s-lyud-mi",
+    "status_code": 301,
+    "comment": "WordPress ?p=2599: Проект Ноосфера -11 «Взаимодействие Ноосферы с людьми»"
+  },
+  {
+    "from_path": "/?p=2612",
+    "to_url": "/projects/noosfera-12-sistema-angelov-hranitelej",
+    "status_code": 301,
+    "comment": "WordPress ?p=2612: Ноосфера -12 «Система Ангелов Хранителей»"
+  },
+  {
+    "from_path": "/?p=2673",
+    "to_url": "/articles/godovshhina-so-dnya-uhoda-aleksandra-georgievicha-glaza-osnovatelya-soobshhestva-i-sajta-h-intellekt",
+    "status_code": 301,
+    "comment": "WordPress ?p=2673: Годовщина со дня ухода Александра Георгиевича Глаза, основателя сообщества и сайта Х-ИНТЕЛЛЕКТ"
+  },
+  {
+    "from_path": "/?p=2715",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014",
+    "status_code": 301,
+    "comment": "WordPress ?p=2715: Проект «Человек — Земля — Космос 2014» Ч.1"
+  },
+  {
+    "from_path": "/?p=2754",
+    "to_url": "/articles/daidzesty",
+    "status_code": 301,
+    "comment": "WordPress ?p=2754: Дайджесты"
+  },
+  {
+    "from_path": "/?p=2770",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-ch-2",
+    "status_code": 301,
+    "comment": "WordPress ?p=2770: Проект «Человек — Земля — Космос 2014 » Ч.2"
+  },
+  {
+    "from_path": "/?p=2807",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-ch-3",
+    "status_code": 301,
+    "comment": "WordPress ?p=2807: Проект «Человек — Земля — Космос 2014 » Ч.3"
+  },
+  {
+    "from_path": "/?p=2835",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-ch-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=2835: Проект «Человек — Земля — Космос 2014 » Ч.4"
+  },
+  {
+    "from_path": "/?p=2860",
+    "to_url": "/about/o-sajte-x-intellect",
+    "status_code": 301,
+    "comment": "WordPress ?p=2860: О сайте X-INTELLECT"
+  },
+  {
+    "from_path": "/?p=2926",
+    "to_url": "/articles/s-novy-m-2015-godom",
+    "status_code": 301,
+    "comment": "WordPress ?p=2926: С Новым, 2015 Годом!!!"
+  },
+  {
+    "from_path": "/?p=2938",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-ch-5",
+    "status_code": 301,
+    "comment": "WordPress ?p=2938: Проект «Человек — Земля — Космос 2014 » Ч.5"
+  },
+  {
+    "from_path": "/?p=2961",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-upravlenie-sobstvennoj-e-nergetikoj-ch-1",
+    "status_code": 301,
+    "comment": "WordPress ?p=2961: Проект «Человек — Земля — Космос 2014 » Управление собственной энергетикой, ч.1"
+  },
+  {
+    "from_path": "/?p=2996",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-2014-upravlenie-sobstvennoj-e-nergetikoj-ch-2",
+    "status_code": 301,
+    "comment": "WordPress ?p=2996: Проект «Человек — Земля — Космос 2014 » Управление собственной энергетикой, ч.2"
+  },
+  {
+    "from_path": "/?p=3017",
+    "to_url": "/articles/prognozy-na-2015-god",
+    "status_code": 301,
+    "comment": "WordPress ?p=3017: «Прогнозы на 2015 год»"
+  },
+  {
+    "from_path": "/?p=3036",
+    "to_url": "/articles/ispolnilos-2-goda-so-dnya-uhoda-iz-zemnogo-voploshheniya-aleksandra-georgievicha-glaza-osnovatelya-soobshhestva-i-sajta-h-intellekt",
+    "status_code": 301,
+    "comment": "WordPress ?p=3036: Исполнилось 2 года со дня ухода из земного воплощения Александра Георгиевича Глаза, основателя сообщества и сайта Х-ИНТЕЛЛЕКТ"
+  },
+  {
+    "from_path": "/?p=3070",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-ch-3",
+    "status_code": 301,
+    "comment": "WordPress ?p=3070: Проект «Человек — Земля — Космос» Управление собственной энергетикой, ч.3"
+  },
+  {
+    "from_path": "/?p=3103",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-ch-4",
+    "status_code": 301,
+    "comment": "WordPress ?p=3103: Проект «Человек — Земля — Космос» Управление собственной энергетикой, ч.4"
+  },
+  {
+    "from_path": "/?p=3183",
+    "to_url": "/articles/s-nastupayushhim-novy-m-2016-godom",
+    "status_code": 301,
+    "comment": "WordPress ?p=3183: С Новым, 2016 Годом!"
+  },
+  {
+    "from_path": "/?p=3204",
+    "to_url": "/articles/novogodnyaya-konferentsiya-s-uchastiem-sil-blizhnego-i-dal-nego-kosmosa-2015",
+    "status_code": 301,
+    "comment": "WordPress ?p=3204: Новогодняя конференция с участием Сил Ближнего и Дальнего космоса-2015"
+  },
+  {
+    "from_path": "/?p=3240",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-ch-5",
+    "status_code": 301,
+    "comment": "WordPress ?p=3240: Проект «Человек — Земля — Космос» Управление собственной энергетикой, ч.5"
+  },
+  {
+    "from_path": "/?p=3275",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-ch-6",
+    "status_code": 301,
+    "comment": "WordPress ?p=3275: Проект «Человек — Земля — Космос» Управление собственной энергетикой, ч.6"
+  },
+  {
+    "from_path": "/?p=3299",
+    "to_url": "/articles/svetlaya-pamyat-aleksandru-glazu",
+    "status_code": 301,
+    "comment": "WordPress ?p=3299: Светлая память Александру Глазу (2016)"
+  },
+  {
+    "from_path": "/?p=3321",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-otvety-sil-na-prakticheskie-voprosy",
+    "status_code": 301,
+    "comment": "WordPress ?p=3321: Проект «Человек — Земля — Космос» Управление собственной энергетикой. Ответы Сил на практические вопросы"
+  },
+  {
+    "from_path": "/?p=3343",
+    "to_url": "/projects/proekt-chelovek-zemlya-kosmos-upravlenie-sobstvennoj-e-nergetikoj-ch-7",
+    "status_code": 301,
+    "comment": "WordPress ?p=3343: Проект «Человек — Земля — Космос» Управление собственной энергетикой, ч.7"
+  },
+  {
+    "from_path": "/?p=3431",
+    "to_url": "/articles/prognozy-na-2017-god",
+    "status_code": 301,
+    "comment": "WordPress ?p=3431: Прогнозы на 2017 год"
+  },
+  {
+    "from_path": "/?p=3850",
+    "to_url": "/articles/mag",
+    "status_code": 301,
+    "comment": "WordPress ?p=3850: Памяти А. Глаза"
+  },
+  {
+    "from_path": "/category/bioe-kran-2",
+    "to_url": "/projects/bioekran-proekt",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Биоэкран"
+  },
+  {
+    "from_path": "/category/celitelstvo",
+    "to_url": "/projects/celitelstvo-proekt",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Целительство"
+  },
+  {
+    "from_path": "/category/dajdzhest",
+    "to_url": "/articles/daidzesty",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Дайджесты"
+  },
+  {
+    "from_path": "/category/dusha",
+    "to_url": "/projects/dusha",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Душа"
+  },
+  {
+    "from_path": "/category/kartiny-uchitelej-noosfery",
+    "to_url": "/projects/kartiny-uchitelei",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Картины Учителей Ноосферы"
+  },
+  {
+    "from_path": "/courses/astral",
+    "to_url": "/courses/astralnye-peremeshheniia-vo-vremeni",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Курс 1. Астральные перемещения во времени"
+  },
+  {
+    "from_path": "/courses/enechange",
+    "to_url": "/courses/psixo-emocionalnaia-i-energeticeskaia-korrekciia",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Курс 3: Психо-эмоциональная и энергетическая коррекция"
+  },
+  {
+    "from_path": "/courses/karma",
+    "to_url": "/courses/karmiceskaia-korrekciia",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Курс 4: Кармическая коррекция"
+  },
+  {
+    "from_path": "/courses/lifepurpuse",
+    "to_url": "/courses/ziznennoe-prednaznacenie-programma-dusi-na-dannuiu-zizn",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Курс 5: Жизненное предназначение - программа души на данную жизнь"
+  },
+  {
+    "from_path": "/courses/yourpast",
+    "to_url": "/courses/izucenie-sobstvennyx-inkarnacionnyx-ziznei",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Курс 2: Изучение собственных инкарнационных жизней"
+  },
+  {
+    "from_path": "/forum/viewforum.php?f=1",
+    "to_url": "/forum",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Архив форума"
+  },
+  {
+    "from_path": "/forum/viewforum.php?f=13",
+    "to_url": "/forum",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Архив форума"
+  },
+  {
+    "from_path": "/forum/viewforum.php?f=54",
+    "to_url": "/forum",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Архив форума"
+  },
+  {
+    "from_path": "/forum/viewforum.php?f=7",
+    "to_url": "/forum",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Архив форума"
+  },
+  {
+    "from_path": "/forum/viewtopic.php?f=3&t=476&p=811",
+    "to_url": "/forum/prodolzenie-proekta-dusa",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Продолжение проекта \"ДУША\""
+  },
+  {
+    "from_path": "/forum/viewtopic.php?f=56&t=755&sid=c9389b20d1ba4415cbf61a1b3ee0d1e7",
+    "to_url": "/forum/situacii-otnoseniia-v-kotoryx-my-sebia-proiavliaem",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Ситуации, отношения в которых мы себя проявляем"
+  },
+  {
+    "from_path": "/history",
+    "to_url": "/about/istoriya-proekta",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: История проекта: от Группы-1 до X-Intellect"
+  },
+  {
+    "from_path": "/map",
+    "to_url": "/sitemap.xml",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Карта сайта (XML)"
+  },
+  {
+    "from_path": "/soul-1",
+    "to_url": "/wiki/proekt-dusa-cast-1",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Проект Душа. Часть 1."
+  },
+  {
+    "from_path": "/soul-2",
+    "to_url": "/wiki/proekt-dusa-cast-2",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Проект Душа. Часть 2."
+  },
+  {
+    "from_path": "/soul3",
+    "to_url": "/wiki/proekt-dusa-cast-3",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Проект Душа. Часть 3."
+  },
+  {
+    "from_path": "/wiki/index.php?title=Заглавная_страница",
+    "to_url": "/wiki",
+    "status_code": 301,
+    "comment": "Архив 2026-10-03: Вики"
+  }
+]
