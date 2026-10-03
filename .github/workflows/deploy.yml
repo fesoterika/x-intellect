@@ -42,6 +42,7 @@ jobs:
             --exclude 'storage/logs'
             --exclude 'node_modules'
             --exclude '.git'
+            --exclude '/docs/project-map.md'
           path: ./
           remote_path: ${{ secrets.DEPLOY_PATH }}
           remote_host: ${{ secrets.SSH_HOST }}
