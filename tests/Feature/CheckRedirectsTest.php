@@ -139,6 +139,33 @@ class CheckRedirectsTest extends TestCase
             ->assertSee('Исправить цепочки');
     }
 
+    public function test_sitemap_redirect_is_valid_only_when_the_public_file_exists(): void
+    {
+        $originalPublicPath = public_path();
+        $temporaryPublicPath = sys_get_temp_dir().'/xi-sitemap-check-'.bin2hex(random_bytes(8));
+        mkdir($temporaryPublicPath);
+        $this->app->usePublicPath($temporaryPublicPath);
+        Redirect::create(['from_path' => '/map', 'to_url' => '/sitemap.xml', 'status_code' => 301]);
+
+        try {
+            file_put_contents(public_path('sitemap.xml'), '<urlset/>');
+            $this->artisan('redirects:check')
+                ->expectsOutputToContain('Редиректов всего: 1. Рабочих: 1.')
+                ->assertSuccessful();
+            unlink(public_path('sitemap.xml'));
+            $this->artisan('redirects:check')
+                ->expectsOutputToContain('Редиректов всего: 1. Рабочих: 0.')
+                ->expectsOutputToContain('Цели нет')
+                ->assertSuccessful();
+        } finally {
+            $this->app->usePublicPath($originalPublicPath);
+            if (is_file($temporaryPublicPath.'/sitemap.xml')) {
+                unlink($temporaryPublicPath.'/sitemap.xml');
+            }
+            rmdir($temporaryPublicPath);
+        }
+    }
+
     /** Редакторам таблица редиректов недоступна — кнопка тоже. */
     public function test_editor_cannot_run_fix(): void
     {

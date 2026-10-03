@@ -171,6 +171,7 @@ class CheckRedirects extends Command
         return isset($this->pageByUrl[$path])
             || in_array($path, $this->sectionUrls, true)
             || in_array($path, $this->fixedPaths, true)
+            || ($path === '/sitemap.xml' && is_file(public_path('sitemap.xml')))
             || str_starts_with($path, '/forum/')
             || str_starts_with($path, '/storage/');
     }
