@@ -1580,7 +1580,7 @@ html { scroll-padding-top: 84px; }
 /* Шапка карточки: бейдж эпохи, год архива у правого края, за ним булавка.
    Год и булавка уходят вправо через margin-left на втором элементе строки —
    каким бы он ни оказался (год есть не у всех материалов). */
-.page-card-top { display: flex; align-items: center; gap: 10px; }
+.page-card-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .page-card-top > :nth-child(2) { margin-left: auto; }
 .page-card-year { font-size: 12px; color: var(--xi-ink-faint); white-space: nowrap; }
 
@@ -1591,11 +1591,27 @@ html { scroll-padding-top: 84px; }
     margin-top: auto;
     padding-top: 12px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
     font-size: 12px;
     color: var(--xi-ink-faint);
 }
+.page-card-foot-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    min-width: 0;
+}
+.page-card-wiki {
+    display: inline-flex;
+    align-items: center;
+    color: #6b6820;
+    font-weight: 600;
+}
+.page-card-wiki svg { width: 16px; height: 16px; flex-shrink: 0; margin-right: 6px; }
+:root[data-theme="dark"] .page-card-wiki { color: #e3e0a4; }
 /* Черта над низом карточки: начинается цветом эпохи (как полоса сверху
    и бейдж) и растворяется вправо */
 .page-card-foot::before {
@@ -1610,6 +1626,8 @@ html { scroll-padding-top: 84px; }
 }
 .page-card-more {
     margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
     font-size: 12.5px;
     font-weight: 600;
     color: var(--xi-accent);
@@ -1656,11 +1674,12 @@ html { scroll-padding-top: 84px; }
     margin-top: 26px;
 }
 
-.section-sort { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+.section-sort { margin-left: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: 100%; }
 .section-sort label { font-size: 13px; color: var(--xi-ink-faint); }
 
 /* Селектор — в стилистике кнопок пагинации (.xi-page) */
 .section-sort select {
+    max-width: 100%;
     appearance: none;
     -webkit-appearance: none;
     height: 38px;
@@ -2418,6 +2437,7 @@ a.xi-download .xi-download__meta {
 .xi-no-flexgap .home-section-head > * + * { margin-left: 12px; }
 .xi-no-flexgap .section-tile-head > * + * { margin-left: 10px; }
 .xi-no-flexgap .page-card-top > * + * { margin-left: 10px; }
+.xi-no-flexgap .page-card-foot-meta > * { margin-right: 14px; margin-bottom: 8px; }
 .xi-no-flexgap .theme-toggle > * + * { margin-left: 8px; }
 
 /* Колонки */
