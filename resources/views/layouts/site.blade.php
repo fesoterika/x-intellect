@@ -221,6 +221,8 @@
         <meta name="description" content="Архив проекта X-Intellect (ранее - «Сфера Разума»): вики, библиотека, записи курсов А. Глаза, материалы о контактах с Внеземным Разумом.">
     @endif
 
+    @include('site.partials.website-json-ld')
+
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     {{-- iOS НЕ умеет SVG в apple-touch-icon: со ссылкой на .svg Safari при
