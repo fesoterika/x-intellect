@@ -1,3 +1,7 @@
+@php
+    // Тип карточки определяется разделом, а бейдж выше — источником материала.
+    $isWikiMaterial = $page->section?->rootAncestor()->slug === 'wiki';
+@endphp
 <a class="page-card epoch-{{ $page->source_type }}{{ $page->is_pinned ? ' is-pinned' : '' }}" href="{{ url($page->url()) }}">
     <div class="page-card-top">
         <x-source-badge :page="$page" />
@@ -18,12 +22,22 @@
         <p>{{ Str::limit($page->excerpt, 140) }}</p>
     @endif
     <div class="page-card-foot">
-        @if ($page->audio->count())
-            <span class="meta-audio">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-                аудио: {{ $page->audio->count() }}
-            </span>
+        @if ($isWikiMaterial || $page->audio->count())
+            <div class="page-card-foot-meta">
+                @if ($isWikiMaterial)
+                    <span class="page-card-wiki">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v15M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1z"/></svg>
+                        Материал из Вики
+                    </span>
+                @endif
+                @if ($page->audio->count())
+                    <span class="meta-audio">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                        аудио: {{ $page->audio->count() }}
+                    </span>
+                @endif
+            </div>
         @endif
-        <span class="page-card-more">Читать <span class="arr" aria-hidden="true">→</span></span>
+        <span class="page-card-more">{{ $isWikiMaterial ? 'Читать в Вики' : 'Читать' }} <span class="arr" aria-hidden="true">→</span></span>
     </div>
 </a>

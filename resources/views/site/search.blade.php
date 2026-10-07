@@ -11,7 +11,7 @@
 
     <form action="{{ route('search') }}" method="GET" style="display: flex; gap: 10px; max-width: 560px; margin: 18px 0 30px;">
         <input type="search" name="q" value="{{ $query }}" placeholder="Например: Биоэкран, Посредники, Хроносфера…"
-               style="flex: 1; background: var(--xi-surface); border: 1px solid var(--xi-line); border-radius: 999px; color: var(--xi-ink); padding: 11px 18px; font-size: 15px;">
+               style="flex: 1; min-width: 0; background: var(--xi-surface); border: 1px solid var(--xi-line); border-radius: 999px; color: var(--xi-ink); padding: 11px 18px; font-size: 15px;">
         <button style="background: var(--xi-accent-deep); color: #fff; border: none; border-radius: 999px; padding: 11px 24px; font-weight: 600; cursor: pointer;">Найти</button>
     </form>
 
