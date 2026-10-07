@@ -52,7 +52,7 @@ Vite 8 и Tailwind CSS 3. Проект сохраняет архив «Икс-И
 
 **11 моделей** в `app/Models/`: `Page`, `PageRevision`, `Section`, `Media`, `MenuItem`,
 `GlossaryTerm`, `ForumTopic`, `ForumPost`, `Redirect`, `Setting`, `User`.
-**22 миграции** в `database/migrations/`.
+**23 миграции** в `database/migrations/`.
 
 - `sections.parent_id` — корневые разделы и подразделы. `Page::url()` строит адрес
   через `rootAncestor()`: перенос внутри одного корня не меняет URL страницы.
@@ -61,6 +61,10 @@ Vite 8 и Tailwind CSS 3. Проект сохраняет архив «Икс-И
   опубликованные unlisted-страницы доступны напрямую и участвуют в поиске.
 - `pages.seo` — JSON с SEO-полями; `source_type`, `source_url`, `archived_at`
   описывают происхождение. `published_at` — дата материала для сортировки.
+- `sections.meta_title`, `sections.meta_description`, `forum_topics.meta_description`,
+  `glossary_terms.meta_description` — отдельные редактируемые SEO-поля.
+  Видимые названия и полные описания сохраняются. Главная и общий глоссарий
+  используют `settings` с ключами `seo.home.meta_title` и `seo.glossary.meta_title`.
 - `page_revisions` — прежние заголовок, тело, происхождение и причина правки.
 - `media` — привязка к странице, тип, путь, порядок и длительность; одна физическая
   запись аудио может быть связана с несколькими строками БД.
@@ -217,6 +221,7 @@ LinkTargets → ImageAligner → ImageFigures → AttachmentDownloads
 | `sitemap:generate` | `GenerateSitemap` | XML-карты страниц и медиа |
 | `indexnow:key` | `IndexNowKey` | Файл подтверждения ключа |
 | `indexnow:submit` | `IndexNowSubmit` | Отправка URL, включая `--all` |
+| `seo:apply-review` | `ApplySeoReview` | Проверка согласованного реестра; применение с `--apply --backup=...`, без изменения URL и тел |
 
 `redirects:check` также признаёт `/sitemap.xml` действующей целью, если файл существует.
 `site:restore-grammar-layout` проверяет URL и хеш исходного тела, сохраняет ревизию,
@@ -224,8 +229,8 @@ LinkTargets → ImageAligner → ImageFigures → AttachmentDownloads
 
 ## Тесты
 
-**37 Feature-файлов** (включая `tests/Feature/Auth/`) + **5 Unit-файлов**;
-`phpunit --list-tests` перечисляет **335 тестов**.
+**38 Feature-файлов** (включая `tests/Feature/Auth/`) + **5 Unit-файлов**;
+`phpunit --list-tests` перечисляет **342 теста**.
 
 ```sh
 php artisan test
@@ -240,6 +245,8 @@ php artisan route:list --json
 
 ## Последние изменения
 
+- 07.10: внедрены согласованные заголовки и SEO-описания с сохранением URL,
+  навигации и текстов — [отчёт](seo-review-2026-10-07.md), [реестр](seo-review-2026-10-07.json).
 - Август: IndexNow и Open Graph для всех типов публичных страниц, `Clean-param`;
   сентябрь: новые брендовые изображения, исправления поиска и тёмной темы.
 - 03.10: восстановление WordPress shortlinks и целей старых редиректов —
