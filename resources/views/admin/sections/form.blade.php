@@ -50,6 +50,17 @@
                 <p class="text-xs text-gray-400 mt-1">Показывается под заголовком раздела; на главной в плитке — как обычный текст без оформления.</p>
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">SEO title</label>
+                <input type="text" name="meta_title" maxlength="255" value="{{ old('meta_title', $section->meta_title) }}" class="w-full rounded-md border-gray-300">
+                <p class="text-xs text-gray-400 mt-1">Название в поиске. Заголовок раздела и меню сохраняются.</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">SEO description</label>
+                <textarea name="meta_description" maxlength="500" rows="3" class="w-full rounded-md border-gray-300">{{ old('meta_description', $section->meta_description) }}</textarea>
+                <p class="text-xs text-gray-400 mt-1">Пустое поле — автоматически использовать описание раздела.</p>
+            </div>
+
             <label class="flex items-center gap-2 text-sm text-gray-700">
                 <input type="hidden" name="is_visible" value="0">
                 <input type="checkbox" name="is_visible" value="1" @checked(old('is_visible', $section->is_visible)) class="rounded border-gray-300">

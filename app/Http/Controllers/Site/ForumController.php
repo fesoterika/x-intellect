@@ -27,6 +27,7 @@ class ForumController extends Controller
             ->map(fn ($items) => $items->groupBy('forum_title'));
 
         return view('site.forum.index', [
+            'forumSection' => \App\Models\Section::where('slug', 'forum')->first(),
             'groups' => $groups,
             'topicsCount' => $topics->count(),
             'postsCount' => (int) $topics->sum('posts_count'),

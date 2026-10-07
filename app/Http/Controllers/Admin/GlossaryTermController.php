@@ -51,6 +51,7 @@ class GlossaryTermController extends Controller
         $data = $request->validate([
             'term' => ['required', 'string', 'max:255', Rule::unique('glossary_terms', 'term')->ignore($term)],
             'definition' => ['required', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
             'page_id' => ['nullable', 'exists:pages,id'],
         ]);
 

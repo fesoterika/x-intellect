@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GlossaryTerm extends Model
 {
-    protected $fillable = ['term', 'slug', 'definition', 'page_id'];
+    protected $fillable = ['term', 'slug', 'definition', 'meta_description', 'page_id'];
 
     /**
      * Собственный индексируемый адрес термина: /glossary?term=<slug>.

@@ -1,12 +1,12 @@
 @extends('layouts.site')
 
-@section('title', 'X-Intellect - архив проекта «Сфера Разума» / X-Интеллект')
+@section('title', \App\Models\Setting::get('seo.home.meta_title', 'X-Intellect - архив проекта «Сфера Разума» / X-Интеллект'))
 
 @section('meta')
     <meta name="description" content="Восстановленный архив проекта X-Intellect (ранее - «Сфера Разума», основан А. Г. Глазом): вики, глоссарий, библиотека, аудиозаписи курсов, история проекта 1982-2017.">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/">
     @include('site.partials.og', [
-        'ogTitle' => 'X-Intellect - архив проекта',
+        'ogTitle' => \App\Models\Setting::get('seo.home.meta_title', 'X-Intellect - архив проекта'),
         'ogDescription' => 'Вики, библиотека, записи курсов и история проекта «Сфера Разума» / X-Интеллект.',
         'ogUrl' => rtrim(config('app.url'), '/').'/',
     ])

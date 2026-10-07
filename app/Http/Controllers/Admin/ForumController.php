@@ -114,6 +114,7 @@ class ForumController extends Controller
             'forum_title' => ['required', 'string', 'max:255'],
             'forum_group' => ['nullable', 'string', 'max:255'],
             'disclaimer' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
         ]);
 
         // Смена адреса темы: 301 со старого URL — внешние ссылки и выдача

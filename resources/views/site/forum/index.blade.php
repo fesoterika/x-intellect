@@ -1,12 +1,12 @@
 @extends('layouts.site')
 
-@section('title', 'Архив форума (2012–2019) — X-Intellect')
+@section('title', $forumSection?->meta_title ?: 'Архив форума (2012–2019) — X-Intellect')
 
 @section('meta')
-    <meta name="description" content="Архивная копия форума проекта X-Intellect за 2012–2019 годы: {{ $topicsCount }} тем и {{ $postsCount }} сообщений участников. Форум неактивен, материалы доступны только для чтения.">
+    <meta name="description" content="{{ $forumSection?->meta_description ?: 'Архивная копия форума проекта X-Intellect за 2012–2019 годы: '.$topicsCount.' тем и '.$postsCount.' сообщений участников. Форум неактивен, материалы доступны только для чтения.' }}">
     <link rel="canonical" href="{{ rtrim(config('app.url'), '/') }}/forum">
     @include('site.partials.og', [
-        'ogTitle' => 'Архив форума X-Intellect',
+        'ogTitle' => $forumSection?->meta_title ?: 'Архив форума X-Intellect',
         'ogDescription' => 'Темы и сообщения форума проекта 2012–2019 годов. Только чтение.',
         'ogUrl' => rtrim(config('app.url'), '/').'/forum',
     ])

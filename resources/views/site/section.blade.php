@@ -1,6 +1,6 @@
 @extends('layouts.site')
 
-@section('title', $section->title.' - X-Intellect')
+@section('title', $section->meta_title ?: $section->title.' - X-Intellect')
 
 @section('meta')
     @php
@@ -8,12 +8,12 @@
         if ($pages->currentPage() > 1) {
             $sectionCanonicalUrl .= '?page='.$pages->currentPage();
         }
-        $sectionDesc = Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158);
+        $sectionDesc = $section->meta_description ?: Str::limit($section->descriptionPlain() ?: 'Раздел «'.$section->title.'» архива проекта X-Intellect.', 158);
     @endphp
     <meta name="description" content="{{ $sectionDesc }}">
     <link rel="canonical" href="{{ $sectionCanonicalUrl }}">
     @include('site.partials.og', [
-        'ogTitle' => $section->title.' - X-Intellect',
+        'ogTitle' => $section->meta_title ?: $section->title.' - X-Intellect',
         'ogDescription' => $sectionDesc,
         'ogUrl' => $sectionCanonicalUrl,
     ])

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Section extends Model
 {
-    protected $fillable = ['parent_id', 'title', 'slug', 'description', 'position', 'is_visible', 'show_on_home'];
+    protected $fillable = ['parent_id', 'title', 'slug', 'description', 'meta_title', 'meta_description', 'position', 'is_visible', 'show_on_home'];
 
     protected function casts(): array
     {
