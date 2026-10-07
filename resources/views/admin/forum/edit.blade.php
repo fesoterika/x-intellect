@@ -54,6 +54,12 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">SEO description</label>
+                <textarea name="meta_description" maxlength="500" rows="3" class="w-full rounded-md border-gray-300 text-sm">{{ old('meta_description', $topic->meta_description) }}</textarea>
+                <p class="text-xs text-gray-400 mt-1">Пустое поле — использовать начало первого сообщения.</p>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Дисклеймер</label>
                 <textarea name="disclaimer" rows="3" class="w-full rounded-md border-gray-300 text-sm"
                           placeholder="Например: сообщения отражают личные мнения участников и не являются медицинскими рекомендациями…">{{ old('disclaimer', $topic->disclaimer) }}</textarea>

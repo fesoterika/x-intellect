@@ -43,6 +43,8 @@ class SectionRequest extends FormRequest
                 },
             ],
             'description' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
             'position' => ['nullable', 'integer', 'min:0'],
             'is_visible' => ['boolean'],
             'show_on_home' => ['boolean'],

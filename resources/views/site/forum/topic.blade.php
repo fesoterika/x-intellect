@@ -8,7 +8,7 @@
         $topicCanonicalUrl .= '?page='.$posts->currentPage();
     }
     $firstPost = $topic->posts->first();
-    $desc = Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags($firstPost?->body ?? ''))), 155);
+    $desc = $topic->meta_description ?: Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags($firstPost?->body ?? ''))), 155);
 @endphp
 
 @section('meta')

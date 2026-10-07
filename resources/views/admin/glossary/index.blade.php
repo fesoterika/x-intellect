@@ -35,6 +35,11 @@
                 <input id="def-new" type="hidden" name="definition">
                 <trix-editor input="def-new" class="trix-content bg-white border border-gray-300 rounded-md" style="min-height: 5rem;"></trix-editor>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">SEO description</label>
+                <textarea name="meta_description" maxlength="500" rows="2" class="w-full rounded-md border-gray-300"></textarea>
+                <p class="text-xs text-gray-400 mt-1">Пустое поле — использовать определение термина.</p>
+            </div>
             <button class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700">Добавить</button>
         </form>
 
@@ -72,6 +77,13 @@
                             <label class="block text-xs font-medium text-gray-500 mb-1">Определение</label>
                             <input id="def-{{ $term->id }}" type="hidden" name="definition" value="{{ $term->definitionHtml() }}">
                             <trix-editor input="def-{{ $term->id }}" class="trix-content bg-white border border-gray-300 rounded-md text-sm" style="min-height: 5rem;"></trix-editor>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <div class="w-full">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">SEO description</label>
+                                <textarea name="meta_description" maxlength="500" rows="3" class="w-full rounded-md border-gray-300 text-sm">{{ old('_term_id') == $term->id ? old('meta_description', $term->meta_description) : $term->meta_description }}</textarea>
+                                <p class="text-xs text-gray-400 mt-1">Пустое поле — использовать определение термина.</p>
+                            </div>
                         </div>
                         <div class="flex gap-4 items-center">
                             <button class="px-4 py-1.5 bg-indigo-600 text-white rounded-md text-xs font-medium hover:bg-indigo-700">Сохранить</button>
