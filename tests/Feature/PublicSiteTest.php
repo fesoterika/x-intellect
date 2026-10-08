@@ -1161,6 +1161,34 @@ class PublicSiteTest extends TestCase
         );
     }
 
+    public function test_publications_page_is_listed_but_hidden_from_home_latest(): void
+    {
+        $this->seedCore();
+
+        $page = Page::create([
+            'section_id' => Section::where('slug', 'about')->firstOrFail()->id,
+            'title' => 'Публикации о проекте X-Intellect',
+            'slug' => 'publikatsii-o-proekte',
+            'body' => '<p>Внешние публикации и обсуждения проекта.</p>',
+            'status' => 'published',
+            'is_listed' => true,
+            'source_type' => 'new',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $home = collect($this->get('/')->viewData('latestPages'))->pluck('slug');
+        $this->assertNotEmpty($home);
+        $this->assertFalse($home->contains($page->slug));
+
+        $this->get($page->url())->assertOk()->assertSee($page->title);
+
+        $section = collect($this->get('/about')->viewData('pages')->items())->pluck('slug');
+        $this->assertTrue($section->contains($page->slug));
+
+        $results = $this->get('/search?'.http_build_query(['q' => $page->title]))->viewData('results');
+        $this->assertTrue(collect($results->items())->pluck('slug')->contains($page->slug));
+    }
+
     public function test_unlisted_page_hidden_from_listing_but_reachable(): void
     {
         $this->seedCore();

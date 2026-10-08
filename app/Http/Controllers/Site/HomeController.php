@@ -49,10 +49,9 @@ class HomeController extends Controller
             'latestPages' => Page::published()
                 ->listed()
                 ->where('page_type', 'page')
-                // Служебная «Правовая информация» (/rules/pravovaia-informaciia,
-                // создана в админке прода со свежей датой) — не материал архива:
-                // из «Свежего» исключается, но в листинге раздела и поиске остаётся
-                ->where('slug', '!=', 'pravovaia-informaciia')
+                // Справочные страницы доступны в разделах и поиске,
+                // но не занимают место в «Последних материалах» на главной.
+                ->whereNotIn('slug', ['pravovaia-informaciia', 'publikatsii-o-proekte'])
                 // page-card: audio-бейдж и url() через section.parent — без N+1
                 ->with(['audio', 'section.parent'])
                 ->orderByDesc('published_at')
