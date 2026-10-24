@@ -10,7 +10,7 @@
     <h1 class="page-title">Поиск по архиву</h1>
 
     <form action="{{ route('search') }}" method="GET" style="display: flex; gap: 10px; max-width: 560px; margin: 18px 0 30px;">
-        <input type="search" name="q" value="{{ $query }}" placeholder="Например: Биоэкран, Посредники, Хроносфера…"
+        <input type="search" name="q" value="{{ $query }}" maxlength="200" aria-label="Поисковый запрос" placeholder="Например: Биоэкран, Посредники, Хроносфера…"
                style="flex: 1; min-width: 0; background: var(--xi-surface); border: 1px solid var(--xi-line); border-radius: 999px; color: var(--xi-ink); padding: 11px 18px; font-size: 15px;">
         <button style="background: var(--xi-accent-deep); color: #fff; border: none; border-radius: 999px; padding: 11px 24px; font-weight: 600; cursor: pointer;">Найти</button>
     </form>
@@ -20,12 +20,14 @@
             <p style="color: var(--xi-ink-faint);">Введите не менее двух символов для поиска.</p>
         @elseif ($results->total() === 0)
             <h2 class="section-title">{{ $glossaryTerms->isEmpty() ? 'Ничего не найдено' : 'Страниц не найдено' }}</h2>
+            <p class="search-hint">Попробуйте сократить запрос или ввести часть слова.</p>
         @else
             <h2 class="section-title">{{ $glossaryTerms->isEmpty() ? 'Найдено' : 'Страницы' }}: {{ $results->total() }}</h2>
+            <p class="search-hint">Совпадения выделены в заголовках и отрывках. @if (count($search->terms) > 1)Ищем все слова запроса; они могут встречаться в разных частях материала.@endif</p>
 
             <div style="display: grid; gap: 12px; max-width: 760px;">
                 @foreach ($results as $page)
-                    @include('site.partials.page-card', ['page' => $page])
+                    @include('site.partials.page-card', ['page' => $page, 'searchPreview' => $search])
                 @endforeach
             </div>
 
@@ -38,8 +40,8 @@
             <div class="search-glossary">
                 @foreach ($glossaryTerms as $term)
                     <a class="xi-card search-glossary-item" href="{{ url($term->url()) }}">
-                        <span class="search-glossary-term">{{ $term->term }}</span>
-                        <span class="search-glossary-def">{{ Str::limit($term->definitionPlain(), 180) }}</span>
+                        <span class="search-glossary-term">{{ $search->highlight($term->term) }}</span>
+                        <span class="search-glossary-def">{{ $search->snippet($term->definition) }}</span>
                     </a>
                 @endforeach
             </div>

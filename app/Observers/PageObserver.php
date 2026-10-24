@@ -21,6 +21,7 @@ use App\Services\TimelineTagger;
 use App\Services\TrixEmbeds;
 use App\Services\TrixTables;
 use Illuminate\Support\Str;
+use App\Support\SearchText;
 
 class PageObserver
 {
@@ -66,6 +67,7 @@ class PageObserver
 
         $this->seo->ensureSlug($page);
         $this->seo->fillDefaults($page);
+        $page->search_text = SearchText::index($page->title, $page->excerpt, $page->body);
 
         if ($page->isDirty('body') || $page->body_rendered === null) {
             // маркеры «в новом окне» → target=_blank; выравнивание картинок

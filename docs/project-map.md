@@ -122,8 +122,10 @@ GET /{section:slug}/{pageSlug}    PageController@show
   Проверки форм — `app/Http/Requests/`.
 
 Админка требует `auth` + `role:admin,editor`; операции с редиректами, меню и форумом
-дополнительно требуют `can:admin`. Поиск на MySQL сочетает LIKE и FULLTEXT;
-на SQLite используется `RussianText` / `xi_lower()`.
+дополнительно требуют `can:admin`. С 24.10.2026 поиск использует все части запроса
+через AND LIKE по производному `pages.search_text` без HTML; SQLite использует
+`RussianText` / `xi_lower()`. Контекстные отрывки и подсветка — в `ArchiveSearch`,
+правила и проверки — [в сохранённом решении](search-context-2026-10-24.md).
 
 ## Сервисы и рендер
 

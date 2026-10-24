@@ -261,7 +261,7 @@ class PublicSiteTest extends TestCase
 
         $this->get('/search?'.http_build_query(['q' => 'эталонизация']))
             ->assertOk()
-            ->assertSeeInOrder(['Эталонизация человека', 'Прочая страница']);
+            ->assertSeeInOrder(['/articles/title-match', '/articles/telo-match']);
     }
 
     public function test_search_is_case_insensitive(): void

@@ -122,7 +122,7 @@ class WikiSidebarTest extends TestCase
 
         $this->get('/wiki')->assertOk()->assertDontSee('Сеанс с Силами 20140203');
         $this->get('/wiki/seans-s-silami-20140203')->assertOk()->assertSee('Сеанс с Силами 20140203');
-        $this->get('/search?q=20140203')->assertOk()->assertSee('Сеанс с Силами 20140203');
+        $this->get('/search?q=20140203')->assertOk()->assertSee('/wiki/seans-s-silami-20140203', false);
     }
 
     public function test_child_section_listing_shows_sidebar_too(): void

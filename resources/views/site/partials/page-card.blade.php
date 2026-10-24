@@ -17,8 +17,10 @@
             </span>
         @endif
     </div>
-    <h3>{{ $page->title }}</h3>
-    @if ($page->excerpt)
+    <h3>{{ isset($searchPreview) ? $searchPreview->highlight($page->title) : $page->title }}</h3>
+    @if (isset($searchPreview))
+        <p class="search-snippet">{{ $searchPreview->snippet($page->body, $page->excerpt) }}</p>
+    @elseif ($page->excerpt)
         <p>{{ Str::limit($page->excerpt, 140) }}</p>
     @endif
     <div class="page-card-foot">

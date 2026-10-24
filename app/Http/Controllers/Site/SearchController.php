@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\GlossaryTerm;
 use App\Models\Page;
-use App\Support\RussianText;
+use App\Services\ArchiveSearch;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
@@ -16,11 +15,13 @@ class SearchController extends Controller
 
     public function __invoke(Request $request)
     {
-        $query = trim((string) $request->query('q', ''));
+        $request->validate(['q' => ['nullable', 'string', 'max:200']]);
+        $query = trim(preg_replace('/[\s\p{Z}]+/u', ' ', (string) $request->query('q', '')));
+        $search = new ArchiveSearch($query);
         $results = null;
         $glossaryTerms = collect();
 
-        if (mb_strlen($query) >= 2) {
+        if (mb_strlen($query) >= 2 && $search->terms !== []) {
             // Архивные unlisted-страницы (стенограммы сеансов) скрыты из списков,
             // но должны находиться поиском; служебные страницы нового сайта
             // (политики и т.п., source_type=new + unlisted) — по-прежнему нет.
@@ -29,51 +30,33 @@ class SearchController extends Controller
                 // page-card: audio-бейдж и url() через section.parent — без N+1
                 ->with(['audio', 'section.parent']);
 
-            // Подстрочный LIKE — общая часть для обеих БД: находит словоформы
-            // («сеанс» → «сеансы») и короткие слова, которые InnoDB FULLTEXT
-            // не индексирует (короче 3 символов). Регистронезависимость
-            // кириллицы: на MySQL — collation utf8mb4, на SQLite — xi_lower()
-            // из App\Support\RussianText. На MySQL FULLTEXT добирает совпадения
-            // по словам целиком (морфология без подстрок) — вместе дают
-            // одинаковую полноту локально и на проде.
-            $builder->where(function ($q) use ($query) {
-                RussianText::contains($q, 'title', $query);
-                RussianText::contains($q, 'body', $query, 'or');
-
-                if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'])) {
-                    $q->orWhereFullText(['title', 'body'], $query);
-                }
-            });
-
-            // Сначала совпадения по заголовку, затем по содержимому;
-            // внутри групп — новые раньше (стабильный порядок для пагинации)
-            RussianText::containsFirstOrder($builder, 'title', $query);
+            $search->apply($builder);
             $builder->orderByDesc('published_at')->orderByDesc('id');
 
             // Номерная пагинация: результатов может быть много, а строку
             // поиска сохраняем в ссылках через withQueryString()
             $results = $builder->paginate(20)->withQueryString();
 
-            $glossaryTerms = $this->glossaryMatches($query);
+            $glossaryTerms = $this->glossaryMatches($search);
         }
 
         return view('site.search', [
             'query' => $query,
+            'search' => $search,
             'results' => $results,
             'glossaryTerms' => $glossaryTerms,
         ]);
     }
 
     /**
-     * Термины глоссария по запросу: регистронезависимо (mb_stripos), сначала
-     * совпадения в названии термина, затем — в тексте определения.
+     * Те же обязательные части запроса, регистр и е/ё, что для материалов.
+     * Сначала совпадения в названии термина, затем — в определении.
      */
-    protected function glossaryMatches(string $query): \Illuminate\Support\Collection
+    protected function glossaryMatches(ArchiveSearch $search): \Illuminate\Support\Collection
     {
         return GlossaryTerm::orderBy('term')->get()
-            ->filter(fn ($term) => mb_stripos($term->term, $query) !== false
-                || mb_stripos($term->definitionPlain(), $query) !== false)
-            ->sortBy(fn ($term) => mb_stripos($term->term, $query) === false ? 1 : 0)
+            ->filter(fn ($term) => $search->matches($term->term.' '.$term->definitionPlain()))
+            ->sortBy(fn ($term) => $search->matches($term->term) ? 0 : 1)
             ->take(self::GLOSSARY_LIMIT)
             ->values();
     }

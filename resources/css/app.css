@@ -1394,6 +1394,9 @@ html { scroll-padding-top: 84px; }
 .glossary-empty { color: var(--xi-ink-faint); margin-top: 20px; }
 
 /* --- Термины глоссария в общем поиске --- */
+.search-hint { max-width: 760px; margin: -6px 0 18px; font-size: 13px; line-height: 1.6; color: var(--xi-ink-faint); }
+.search-match { color: var(--xi-ink); background: var(--xi-accent-soft); border-radius: 3px; box-shadow: 0 1px 0 var(--xi-accent); font-weight: 600; padding: 0 .08em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.page-card .search-snippet { line-height: 1.65; overflow-wrap: anywhere; }
 .search-glossary { display: grid; gap: 10px; max-width: 760px; margin-bottom: 30px; }
 .search-glossary-item {
     display: block;
